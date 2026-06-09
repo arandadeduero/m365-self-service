@@ -1,0 +1,25 @@
+services/graphService.js
+  s_23a3b525705a2e::t_1b5528b1cc4ff9 270,283-288
+  s_23a3b525705a2e::t_48ff98dcf96cb3 219-220,226,229,237-240,242-246,252-254
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "7bf9ed2a50b04e945012e209cac958f51e361294",
+  "prompts": {},
+  "humans": {
+    "h_3aa52f59e1a7c5": {
+      "author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_23a3b525705a2e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_152d577baffeuHaJOMbjwI9zxP",
+        "model": "claude-sonnet-4.5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
