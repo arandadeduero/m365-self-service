@@ -156,6 +156,127 @@ async function getGroupsWithMembership(accessToken) {
 }
 
 /**
+ * Get all distribution lists (mail-enabled groups) in the tenant
+ * @param {string} accessToken - Valid access token for Microsoft Graph
+ * @returns {Promise<Array>} Array of all distribution lists in the tenant
+ */
+async function getAllDistributionLists(accessToken) {
+  try {
+    const response = await axios.get('https://graph.microsoft.com/v1.0/groups', {
+      params: {
+        $filter: 'mailEnabled eq true',
+        $select: 'id,displayName,description,mail,mailEnabled,securityEnabled,groupTypes',
+        $orderby: 'displayName',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data.value || [];
+  } catch (error) {
+    console.error('Error fetching distribution lists:', error.response?.data || error.message);
+    throw new Error('Failed to fetch distribution lists');
+  }
+}
+
+/**
+ * Get all distribution lists with user membership status
+ * @param {string} accessToken - Valid access token for Microsoft Graph
+ * @returns {Promise<Object>} Object with all distribution lists and user's membership
+ */
+async function getDistributionListsWithMembership(accessToken) {
+  try {
+    const [allDistLists, userGroups] = await Promise.all([
+      getAllDistributionLists(accessToken),
+      getUserGroups(accessToken),
+    ]);
+
+    // Create a Set of user's group IDs for fast lookup
+    const userGroupIds = new Set(userGroups.map(g => g.id));
+
+    // Add membership status to each distribution list
+    const distListsWithStatus = allDistLists.map(list => ({
+      ...list,
+      isMember: userGroupIds.has(list.id),
+    }));
+
+    // Count how many distribution lists user is member of
+    const memberCount = distListsWithStatus.filter(dl => dl.isMember).length;
+
+    return {
+      allDistLists: distListsWithStatus,
+      memberCount,
+      totalCount: allDistLists.length,
+    };
+  } catch (error) {
+    console.error('Error fetching distribution lists with membership:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get all shared mailboxes in the tenant
+ * Shared mailboxes are mailboxes with type "SharedMailbox"
+ * @param {string} accessToken - Valid access token for Microsoft Graph
+ * @returns {Promise<Array>} Array of all shared mailboxes in the tenant
+ */
+async function getAllSharedMailboxes(accessToken) {
+  try {
+    const response = await axios.get('https://graph.microsoft.com/v1.0/users', {
+      params: {
+        $filter: 'userType eq \'Guest\' or assignedLicenses/$count eq 0',
+        $select: 'id,displayName,mail,userPrincipalName,mailboxSettings',
+        $orderby: 'displayName',
+        $count: true,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        ConsistencyLevel: 'eventual',
+      },
+    });
+    
+    // Filter to only shared mailboxes (those with mail but no licenses)
+    const mailboxes = (response.data.value || []).filter(user => 
+      user.mail && user.mail.length > 0
+    );
+    
+    return mailboxes;
+  } catch (error) {
+    console.error('Error fetching shared mailboxes:', error.response?.data || error.message);
+    throw new Error('Failed to fetch shared mailboxes');
+  }
+}
+
+/**
+ * Get all shared mailboxes with user access status
+ * Note: Detecting access to shared mailboxes requires checking delegated permissions
+ * This is a simplified version that lists all shared mailboxes
+ * @param {string} accessToken - Valid access token for Microsoft Graph
+ * @returns {Promise<Object>} Object with all shared mailboxes
+ */
+async function getSharedMailboxesWithAccess(accessToken) {
+  try {
+    const allMailboxes = await getAllSharedMailboxes(accessToken);
+
+    // Mark all as "not accessible" by default since we can't easily check access
+    // In a real implementation, you'd need to check mailbox permissions
+    const mailboxesWithStatus = allMailboxes.map(mailbox => ({
+      ...mailbox,
+      hasAccess: false, // Default to false, would need additional API calls to verify
+    }));
+
+    return {
+      allMailboxes: mailboxesWithStatus,
+      accessCount: 0, // Would need to be calculated from actual permissions
+      totalCount: allMailboxes.length,
+    };
+  } catch (error) {
+    console.error('Error fetching shared mailboxes with access:', error.message);
+    throw error;
+  }
+}
+
+/**
  * Get all user data in one call (convenience function)
  * @param {string} accessToken - Valid access token for Microsoft Graph
  * @returns {Promise<Object>} Complete user data object
@@ -190,4 +311,8 @@ module.exports = {
   getAllUserData,
   getAllTenantGroups,
   getGroupsWithMembership,
+  getAllDistributionLists,
+  getDistributionListsWithMembership,
+  getAllSharedMailboxes,
+  getSharedMailboxesWithAccess,
 };

@@ -1,0 +1,352 @@
+<%- include('partials/header') %>
+
+<main class="groups-container">
+  <div class="groups-header">
+    <div>
+      <h1>Distribution Lists</h1>
+      <p class="groups-stats">
+        Member of <%= memberCount %> out of <%= totalCount %> distribution lists
+      </p>
+    </div>
+    <fluent-button appearance="stealth" onclick="window.location.href='/auth/logout'">
+      Logout
+    </fluent-button>
+  </div>
+
+  <!-- Distribution Lists Actions -->
+  <fluent-card class="groups-actions">
+    <div class="action-header">
+      <h3>Select distribution lists you want to join</h3>
+      <div class="action-buttons">
+        <fluent-button id="selectAllBtn" appearance="outline" onclick="selectAllNonMember()">
+          Select All Non-Member
+        </fluent-button>
+        <fluent-button id="clearBtn" appearance="outline" onclick="clearSelection()">
+          Clear Selection
+        </fluent-button>
+        <fluent-button id="generateBtn" appearance="accent" onclick="generateReport()" disabled>
+          Generate Report
+        </fluent-button>
+      </div>
+    </div>
+    <p class="selected-count">Selected: <span id="selectedCount">0</span> distribution lists</p>
+  </fluent-card>
+
+  <!-- Distribution Lists Table -->
+  <fluent-card class="groups-list-card">
+    <h3>All Distribution Lists</h3>
+    <fluent-divider></fluent-divider>
+    
+    <% if (allDistLists && allDistLists.length > 0) { %>
+      <div class="groups-table">
+        <div class="table-header">
+          <div class="col-checkbox"></div>
+          <div class="col-status">Status</div>
+          <div class="col-name">Distribution List Name</div>
+          <div class="col-email">Email</div>
+          <div class="col-type">Type</div>
+        </div>
+        
+        <% allDistLists.forEach(function(list) { %>
+          <div class="table-row <%= list.isMember ? 'is-member' : 'not-member' %>">
+            <div class="col-checkbox">
+              <% if (!list.isMember) { %>
+                <fluent-checkbox 
+                  class="distlist-checkbox" 
+                  data-distlist-id="<%= list.id %>"
+                  data-distlist-name="<%= list.displayName %>"
+                  onchange="updateSelection()">
+                </fluent-checkbox>
+              <% } %>
+            </div>
+            
+            <div class="col-status">
+              <% if (list.isMember) { %>
+                <span class="status-badge member">✓ Member</span>
+              <% } else { %>
+                <span class="status-badge non-member">✗ Not Member</span>
+              <% } %>
+            </div>
+            
+            <div class="col-name">
+              <strong><%= list.displayName %></strong>
+              <% if (list.description) { %>
+                <p class="group-description"><%= list.description %></p>
+              <% } %>
+            </div>
+            
+            <div class="col-email">
+              <% if (list.mail) { %>
+                <%= list.mail %>
+              <% } else { %>
+                <span class="no-email">—</span>
+              <% } %>
+            </div>
+            
+            <div class="col-type">
+              <% if (list.securityEnabled && list.mailEnabled) { %>
+                <span class="type-badge">Security + Mail</span>
+              <% } else if (list.mailEnabled) { %>
+                <span class="type-badge">Mail-Enabled</span>
+              <% } else { %>
+                <span class="type-badge">Other</span>
+              <% } %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p class="no-groups">No distribution lists found in the tenant.</p>
+    <% } %>
+  </fluent-card>
+
+  <!-- Report Modal -->
+  <fluent-dialog id="reportDialog" modal hidden>
+    <div class="dialog-content">
+      <h2>Distribution Lists Access Request Report</h2>
+      <fluent-divider></fluent-divider>
+      <fluent-text-area id="reportText" rows="20" readonly resize="vertical"></fluent-text-area>
+      <div class="dialog-actions">
+        <fluent-button appearance="accent" onclick="copyReport()">
+          Copy to Clipboard
+        </fluent-button>
+        <fluent-button appearance="outline" onclick="closeDialog()">
+          Close
+        </fluent-button>
+      </div>
+    </div>
+  </fluent-dialog>
+</main>
+
+<script>
+  let selectedDistLists = [];
+
+  function updateSelection() {
+    const checkboxes = document.querySelectorAll('.distlist-checkbox');
+    selectedDistLists = [];
+    
+    checkboxes.forEach(cb => {
+      if (cb.checked) {
+        selectedDistLists.push({
+          id: cb.dataset.distlistId,
+          name: cb.dataset.distlistName
+        });
+      }
+    });
+    
+    document.getElementById('selectedCount').textContent = selectedDistLists.length;
+    document.getElementById('generateBtn').disabled = selectedDistLists.length === 0;
+  }
+
+  function selectAllNonMember() {
+    const checkboxes = document.querySelectorAll('.distlist-checkbox');
+    checkboxes.forEach(cb => {
+      cb.checked = true;
+    });
+    updateSelection();
+  }
+
+  function clearSelection() {
+    const checkboxes = document.querySelectorAll('.distlist-checkbox');
+    checkboxes.forEach(cb => {
+      cb.checked = false;
+    });
+    updateSelection();
+  }
+
+  async function generateReport() {
+    if (selectedDistLists.length === 0) return;
+    
+    try {
+      const response = await fetch('/distribution-lists/generate-report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selectedDistLists: selectedDistLists.map(dl => dl.id)
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        document.getElementById('reportText').value = data.report;
+        document.getElementById('reportDialog').removeAttribute('hidden');
+      } else {
+        alert('Error generating report: ' + (data.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error generating report:', error);
+      alert('Failed to generate report. Please try again.');
+    }
+  }
+
+  function copyReport() {
+    const reportText = document.getElementById('reportText').value;
+    navigator.clipboard.writeText(reportText).then(() => {
+      alert('Report copied to clipboard!');
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      alert('Failed to copy to clipboard. Please copy manually.');
+    });
+  }
+
+  function closeDialog() {
+    document.getElementById('reportDialog').setAttribute('hidden', '');
+  }
+</script>
+
+<style>
+  .groups-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .groups-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+  }
+
+  .groups-stats {
+    color: var(--neutral-foreground-rest);
+    margin-top: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .groups-actions {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .action-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .action-header h3 {
+    margin: 0;
+  }
+
+  .action-buttons {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .selected-count {
+    margin: 0;
+    font-weight: 600;
+    color: var(--accent-foreground-rest);
+  }
+
+  .groups-list-card {
+    padding: 1.5rem;
+  }
+
+  .groups-list-card h3 {
+    margin-top: 0;
+  }
+
+  .groups-table {
+    margin-top: 1rem;
+  }
+
+  .table-header,
+  .table-row {
+    display: grid;
+    grid-template-columns: 40px 140px 1fr 200px 150px;
+    gap: 1rem;
+    padding: 0.75rem;
+    align-items: center;
+  }
+
+  .table-header {
+    font-weight: 600;
+    border-bottom: 2px solid var(--neutral-stroke-rest);
+    background: var(--neutral-layer-2);
+  }
+
+  .table-row {
+    border-bottom: 1px solid var(--neutral-stroke-rest);
+    transition: background-color 0.2s;
+  }
+
+  .table-row:hover {
+    background: var(--neutral-layer-1);
+  }
+
+  .table-row.is-member {
+    opacity: 0.7;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .status-badge.member {
+    background: #10b981;
+    color: white;
+  }
+
+  .status-badge.non-member {
+    background: #ef4444;
+    color: white;
+  }
+
+  .group-description {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.85rem;
+    color: var(--neutral-foreground-hint);
+  }
+
+  .no-email {
+    color: var(--neutral-foreground-hint);
+  }
+
+  .type-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: var(--neutral-layer-3);
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+
+  .no-groups {
+    padding: 2rem;
+    text-align: center;
+    color: var(--neutral-foreground-hint);
+  }
+
+  .dialog-content {
+    padding: 1.5rem;
+    min-width: 600px;
+  }
+
+  .dialog-content h2 {
+    margin-top: 0;
+  }
+
+  .dialog-content fluent-text-area {
+    width: 100%;
+    margin: 1rem 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+  }
+
+  .dialog-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+  }
+</style>
+
+<%- include('partials/footer')%>
