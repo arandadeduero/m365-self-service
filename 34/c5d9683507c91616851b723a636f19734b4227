@@ -1,0 +1,34 @@
+routes/index.js
+  s_23a3b525705a2e::t_881e516c70a1a6 7,13,36,61-148,156
+views/partials/header.ejs
+  s_23a3b525705a2e::t_e7e07c97a9258a 15-31
+README.md
+  s_23a3b525705a2e::t_960cbe8872335a 99-100
+public/css/custom.css
+  s_23a3b525705a2e::t_d0bc3e92a927b0 23-73
+config/authConfig.js
+  s_23a3b525705a2e::t_526011cdc41f40 43-44
+views/groups.ejs
+  s_23a3b525705a2e::t_7c7f401b99cbfc 1-354
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "34c5d9683507c91616851b723a636f19734b4227",
+  "prompts": {},
+  "humans": {
+    "h_3aa52f59e1a7c5": {
+      "author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_23a3b525705a2e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_152d577baffeuHaJOMbjwI9zxP",
+        "model": "claude-sonnet-4.5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
