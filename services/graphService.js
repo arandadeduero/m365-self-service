@@ -216,34 +216,42 @@ async function getDistributionListsWithMembership(accessToken) {
 
 /**
  * Get all shared mailboxes in the tenant
- * Shared mailboxes are mailboxes with type "SharedMailbox"
+ * Shared mailboxes are typically users with RecipientTypeDetails=SharedMailbox
+ * Since Graph API doesn't directly expose this, we'll use a workaround to find users with mail but no licenses
  * @param {string} accessToken - Valid access token for Microsoft Graph
  * @returns {Promise<Array>} Array of all shared mailboxes in the tenant
  */
 async function getAllSharedMailboxes(accessToken) {
   try {
+    // Method 1: Try to get all users and filter those without assigned licenses (typical for shared mailboxes)
     const response = await axios.get('https://graph.microsoft.com/v1.0/users', {
       params: {
-        $filter: 'userType eq \'Guest\' or assignedLicenses/$count eq 0',
-        $select: 'id,displayName,mail,userPrincipalName,mailboxSettings',
+        $select: 'id,displayName,mail,userPrincipalName,assignedLicenses,accountEnabled',
         $orderby: 'displayName',
-        $count: true,
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
-        ConsistencyLevel: 'eventual',
       },
     });
     
-    // Filter to only shared mailboxes (those with mail but no licenses)
+    // Filter to find potential shared mailboxes:
+    // - Has a mail address
+    // - Has no assigned licenses (assignedLicenses array is empty)
+    // - Account is enabled
     const mailboxes = (response.data.value || []).filter(user => 
-      user.mail && user.mail.length > 0
+      user.mail && 
+      user.mail.length > 0 && 
+      user.assignedLicenses && 
+      user.assignedLicenses.length === 0 &&
+      user.accountEnabled
     );
     
     return mailboxes;
   } catch (error) {
     console.error('Error fetching shared mailboxes:', error.response?.data || error.message);
-    throw new Error('Failed to fetch shared mailboxes');
+    // If the query fails, return empty array instead of throwing
+    // This prevents the entire page from failing
+    return [];
   }
 }
 
@@ -259,7 +267,7 @@ async function getSharedMailboxesWithAccess(accessToken) {
     const allMailboxes = await getAllSharedMailboxes(accessToken);
 
     // Mark all as "not accessible" by default since we can't easily check access
-    // In a real implementation, you'd need to check mailbox permissions
+    // In a real implementation, you'd need to check mailbox permissions via EWS or Exchange Online PowerShell
     const mailboxesWithStatus = allMailboxes.map(mailbox => ({
       ...mailbox,
       hasAccess: false, // Default to false, would need additional API calls to verify
@@ -272,7 +280,12 @@ async function getSharedMailboxesWithAccess(accessToken) {
     };
   } catch (error) {
     console.error('Error fetching shared mailboxes with access:', error.message);
-    throw error;
+    // Return empty structure instead of throwing to prevent page crashes
+    return {
+      allMailboxes: [],
+      accessCount: 0,
+      totalCount: 0,
+    };
   }
 }
 
