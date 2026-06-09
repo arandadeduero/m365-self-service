@@ -1,0 +1,53 @@
+views/partials/footer.ejs
+  s_23a3b525705a2e::t_9561eacbb259e9 1-5
+public/css/custom.css
+  s_23a3b525705a2e::t_a168b2fc08f3a4 1-366
+public/js/profile.js
+  s_23a3b525705a2e::t_4cd7dd2430fcee 1-21
+views/error-prod.ejs
+  s_23a3b525705a2e::t_222d2e93038fca 1-38
+test/routes.test.js
+  s_23a3b525705a2e::t_dd18eed91624c6 1-57
+public/images/default-avatar.svg
+  s_23a3b525705a2e::t_a61c4ccfb3f220 1-5
+views/partials/header.ejs
+  s_23a3b525705a2e::t_54c0c532c9fc82 1-14
+views/login.ejs
+  s_23a3b525705a2e::t_8650fea4bedf80 1-29
+views/error-dev.ejs
+  s_23a3b525705a2e::t_4537e50c2d280d 1-61
+test/auth.test.js
+  s_23a3b525705a2e::t_2bc2498e20e9f7 1-43
+middleware/errorHandler.js
+  s_23a3b525705a2e::t_1f256235bd18d1 1-73
+config/authConfig.js
+  s_23a3b525705a2e::t_342d67b6d9f151 1-52
+routes/auth.js
+  s_23a3b525705a2e::t_2d97578fda29ca 1-112
+config/graphConfig.js
+  s_23a3b525705a2e::t_f07fb67d506295 1-55
+middleware/auth.js
+  s_23a3b525705a2e::t_43282bb503a2b6 1-39
+services/graphService.js
+  s_23a3b525705a2e::t_95a04bfd8d4980 1-135
+routes/index.js
+  s_23a3b525705a2e::t_8695361422fe47 1-69
+views/profile.ejs
+  s_23a3b525705a2e::t_7274073f2d4617 1-138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "22e753d92ff84f79aa9586dec4030c84af57874f",
+  "prompts": {},
+  "sessions": {
+    "s_23a3b525705a2e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_152d577baffeuHaJOMbjwI9zxP",
+        "model": "claude-sonnet-4.5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
