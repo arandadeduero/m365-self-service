@@ -1,0 +1,25 @@
+package.json
+  s_23a3b525705a2e::t_09e5e55b78a91c 31,34-35
+  h_3aa52f59e1a7c5 32-33,36-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.6",
+  "base_commit_sha": "8f6a757e057e7f89d57d797bd062479d5a2aafdd",
+  "prompts": {},
+  "humans": {
+    "h_3aa52f59e1a7c5": {
+      "author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_23a3b525705a2e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_152d577baffeuHaJOMbjwI9zxP",
+        "model": "claude-sonnet-4.5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
