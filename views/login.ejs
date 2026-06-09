@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+
+<main class="login-container">
+  <fluent-card class="login-card">
+    <div class="login-content">
+      <h1>Welcome to M365 Login Demo</h1>
+      <p>Sign in with your Microsoft 365 account to access your profile</p>
+      
+      <div class="login-button-container">
+        <fluent-button appearance="accent" class="login-button" onclick="window.location.href='/auth/signin'">
+          <span>Sign in with Microsoft</span>
+        </fluent-button>
+      </div>
+      
+      <div class="login-info">
+        <p><strong>What you'll see after login:</strong></p>
+        <ul>
+          <li>Your profile information</li>
+          <li>Profile photo</li>
+          <li>Group memberships</li>
+          <li>Manager details</li>
+          <li>Raw JSON data</li>
+        </ul>
+      </div>
+    </div>
+  </fluent-card>
+</main>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+
+<main class="error-container error-production">
+  <fluent-card class="error-card-prod">
+    <div class="error-status">
+      <h1 class="status-code"><%= statusCode %></h1>
+    </div>
+    
+    <fluent-divider></fluent-divider>
+    
+    <div class="error-message">
+      <% if (statusCode === 401) { %>
+        <h2>Authentication Required</h2>
+        <p>Please sign in to continue</p>
+      <% } else if (statusCode === 403) { %>
+        <h2>Access Denied</h2>
+        <p>You don't have permission to access this resource</p>
+      <% } else if (statusCode === 404) { %>
+        <h2>Page Not Found</h2>
+        <p>The page you're looking for doesn't exist</p>
+      <% } else if (statusCode === 500) { %>
+        <h2>Internal Server Error</h2>
+        <p>Something went wrong on our end</p>
+      <% } else { %>
+        <h2>Error</h2>
+        <p>An unexpected error occurred</p>
+      <% } %>
+    </div>
+
+    <div class="error-actions">
+      <fluent-button appearance="accent" onclick="window.location.href='/'">
+        Return to Home
+      </fluent-button>
+    </div>
+  </fluent-card-prod>
+</main>
+
+<%- include('partials/footer') %>

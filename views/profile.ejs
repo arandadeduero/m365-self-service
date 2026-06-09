@@ -1,0 +1,138 @@
+<%- include('partials/header') %>
+
+<main class="profile-container">
+  <div class="profile-header">
+    <h1>User Profile</h1>
+    <fluent-button appearance="stealth" onclick="window.location.href='/auth/logout'">
+      Logout
+    </fluent-button>
+  </div>
+
+  <!-- Profile Card -->
+  <fluent-card class="profile-card">
+    <div class="profile-main">
+      <% if (photo) { %>
+        <img src="<%= photo %>" alt="<%= user.displayName %>" class="profile-avatar">
+      <% } else { %>
+        <img src="/images/default-avatar.png" alt="<%= user.displayName %>" class="profile-avatar">
+      <% } %>
+      
+      <div class="profile-info">
+        <h2><%= user.displayName %></h2>
+        <% if (user.jobTitle) { %>
+          <p class="job-title"><%= user.jobTitle %></p>
+        <% } %>
+        <% if (user.department) { %>
+          <p class="department"><%= user.department %></p>
+        <% } %>
+      </div>
+    </div>
+  </fluent-card>
+
+  <!-- Contact Information Card -->
+  <fluent-card class="info-card">
+    <h3>Contact Information</h3>
+    <fluent-divider></fluent-divider>
+    <div class="info-grid">
+      <% if (user.mail) { %>
+        <div class="info-item">
+          <strong>Email:</strong>
+          <span><%= user.mail %></span>
+        </div>
+      <% } %>
+      
+      <% if (user.userPrincipalName) { %>
+        <div class="info-item">
+          <strong>User Principal Name:</strong>
+          <span><%= user.userPrincipalName %></span>
+        </div>
+      <% } %>
+      
+      <% if (user.mobilePhone) { %>
+        <div class="info-item">
+          <strong>Mobile:</strong>
+          <span><%= user.mobilePhone %></span>
+        </div>
+      <% } %>
+      
+      <% if (user.businessPhones && user.businessPhones.length > 0) { %>
+        <div class="info-item">
+          <strong>Business Phone:</strong>
+          <span><%= user.businessPhones.join(', ') %></span>
+        </div>
+      <% } %>
+      
+      <% if (user.officeLocation) { %>
+        <div class="info-item">
+          <strong>Office Location:</strong>
+          <span><%= user.officeLocation %></span>
+        </div>
+      <% } %>
+      
+      <% if (user.companyName) { %>
+        <div class="info-item">
+          <strong>Company:</strong>
+          <span><%= user.companyName %></span>
+        </div>
+      <% } %>
+      
+      <% if (user.employeeId) { %>
+        <div class="info-item">
+          <strong>Employee ID:</strong>
+          <span><%= user.employeeId %></span>
+        </div>
+      <% } %>
+      
+      <% if (user.preferredLanguage) { %>
+        <div class="info-item">
+          <strong>Preferred Language:</strong>
+          <span><%= user.preferredLanguage %></span>
+        </div>
+      <% } %>
+    </div>
+  </fluent-card>
+
+  <!-- Group Memberships Card -->
+  <% if (groups && groups.length > 0) { %>
+    <fluent-card class="info-card">
+      <h3>Group Memberships</h3>
+      <fluent-divider></fluent-divider>
+      <ul class="groups-list">
+        <% groups.forEach(function(group) { %>
+          <li><%= group.displayName || group.id %></li>
+        <% }); %>
+      </ul>
+    </fluent-card>
+  <% } %>
+
+  <!-- Manager Card -->
+  <% if (manager) { %>
+    <fluent-card class="info-card">
+      <h3>Manager</h3>
+      <fluent-divider></fluent-divider>
+      <div class="manager-info">
+        <p><strong>Name:</strong> <%= manager.displayName %></p>
+        <% if (manager.jobTitle) { %>
+          <p><strong>Title:</strong> <%= manager.jobTitle %></p>
+        <% } %>
+        <% if (manager.mail) { %>
+          <p><strong>Email:</strong> <%= manager.mail %></p>
+        <% } %>
+      </div>
+    </fluent-card>
+  <% } %>
+
+  <!-- Raw JSON Data (Collapsible) -->
+  <fluent-card class="info-card">
+    <fluent-accordion>
+      <fluent-accordion-item>
+        <span slot="heading">View Raw JSON Data</span>
+        <div class="json-container">
+          <pre><code><%= rawJson %></code></pre>
+        </div>
+      </fluent-accordion-item>
+    </fluent-accordion>
+  </fluent-card>
+</main>
+
+<%- include('partials/footer') %>

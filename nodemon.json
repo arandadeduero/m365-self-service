@@ -1,0 +1,25 @@
+{
+  "watch": [
+    "server.js",
+    "routes/",
+    "middleware/",
+    "services/",
+    "config/",
+    "views/"
+  ],
+  "ext": "js,json,ejs,css",
+  "ignore": [
+    "node_modules/",
+    "test/",
+    ".git/",
+    "public/",
+    "coverage/"
+  ],
+  "exec": "node server.js",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "delay": "1000",
+  "verbose": false,
+  "restartable": "rs"
+}
