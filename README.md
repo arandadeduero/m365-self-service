@@ -100,6 +100,7 @@ After registration, you'll see the app's overview page. **Copy these values** (y
    - ✅ `Group.Read.All` - Read all groups in the tenant (for Groups page)
    - ✅ `Directory.Read.All` - Read directory data
    - ✅ `MailboxSettings.Read` - Read mailbox settings (for Shared Mailboxes detection)
+   - ✅ `Mail.Send` - Send emails as the signed-in user (for manager correction requests)
    - ✅ `offline_access` - Maintain access to data
 4. Click **Add permissions**
 5. (Recommended) Click **Grant admin consent for [Your Organization]**

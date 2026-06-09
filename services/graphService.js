@@ -17,13 +17,13 @@ const graphConfig = require('../config/graphConfig');
  */
 async function processBatches(items, processFn, batchSize = 10) {
   const results = [];
-  
+
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
     const batchResults = await Promise.all(batch.map(processFn));
     results.push(...batchResults);
   }
-  
+
   return results;
 }
 
@@ -46,6 +46,75 @@ async function getUserProfile(accessToken) {
   } catch (error) {
     console.error('Error fetching user profile:', error.response?.data || error.message);
     throw new Error('Failed to fetch user profile');
+  }
+}
+
+/**
+ * Get all users in the organization for selection dropdowns
+ * @param {string} accessToken - Valid access token for Microsoft Graph
+ * @returns {Promise<Array>} Array of users with basic info
+ */
+async function getAllUsers(accessToken) {
+  try {
+    const response = await axios.get('https://graph.microsoft.com/v1.0/users', {
+      params: {
+        $select: 'id,displayName,mail,jobTitle,department',
+        $orderby: 'displayName',
+        $top: 999, // Get up to 999 users
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data.value || [];
+  } catch (error) {
+    console.error('Error fetching all users:', error.response?.data || error.message);
+    return [];
+  }
+}
+
+/**
+ * Send an email via Microsoft Graph
+ * @param {string} accessToken - Valid access token for Microsoft Graph
+ * @param {Object} emailData - Email data (to, subject, body)
+ * @returns {Promise<void>}
+ */
+async function sendEmail(accessToken, emailData) {
+  try {
+    const { to, subject, body } = emailData;
+    
+    const message = {
+      message: {
+        subject: subject,
+        body: {
+          contentType: 'Text',
+          content: body,
+        },
+        toRecipients: [
+          {
+            emailAddress: {
+              address: to,
+            },
+          },
+        ],
+      },
+    };
+
+    await axios.post(
+      'https://graph.microsoft.com/v1.0/me/sendMail',
+      message,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log(`Email sent successfully to ${to}`);
+  } catch (error) {
+    console.error('Error sending email:', error.response?.data || error.message);
+    throw new Error('Failed to send email');
   }
 }
 
@@ -251,12 +320,12 @@ async function getAllSharedMailboxes(accessToken) {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    
+
     const users = response.data.value || [];
-    
+
     // Filter out users without mail addresses first
     const usersWithMail = users.filter(user => user.mail);
-    
+
     console.log(`Checking ${usersWithMail.length} users with mail addresses for shared mailboxes...`);
 
     // Step 2: Check each user's mailboxSettings to determine if it's a shared mailbox
@@ -302,7 +371,7 @@ async function getAllSharedMailboxes(accessToken) {
     const sharedMailboxes = results.filter(mailbox => mailbox !== null);
 
     console.log(`Found ${sharedMailboxes.length} shared mailboxes out of ${usersWithMail.length} users with mail`);
-    
+
     return sharedMailboxes;
   } catch (error) {
     console.error('Error fetching shared mailboxes:', error.response?.data || error.message);
@@ -385,4 +454,6 @@ module.exports = {
   getDistributionListsWithMembership,
   getAllSharedMailboxes,
   getSharedMailboxesWithAccess,
+  getAllUsers,
+  sendEmail,
 };

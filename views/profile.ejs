@@ -108,7 +108,12 @@
   <!-- Manager Card -->
   <% if (manager) { %>
     <fluent-card class="info-card">
-      <h3>Manager</h3>
+      <div class="manager-header">
+        <h3>Manager</h3>
+        <a href="#" class="manager-incorrect-link" onclick="openManagerDialog(); return false;">
+          Manager incorrect?
+        </a>
+      </div>
       <fluent-divider></fluent-divider>
       <div class="manager-info">
         <p><strong>Name:</strong> <%= manager.displayName %></p>
@@ -133,6 +138,192 @@
       </fluent-accordion-item>
     </fluent-accordion>
   </fluent-card>
+
+  <!-- Manager Correction Dialog -->
+  <fluent-dialog id="managerDialog" modal hidden>
+    <div class="dialog-content">
+      <h2>Correct Manager Information</h2>
+      <fluent-divider></fluent-divider>
+      <p class="dialog-description">
+        If your manager information is incorrect, please select the correct manager from the list below.
+      </p>
+      
+      <div class="form-group">
+        <label for="managerSelect"><strong>Select your manager:</strong></label>
+        <select id="managerSelect" class="manager-select">
+          <option value="">Loading users...</option>
+        </select>
+      </div>
+
+      <div class="dialog-actions">
+        <fluent-button appearance="accent" onclick="submitManagerCorrection()">
+          Enviar corrección
+        </fluent-button>
+        <fluent-button appearance="outline" onclick="closeManagerDialog()">
+          Cancel
+        </fluent-button>
+      </div>
+    </div>
+  </fluent-dialog>
 </main>
+
+<script>
+  let allUsers = [];
+
+  async function openManagerDialog() {
+    const dialog = document.getElementById('managerDialog');
+    const select = document.getElementById('managerSelect');
+    
+    // Show dialog
+    dialog.removeAttribute('hidden');
+    
+    // Load users if not already loaded
+    if (allUsers.length === 0) {
+      try {
+        const response = await fetch('/api/users');
+        const data = await response.json();
+        
+        if (data.success) {
+          allUsers = data.users;
+          populateManagerSelect();
+        } else {
+          alert('Failed to load users. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error loading users:', error);
+        alert('Failed to load users. Please try again.');
+      }
+    }
+  }
+
+  function populateManagerSelect() {
+    const select = document.getElementById('managerSelect');
+    select.innerHTML = '<option value="">-- Select a manager --</option>';
+    
+    allUsers.forEach(user => {
+      const option = document.createElement('option');
+      option.value = user.id;
+      option.textContent = `${user.displayName}${user.jobTitle ? ' - ' + user.jobTitle : ''}${user.department ? ' (' + user.department + ')' : ''}`;
+      option.dataset.name = user.displayName;
+      select.appendChild(option);
+    });
+  }
+
+  async function submitManagerCorrection() {
+    const select = document.getElementById('managerSelect');
+    const selectedOption = select.options[select.selectedIndex];
+    
+    if (!select.value) {
+      alert('Please select a manager');
+      return;
+    }
+
+    const selectedManagerId = select.value;
+    const selectedManagerName = selectedOption.dataset.name;
+
+    try {
+      const response = await fetch('/api/manager-correction', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selectedManagerId,
+          selectedManagerName
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('Manager correction request sent successfully!');
+        closeManagerDialog();
+      } else {
+        alert('Error: ' + (data.error || 'Failed to send correction request'));
+      }
+    } catch (error) {
+      console.error('Error submitting manager correction:', error);
+      alert('Failed to send correction request. Please try again.');
+    }
+  }
+
+  function closeManagerDialog() {
+    const dialog = document.getElementById('managerDialog');
+    dialog.setAttribute('hidden', '');
+  }
+</script>
+
+<style>
+  .manager-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .manager-header h3 {
+    margin: 0;
+  }
+
+  .manager-incorrect-link {
+    font-size: 0.85rem;
+    color: var(--accent-foreground-rest, #0078d4);
+    text-decoration: none;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+  }
+
+  .manager-incorrect-link:hover {
+    background-color: var(--neutral-layer-2, #f3f2f1);
+    text-decoration: underline;
+  }
+
+  .dialog-content {
+    padding: 1.5rem;
+    min-width: 500px;
+  }
+
+  .dialog-content h2 {
+    margin-top: 0;
+  }
+
+  .dialog-description {
+    margin: 1rem 0;
+    color: var(--neutral-foreground-rest);
+  }
+
+  .form-group {
+    margin: 1.5rem 0;
+  }
+
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--neutral-foreground-rest);
+  }
+
+  .manager-select {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid var(--neutral-stroke-rest, #d1d1d1);
+    border-radius: 4px;
+    background-color: var(--neutral-layer-1, #ffffff);
+    font-family: inherit;
+  }
+
+  .manager-select:focus {
+    outline: none;
+    border-color: var(--accent-foreground-rest, #0078d4);
+    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.1);
+  }
+
+  .dialog-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+  }
+</style>
 
 <%- include('partials/footer') %>

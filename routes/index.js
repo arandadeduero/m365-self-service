@@ -10,7 +10,7 @@
 const express = require('express');
 const router = express.Router();
 const { isAuthenticated, redirectIfAuthenticated } = require('../middleware/auth');
-const { getAllUserData, getGroupsWithMembership, getDistributionListsWithMembership, getSharedMailboxesWithAccess } = require('../services/graphService');
+const { getAllUserData, getGroupsWithMembership, getDistributionListsWithMembership, getSharedMailboxesWithAccess, getAllUsers, sendEmail } = require('../services/graphService');
 
 /**
  * GET /
@@ -319,6 +319,70 @@ router.post('/shared-mailboxes/generate-report', isAuthenticated, async (req, re
   } catch (error) {
     console.error('Error generating report:', error);
     next(error);
+  }
+});
+
+/**
+ * GET /api/users
+ * Get all users in the organization for manager selection dropdown
+ */
+router.get('/api/users', isAuthenticated, async (req, res, next) => {
+  try {
+    const accessToken = req.session.accessToken;
+    const users = await getAllUsers(accessToken);
+    
+    res.json({ 
+      success: true, 
+      users 
+    });
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to fetch users' 
+    });
+  }
+});
+
+/**
+ * POST /api/manager-correction
+ * Send email notification about manager correction request
+ */
+router.post('/api/manager-correction', isAuthenticated, async (req, res, next) => {
+  try {
+    const { selectedManagerId, selectedManagerName } = req.body;
+    
+    if (!selectedManagerId || !selectedManagerName) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Manager information is required' 
+      });
+    }
+
+    const accessToken = req.session.accessToken;
+    const currentUser = req.session.account?.name || req.session.account?.username;
+    const currentUserEmail = req.session.account?.username; // Usually the email
+
+    // Email configuration
+    const emailData = {
+      to: 'glopez@arandadeduero.es',
+      subject: '[m365-admin] Change request',
+      body: `The user ${currentUser} (${currentUserEmail}) is requesting that their manager is ${selectedManagerName} (ID: ${selectedManagerId})`,
+    };
+
+    // Send the email
+    await sendEmail(accessToken, emailData);
+
+    res.json({ 
+      success: true, 
+      message: 'Manager correction request sent successfully' 
+    });
+  } catch (error) {
+    console.error('Error sending manager correction:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to send manager correction request' 
+    });
   }
 });
 
