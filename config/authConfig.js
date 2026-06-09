@@ -40,7 +40,8 @@ const redirectUri = process.env.REDIRECT_URI || 'http://localhost:3000/auth/call
 const scopes = [
   'user.read',              // Basic user profile
   'User.ReadBasic.All',     // Extended user information
-  'GroupMember.Read.All',   // Group memberships
+  'GroupMember.Read.All',   // User's group memberships
+  'Group.Read.All',         // Read all groups in the tenant
   'Directory.Read.All',     // Comprehensive directory data (includes manager)
   'offline_access',         // Refresh tokens for long-lived sessions
 ];

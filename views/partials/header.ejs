@@ -12,3 +12,20 @@
   <link rel="stylesheet" href="/css/custom.css">
 </head>
 <body>
+  <% if (typeof currentPage !== 'undefined' && currentPage !== 'login') { %>
+  <nav class="app-navigation">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <h2>M365 Manager</h2>
+      </div>
+      <div class="nav-links">
+        <a href="/" class="nav-link <%= currentPage === 'profile' ? 'active' : '' %>">
+          Profile
+        </a>
+        <a href="/groups" class="nav-link <%= currentPage === 'groups' ? 'active' : '' %>">
+          Groups
+        </a>
+      </div>
+    </div>
+  </nav>
+  <% } %>

@@ -6,6 +6,8 @@ A modern Node.js application demonstrating Microsoft 365 authentication with ext
 
 - ✅ **Microsoft 365 Authentication** - Single tenant OAuth 2.0 flow with MSAL
 - ✅ **Extended User Data** - Profile, photo, groups, manager information
+- ✅ **Groups Management** - View all tenant groups with membership status
+- ✅ **Access Request Reports** - Generate text reports for group access requests
 - ✅ **Fluent UI Design** - Microsoft-consistent design using Web Components
 - ✅ **Dual Display Mode** - Formatted view + raw JSON data
 - ✅ **Smart Error Handling** - Detailed dev errors vs. simple production messages
@@ -15,12 +17,20 @@ A modern Node.js application demonstrating Microsoft 365 authentication with ext
 
 ## Screenshots
 
+### Profile Page
 After logging in, you'll see:
 - Your profile photo and basic information
 - Contact details
 - Group memberships
 - Manager information
 - Collapsible raw JSON data
+
+### Groups Page
+View and manage group access:
+- All tenant groups with visual membership indicators (✓ green check / ✗ red cross)
+- Select non-member groups to request access
+- Generate formatted access request reports
+- Filter and search through groups
 
 ## Technology Stack
 
@@ -86,7 +96,8 @@ After registration, you'll see the app's overview page. **Copy these values** (y
 3. Add the following permissions:
    - ✅ `User.Read` - Read user profile
    - ✅ `User.ReadBasic.All` - Read all users' basic profiles
-   - ✅ `GroupMember.Read.All` - Read group memberships
+   - ✅ `GroupMember.Read.All` - Read user's group memberships
+   - ✅ `Group.Read.All` - Read all groups in the tenant (for Groups page)
    - ✅ `Directory.Read.All` - Read directory data
    - ✅ `offline_access` - Maintain access to data
 4. Click **Add permissions**

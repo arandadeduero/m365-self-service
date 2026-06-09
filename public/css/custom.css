@@ -20,6 +20,57 @@ body {
   flex-direction: column;
 }
 
+/* Navigation Styles */
+.app-navigation {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e1dfdd;
+  box-shadow: 0 1.6px 3.6px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+}
+
+.nav-brand h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #0078d4;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  padding: 0.5rem 1.25rem;
+  text-decoration: none;
+  color: #323130;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+  background-color: #f3f2f1;
+  color: #0078d4;
+}
+
+.nav-link.active {
+  background-color: #0078d4;
+  color: #ffffff;
+}
+
 main {
   flex: 1;
   padding: 2rem;

@@ -100,6 +100,62 @@ async function getUserManager(accessToken) {
 }
 
 /**
+ * Get all groups in the tenant
+ * @param {string} accessToken - Valid access token for Microsoft Graph
+ * @returns {Promise<Array>} Array of all groups in the tenant
+ */
+async function getAllTenantGroups(accessToken) {
+  try {
+    const response = await axios.get('https://graph.microsoft.com/v1.0/groups', {
+      params: {
+        $select: 'id,displayName,description,mail,mailEnabled,securityEnabled',
+        $orderby: 'displayName',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data.value || [];
+  } catch (error) {
+    console.error('Error fetching all tenant groups:', error.response?.data || error.message);
+    throw new Error('Failed to fetch tenant groups');
+  }
+}
+
+/**
+ * Get all tenant groups with user membership status
+ * @param {string} accessToken - Valid access token for Microsoft Graph
+ * @returns {Promise<Object>} Object with all groups and user's groups
+ */
+async function getGroupsWithMembership(accessToken) {
+  try {
+    const [allGroups, userGroups] = await Promise.all([
+      getAllTenantGroups(accessToken),
+      getUserGroups(accessToken),
+    ]);
+
+    // Create a Set of user's group IDs for fast lookup
+    const userGroupIds = new Set(userGroups.map(g => g.id));
+
+    // Add membership status to each group
+    const groupsWithStatus = allGroups.map(group => ({
+      ...group,
+      isMember: userGroupIds.has(group.id),
+    }));
+
+    return {
+      allGroups: groupsWithStatus,
+      userGroups,
+      memberCount: userGroups.length,
+      totalCount: allGroups.length,
+    };
+  } catch (error) {
+    console.error('Error fetching groups with membership:', error.message);
+    throw error;
+  }
+}
+
+/**
  * Get all user data in one call (convenience function)
  * @param {string} accessToken - Valid access token for Microsoft Graph
  * @returns {Promise<Object>} Complete user data object
@@ -132,4 +188,6 @@ module.exports = {
   getUserGroups,
   getUserManager,
   getAllUserData,
+  getAllTenantGroups,
+  getGroupsWithMembership,
 };
