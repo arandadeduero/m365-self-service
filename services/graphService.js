@@ -9,6 +9,25 @@ const axios = require('axios');
 const graphConfig = require('../config/graphConfig');
 
 /**
+ * Helper function to process requests in batches to avoid overwhelming the API
+ * @param {Array} items - Items to process
+ * @param {Function} processFn - Async function to process each item
+ * @param {number} batchSize - Number of items to process concurrently
+ * @returns {Promise<Array>} Results from all batches
+ */
+async function processBatches(items, processFn, batchSize = 10) {
+  const results = [];
+  
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    const batchResults = await Promise.all(batch.map(processFn));
+    results.push(...batchResults);
+  }
+  
+  return results;
+}
+
+/**
  * Get user profile information with extended fields
  * @param {string} accessToken - Valid access token for Microsoft Graph
  * @returns {Promise<Object>} User profile data
@@ -216,17 +235,16 @@ async function getDistributionListsWithMembership(accessToken) {
 
 /**
  * Get all shared mailboxes in the tenant
- * Shared mailboxes are typically users with RecipientTypeDetails=SharedMailbox
- * Since Graph API doesn't directly expose this, we'll use a workaround to find users with mail but no licenses
+ * Checks mailboxSettings.userPurpose to identify shared mailboxes
  * @param {string} accessToken - Valid access token for Microsoft Graph
  * @returns {Promise<Array>} Array of all shared mailboxes in the tenant
  */
 async function getAllSharedMailboxes(accessToken) {
   try {
-    // Method 1: Try to get all users and filter those without assigned licenses (typical for shared mailboxes)
+    // Step 1: Get all users in the tenant
     const response = await axios.get('https://graph.microsoft.com/v1.0/users', {
       params: {
-        $select: 'id,displayName,mail,userPrincipalName,assignedLicenses,accountEnabled',
+        $select: 'id,displayName,mail,userPrincipalName,accountEnabled',
         $orderby: 'displayName',
       },
       headers: {
@@ -234,19 +252,58 @@ async function getAllSharedMailboxes(accessToken) {
       },
     });
     
-    // Filter to find potential shared mailboxes:
-    // - Has a mail address
-    // - Has no assigned licenses (assignedLicenses array is empty)
-    // - Account is enabled
-    const mailboxes = (response.data.value || []).filter(user => 
-      user.mail && 
-      user.mail.length > 0 && 
-      user.assignedLicenses && 
-      user.assignedLicenses.length === 0 &&
-      user.accountEnabled
-    );
+    const users = response.data.value || [];
     
-    return mailboxes;
+    // Filter out users without mail addresses first
+    const usersWithMail = users.filter(user => user.mail);
+    
+    console.log(`Checking ${usersWithMail.length} users with mail addresses for shared mailboxes...`);
+
+    // Step 2: Check each user's mailboxSettings to determine if it's a shared mailbox
+    // Process in batches of 10 to avoid overwhelming the API
+    const checkMailbox = async (user) => {
+      try {
+        // Get mailbox settings for this user
+        const mailboxResponse = await axios.get(
+          `https://graph.microsoft.com/v1.0/users/${user.id}/mailboxSettings`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+
+        const mailboxSettings = mailboxResponse.data;
+
+        // Check if userPurpose is 'shared'
+        if (mailboxSettings.userPurpose === 'shared') {
+          console.log(`Found shared mailbox: ${user.displayName} (${user.mail})`);
+          return {
+            id: user.id,
+            displayName: user.displayName,
+            mail: user.mail,
+            userPrincipalName: user.userPrincipalName,
+            accountEnabled: user.accountEnabled,
+            userPurpose: mailboxSettings.userPurpose,
+          };
+        }
+      } catch (error) {
+        // Silently skip users where we can't access mailbox settings
+        // This is normal for some system accounts or users without mailboxes
+      }
+
+      return null;
+    };
+
+    // Process in batches for better performance and API rate limit management
+    const results = await processBatches(usersWithMail, checkMailbox, 10);
+
+    // Filter out null results and return only shared mailboxes
+    const sharedMailboxes = results.filter(mailbox => mailbox !== null);
+
+    console.log(`Found ${sharedMailboxes.length} shared mailboxes out of ${usersWithMail.length} users with mail`);
+    
+    return sharedMailboxes;
   } catch (error) {
     console.error('Error fetching shared mailboxes:', error.response?.data || error.message);
     // If the query fails, return empty array instead of throwing

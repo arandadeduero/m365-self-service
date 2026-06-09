@@ -43,6 +43,7 @@ const scopes = [
   'GroupMember.Read.All',   // User's group memberships
   'Group.Read.All',         // Read all groups in the tenant
   'Directory.Read.All',     // Comprehensive directory data (includes manager)
+  'MailboxSettings.Read',   // Read mailbox settings (needed for shared mailbox detection)
   'offline_access',         // Refresh tokens for long-lived sessions
 ];
 
