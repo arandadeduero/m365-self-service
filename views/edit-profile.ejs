@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-profile">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Editar Perfil</h1>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <form action="/profile/me/edit" method="POST">
+        <div class="mb-3">
+          <label for="jobTitle" class="form-label">Puesto de trabajo</label>
+          <input type="text" class="form-control" id="jobTitle" name="jobTitle" value="<%= user.jobTitle || '' %>">
+        </div>
+        <div class="mb-3">
+          <label for="mobilePhone" class="form-label">Telefono movil</label>
+          <input type="text" class="form-control" id="mobilePhone" name="mobilePhone" value="<%= user.mobilePhone || '' %>">
+        </div>
+        <div class="mb-3">
+          <label for="businessPhones" class="form-label">Extensión (Teléfono empresa)</label>
+          <input type="text" class="form-control" id="businessPhones" name="businessPhones" value="<%= (user.businessPhones && user.businessPhones[0]) || '' %>">
+        </div>
+        <div class="mb-3">
+          <label for="officeLocation" class="form-label">Ubicacion de oficina</label>
+          <input type="text" class="form-control" id="officeLocation" name="officeLocation" value="<%= user.officeLocation || '' %>">
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          <a href="/" class="btn btn-outline-secondary">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <h3 class="h5 mb-3">Datos del usuario (JSON)</h3>
+      <div class="json-container">
+        <pre><code><%= JSON.stringify(user, null, 2) %></code></pre>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

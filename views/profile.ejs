@@ -1,210 +1,212 @@
 <%- include('partials/header') %>
 
-<main class="profile-container">
-  <div class="profile-header">
-    <h1>User Profile</h1>
-    <fluent-button appearance="stealth" onclick="window.location.href='/auth/logout'">
-      Logout
-    </fluent-button>
+<main class="container py-4 profile-container page-shell page-profile">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Perfil de usuario</h1>
+    <div>
+        <a href="/profile/me/edit" class="btn btn-primary me-2">Editar perfil</a>
+        <a href="/auth/logout" class="btn btn-outline-secondary">Cerrar sesion</a>
+    </div>
   </div>
 
-  <!-- Profile Card -->
-  <fluent-card class="profile-card">
-    <div class="profile-main">
-      <% if (photo) { %>
-        <img src="<%= photo %>" alt="<%= user.displayName %>" class="profile-avatar">
-      <% } else { %>
-        <img src="/images/default-avatar.png" alt="<%= user.displayName %>" class="profile-avatar">
-      <% } %>
-      
-      <div class="profile-info">
-        <h2><%= user.displayName %></h2>
-        <% if (user.jobTitle) { %>
-          <p class="job-title"><%= user.jobTitle %></p>
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex flex-column flex-md-row align-items-md-center gap-4 profile-main">
+        <% if (photo) { %>
+          <img src="<%= photo %>" alt="<%= user.displayName %>" class="profile-avatar">
+        <% } else { %>
+          <img src="/images/default-avatar.png" alt="<%= user.displayName %>" class="profile-avatar">
         <% } %>
-        <% if (user.department) { %>
-          <p class="department"><%= user.department %></p>
+
+        <div>
+          <h2 class="h3 mb-1"><%= user.displayName %></h2>
+          <% if (user.jobTitle) { %>
+            <p class="text-primary fw-semibold mb-1"><%= user.jobTitle %></p>
+          <% } %>
+          <% if (user.department) { %>
+            <p class="text-muted mb-0"><%= user.department %></p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <h3 class="h5 mb-3">Informacion de contacto</h3>
+      <hr>
+      <div class="row g-3 mt-1">
+        <% if (user.mail) { %>
+          <div class="col-12 col-md-6">
+            <div class="info-item"><strong>Correo:</strong><span><%= user.mail %></span></div>
+          </div>
+        <% } %>
+        <% if (user.userPrincipalName) { %>
+          <div class="col-12 col-md-6">
+            <div class="info-item"><strong>Usuario principal:</strong><span><%= user.userPrincipalName %></span></div>
+          </div>
+        <% } %>
+        <% if (user.mobilePhone) { %>
+          <div class="col-12 col-md-6">
+            <div class="info-item"><strong>Movil:</strong><span><%= user.mobilePhone %></span></div>
+          </div>
+        <% } %>
+        <% if (user.businessPhones && user.businessPhones.length > 0) { %>
+          <div class="col-12 col-md-6">
+            <div class="info-item"><strong>Telefono de empresa:</strong><span><%= user.businessPhones.join(', ') %></span></div>
+          </div>
+        <% } %>
+        <% if (user.officeLocation) { %>
+          <div class="col-12 col-md-6">
+            <div class="info-item"><strong>Ubicacion de oficina:</strong><span><%= user.officeLocation %></span></div>
+          </div>
+        <% } %>
+        <% if (user.companyName) { %>
+          <div class="col-12 col-md-6">
+            <div class="info-item"><strong>Empresa:</strong><span><%= user.companyName %></span></div>
+          </div>
+        <% } %>
+        <% if (user.employeeId) { %>
+          <div class="col-12 col-md-6">
+            <div class="info-item"><strong>ID de empleado:</strong><span><%= user.employeeId %></span></div>
+          </div>
+        <% } %>
+        <% if (user.preferredLanguage) { %>
+          <div class="col-12 col-md-6">
+            <div class="info-item"><strong>Idioma preferido:</strong><span><%= user.preferredLanguage %></span></div>
+          </div>
         <% } %>
       </div>
     </div>
-  </fluent-card>
+  </div>
 
-  <!-- Contact Information Card -->
-  <fluent-card class="info-card">
-    <h3>Contact Information</h3>
-    <fluent-divider></fluent-divider>
-    <div class="info-grid">
-      <% if (user.mail) { %>
-        <div class="info-item">
-          <strong>Email:</strong>
-          <span><%= user.mail %></span>
-        </div>
-      <% } %>
-      
-      <% if (user.userPrincipalName) { %>
-        <div class="info-item">
-          <strong>User Principal Name:</strong>
-          <span><%= user.userPrincipalName %></span>
-        </div>
-      <% } %>
-      
-      <% if (user.mobilePhone) { %>
-        <div class="info-item">
-          <strong>Mobile:</strong>
-          <span><%= user.mobilePhone %></span>
-        </div>
-      <% } %>
-      
-      <% if (user.businessPhones && user.businessPhones.length > 0) { %>
-        <div class="info-item">
-          <strong>Business Phone:</strong>
-          <span><%= user.businessPhones.join(', ') %></span>
-        </div>
-      <% } %>
-      
-      <% if (user.officeLocation) { %>
-        <div class="info-item">
-          <strong>Office Location:</strong>
-          <span><%= user.officeLocation %></span>
-        </div>
-      <% } %>
-      
-      <% if (user.companyName) { %>
-        <div class="info-item">
-          <strong>Company:</strong>
-          <span><%= user.companyName %></span>
-        </div>
-      <% } %>
-      
-      <% if (user.employeeId) { %>
-        <div class="info-item">
-          <strong>Employee ID:</strong>
-          <span><%= user.employeeId %></span>
-        </div>
-      <% } %>
-      
-      <% if (user.preferredLanguage) { %>
-        <div class="info-item">
-          <strong>Preferred Language:</strong>
-          <span><%= user.preferredLanguage %></span>
-        </div>
-      <% } %>
-    </div>
-  </fluent-card>
-
-  <!-- Group Memberships Card -->
-  <% if (groups && groups.length > 0) { %>
-    <fluent-card class="info-card">
-      <h3>Group Memberships</h3>
-      <fluent-divider></fluent-divider>
-      <ul class="groups-list">
-        <% groups.forEach(function(group) { %>
-          <li><%= group.displayName || group.id %></li>
-        <% }); %>
-      </ul>
-    </fluent-card>
-  <% } %>
-
-  <!-- Manager Card -->
   <% if (manager) { %>
-    <fluent-card class="info-card">
-      <div class="manager-header">
-        <h3>Manager</h3>
-        <a href="#" class="manager-incorrect-link" onclick="openManagerDialog(); return false;">
-          Manager incorrect?
-        </a>
-      </div>
-      <fluent-divider></fluent-divider>
-      <div class="manager-info">
-        <p><strong>Name:</strong> <%= manager.displayName %></p>
-        <% if (manager.jobTitle) { %>
-          <p><strong>Title:</strong> <%= manager.jobTitle %></p>
-        <% } %>
-        <% if (manager.mail) { %>
-          <p><strong>Email:</strong> <%= manager.mail %></p>
-        <% } %>
-      </div>
-    </fluent-card>
-  <% } %>
-
-  <!-- Raw JSON Data (Collapsible) -->
-  <fluent-card class="info-card">
-    <fluent-accordion>
-      <fluent-accordion-item>
-        <span slot="heading">View Raw JSON Data</span>
-        <div class="json-container">
-          <pre><code><%= rawJson %></code></pre>
+    <div class="card shadow-sm border-0 app-panel mb-4">
+      <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center gap-2 mb-3">
+          <h3 class="h5 mb-0">Responsable</h3>
+          <button type="button" class="btn btn-link p-0 manager-incorrect-link" id="openManagerDialogBtn">
+            Responsable incorrecto?
+          </button>
         </div>
-      </fluent-accordion-item>
-    </fluent-accordion>
-  </fluent-card>
-
-  <!-- Manager Correction Dialog -->
-  <fluent-dialog id="managerDialog" modal hidden>
-    <div class="dialog-content">
-      <h2>Correct Manager Information</h2>
-      <fluent-divider></fluent-divider>
-      <p class="dialog-description">
-        If your manager information is incorrect, please select the correct manager from the list below.
-      </p>
-      
-      <div class="form-group">
-        <label for="managerSelect"><strong>Select your manager:</strong></label>
-        <select id="managerSelect" class="manager-select">
-          <option value="">Loading users...</option>
-        </select>
-      </div>
-
-      <div class="dialog-actions">
-        <fluent-button appearance="accent" onclick="submitManagerCorrection()">
-          Enviar corrección
-        </fluent-button>
-        <fluent-button appearance="outline" onclick="closeManagerDialog()">
-          Cancel
-        </fluent-button>
+        <hr>
+        <div class="manager-info">
+          <p><strong>Nombre:</strong> <%= manager.displayName %></p>
+          <% if (manager.jobTitle) { %><p><strong>Cargo:</strong> <%= manager.jobTitle %></p><% } %>
+          <% if (manager.mail) { %><p><strong>Correo:</strong> <%= manager.mail %></p><% } %>
+        </div>
       </div>
     </div>
-  </fluent-dialog>
+  <% } %>
+
+  <!-- Data Entra ID -->
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <h3 class="h5 mb-3">Datos adicionales de Entra ID</h3>
+      <div class="json-container">
+        <pre><code><%= JSON.stringify(extendedInfo, null, 2) %></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <% if (groups && groups.length > 0) { %>
+    <div class="card shadow-sm border-0 app-panel mb-4">
+      <div class="card-body p-4">
+        <h3 class="h5 mb-3">Pertenencia a grupos</h3>
+        <hr>
+        <ul class="list-group list-group-flush">
+          <% groups.forEach(function(group) { %>
+            <li class="list-group-item px-0"><%= group.displayName || group.id %></li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+  <% } %>
+
+  <% if (typeof isAdmin !== 'undefined' && isAdmin && adminRoles && adminRoles.length > 0) { %>
+    <div class="card shadow-sm border-0 app-panel mb-4">
+      <div class="card-body p-4 bg-light">
+        <h3 class="h5 mb-3 text-danger">Configuracion de Administrador</h3>
+        <hr>
+        <p class="mb-2"><strong>Roles asignados:</strong></p>
+        <ul class="list-group list-group-flush bg-light">
+          <% adminRoles.forEach(function(role) { %>
+            <li class="list-group-item bg-light px-0 text-danger"><%= role %></li>
+          <% }); %>
+        </ul>
+      </div>
+    </div>
+  <% } %>
+
+  <div class="modal fade" id="managerDialog" tabindex="-1" aria-labelledby="managerDialogLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="managerDialogLabel">Corregir informacion del responsable</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-muted">Si la informacion de tu responsable es incorrecta, selecciona el responsable correcto de la lista.</p>
+          <div class="mb-3">
+            <label for="managerSelect" class="form-label"><strong>Selecciona tu responsable:</strong></label>
+            <select id="managerSelect" class="form-select">
+              <option value="">Cargando usuarios...</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="submitManagerCorrectionBtn">Enviar correccion</button>
+          <button type="button" class="btn btn-outline-secondary" id="closeManagerDialogBtn" data-bs-dismiss="modal">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </main>
 
 <script>
   let allUsers = [];
+  let managerModal;
+
+  function getManagerModal() {
+    if (!managerModal) {
+      const modalElement = document.getElementById('managerDialog');
+      managerModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    }
+    return managerModal;
+  }
 
   async function openManagerDialog() {
-    const dialog = document.getElementById('managerDialog');
-    const select = document.getElementById('managerSelect');
-    
-    // Show dialog
-    dialog.removeAttribute('hidden');
-    
-    // Load users if not already loaded
+    const modal = getManagerModal();
+    modal.show();
+
     if (allUsers.length === 0) {
       try {
         const response = await fetch('/api/users');
         const data = await response.json();
-        
+
         if (data.success) {
           allUsers = data.users;
           populateManagerSelect();
         } else {
-          alert('Failed to load users. Please try again.');
+          alert('No se pudieron cargar los usuarios. Intentalo de nuevo.');
         }
       } catch (error) {
         console.error('Error loading users:', error);
-        alert('Failed to load users. Please try again.');
+        alert('No se pudieron cargar los usuarios. Intentalo de nuevo.');
       }
     }
   }
 
   function populateManagerSelect() {
     const select = document.getElementById('managerSelect');
-    select.innerHTML = '<option value="">-- Select a manager --</option>';
-    
+    select.innerHTML = '<option value="">-- Selecciona un responsable --</option>';
+
     allUsers.forEach(user => {
       const option = document.createElement('option');
       option.value = user.id;
       option.textContent = `${user.displayName}${user.jobTitle ? ' - ' + user.jobTitle : ''}${user.department ? ' (' + user.department + ')' : ''}`;
       option.dataset.name = user.displayName;
+      option.dataset.email = user.mail || user.userPrincipalName || '';
       select.appendChild(option);
     });
   }
@@ -212,118 +214,52 @@
   async function submitManagerCorrection() {
     const select = document.getElementById('managerSelect');
     const selectedOption = select.options[select.selectedIndex];
-    
+
     if (!select.value) {
-      alert('Please select a manager');
+      alert('Selecciona un responsable');
       return;
     }
 
     const selectedManagerId = select.value;
     const selectedManagerName = selectedOption.dataset.name;
+    const selectedManagerEmail = selectedOption.dataset.email;
 
     try {
       const response = await fetch('/api/manager-correction', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           selectedManagerId,
-          selectedManagerName
+          selectedManagerName,
+          selectedManagerEmail
         })
       });
 
       const data = await response.json();
 
       if (data.success) {
-        alert('Manager correction request sent successfully!');
+        alert('Solicitud de correccion de responsable enviada correctamente');
         closeManagerDialog();
       } else {
-        alert('Error: ' + (data.error || 'Failed to send correction request'));
+        alert('Error: ' + (data.error || 'No se pudo enviar la solicitud de correccion'));
       }
     } catch (error) {
       console.error('Error submitting manager correction:', error);
-      alert('Failed to send correction request. Please try again.');
+      alert('No se pudo enviar la solicitud de correccion. Intentalo de nuevo.');
     }
   }
 
   function closeManagerDialog() {
-    const dialog = document.getElementById('managerDialog');
-    dialog.setAttribute('hidden', '');
+    getManagerModal().hide();
   }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('openManagerDialogBtn')?.addEventListener('click', openManagerDialog);
+    document.getElementById('submitManagerCorrectionBtn')?.addEventListener('click', submitManagerCorrection);
+    document.getElementById('closeManagerDialogBtn')?.addEventListener('click', closeManagerDialog);
+  });
 </script>
-
-<style>
-  .manager-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .manager-header h3 {
-    margin: 0;
-  }
-
-  .manager-incorrect-link {
-    font-size: 0.85rem;
-    color: var(--accent-foreground-rest, #0078d4);
-    text-decoration: none;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-  }
-
-  .manager-incorrect-link:hover {
-    background-color: var(--neutral-layer-2, #f3f2f1);
-    text-decoration: underline;
-  }
-
-  .dialog-content {
-    padding: 1.5rem;
-    min-width: 500px;
-  }
-
-  .dialog-content h2 {
-    margin-top: 0;
-  }
-
-  .dialog-description {
-    margin: 1rem 0;
-    color: var(--neutral-foreground-rest);
-  }
-
-  .form-group {
-    margin: 1.5rem 0;
-  }
-
-  .form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: var(--neutral-foreground-rest);
-  }
-
-  .manager-select {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid var(--neutral-stroke-rest, #d1d1d1);
-    border-radius: 4px;
-    background-color: var(--neutral-layer-1, #ffffff);
-    font-family: inherit;
-  }
-
-  .manager-select:focus {
-    outline: none;
-    border-color: var(--accent-foreground-rest, #0078d4);
-    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.1);
-  }
-
-  .dialog-actions {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-  }
-</style>
 
 <%- include('partials/footer') %>

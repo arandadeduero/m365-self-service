@@ -27,7 +27,7 @@ All 25 files have been created and committed to git.
 - ✅ `routes/auth.js` - Authentication routes (signin, callback, logout)
 - ✅ `routes/index.js` - Main routes (home, login)
 
-### Views with Fluent UI (6)
+### Views with Bootstrap 5 (6)
 - ✅ `views/partials/header.ejs` - Reusable header
 - ✅ `views/partials/footer.ejs` - Reusable footer
 - ✅ `views/login.ejs` - Login page
@@ -60,7 +60,7 @@ npm install
 This will install:
 - Express 5.0.1
 - @azure/msal-node 2.15.0
-- Fluent UI Web Components
+- Bootstrap 5 & Custom CSS
 - EJS, axios, express-session
 - Testing tools (ava, c8, nodemon, supertest)
 
@@ -126,7 +126,7 @@ npm run test:watch
   - Profile photo (with fallback to default avatar)
   - Group memberships (simple list)
   - Manager information
-✅ Fluent UI Web Components design
+✅ Bootstrap 5 + custom CSS design
 ✅ Dual display mode (formatted + raw JSON)
 ✅ Smart error handling (dev vs production)
 ✅ Testing suite (ava + c8)
@@ -152,7 +152,7 @@ The README.md includes:
 - Part 11: Security considerations
 - Part 12: Troubleshooting
 - Part 13: Development tips
-- Part 14: Fluent UI Web Components
+- Part 14: UI & Styling Design
 - Part 15: Contributing
 - Part 16: License (MIT)
 - Part 17: Additional resources
@@ -176,7 +176,7 @@ The README.md includes:
 - **Node.js**: >=25.0.0
 - **Express**: 5.0.1
 - **MSAL**: @azure/msal-node 2.15.0
-- **UI**: Fluent UI Web Components (beta)
+- **UI**: Bootstrap 5 + Custom CSS
 - **Template**: EJS 3.1.10
 - **HTTP**: axios 1.7.9
 - **Session**: express-session 1.18.1

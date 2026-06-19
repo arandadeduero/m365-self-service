@@ -3,7 +3,7 @@
  * Tests for authentication middleware and route access
  */
 
-const test = require('ava');
+const test = require('ava').default;
 const request = require('supertest');
 const app = require('../server');
 
@@ -28,8 +28,8 @@ test('GET /login returns login page', async t => {
     .get('/login')
     .expect(200);
 
-  t.true(res.text.includes('Sign in with Microsoft'));
-  t.true(res.text.includes('M365 Login Demo'));
+  t.true(res.text.includes('Iniciar sesion con Microsoft'));
+  t.true(res.text.includes('Herramienta 365 - Ayuntamiento de Aranda de Duero'));
 });
 
 test('GET /login renders correct content', async t => {
@@ -38,8 +38,48 @@ test('GET /login renders correct content', async t => {
     .expect(200);
 
   // Check for key elements
-  t.true(res.text.includes('fluent-button'));
+  t.true(res.text.includes('btn btn-primary'));
   t.true(res.text.includes('/auth/signin'));
+});
+
+test('GET /organigrama redirects unauthenticated users to login', async t => {
+  const res = await request(app)
+    .get('/organigrama')
+    .expect(302);
+
+  t.is(res.header.location, '/login');
+});
+
+test('GET /profile/me/edit redirects unauthenticated users to login', async t => {
+  const res = await request(app)
+    .get('/profile/me/edit')
+    .expect(302);
+
+  t.is(res.header.location, '/login');
+});
+
+test('GET /teams redirects unauthenticated users to login', async t => {
+  const res = await request(app)
+    .get('/teams')
+    .expect(302);
+
+  t.is(res.header.location, '/login');
+});
+
+test('GET /groups redirects unauthenticated users to login', async t => {
+  const res = await request(app)
+    .get('/groups')
+    .expect(302);
+
+  t.is(res.header.location, '/login');
+});
+
+test('GET /api/users redirects unauthenticated users to login', async t => {
+  const res = await request(app)
+    .get('/api/users')
+    .expect(302);
+
+  t.is(res.header.location, '/login');
 });
 
 test('GET /nonexistent returns 404', async t => {

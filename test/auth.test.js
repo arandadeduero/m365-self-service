@@ -3,7 +3,7 @@
  * Tests for the authentication flow
  */
 
-const test = require('ava');
+const test = require('ava').default;
 const request = require('supertest');
 const app = require('../server');
 
@@ -25,12 +25,12 @@ test('GET /auth/signin redirects to Microsoft login', async t => {
   t.true(res.header.location.includes('oauth2'));
 });
 
-test('GET /auth/callback returns 400 without authorization code', async t => {
+test('GET /auth/callback returns 401 without authorization code', async t => {
   const res = await request(app)
     .get('/auth/callback')
-    .expect(400);
+    .expect(401);
 
-  t.is(res.status, 400);
+  t.is(res.status, 401);
 });
 
 test('GET /auth/logout clears session and redirects', async t => {

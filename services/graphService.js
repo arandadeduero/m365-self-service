@@ -35,9 +35,6 @@ async function processBatches(items, processFn, batchSize = 10) {
 async function getUserProfile(accessToken) {
   try {
     const response = await axios.get(graphConfig.userProfile.endpoint, {
-      params: {
-        $select: graphConfig.userProfile.select,
-      },
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -81,7 +78,7 @@ async function getAllUsers(accessToken) {
  */
 async function sendEmail(accessToken, emailData) {
   try {
-    const { to, subject, body } = emailData;
+    const { to, subject, body, attachments } = emailData;
     
     const message = {
       message: {
@@ -99,6 +96,16 @@ async function sendEmail(accessToken, emailData) {
         ],
       },
     };
+
+    if (attachments && attachments.length > 0) {
+      message.message.hasAttachments = true;
+      message.message.attachments = attachments.map(att => ({
+        "@odata.type": "#microsoft.graph.fileAttachment",
+        name: att.name,
+        contentType: att.contentType,
+        contentBytes: att.contentBytes // base64 encoded
+      }));
+    }
 
     await axios.post(
       'https://graph.microsoft.com/v1.0/me/sendMail',
@@ -442,18 +449,186 @@ async function getAllUserData(accessToken) {
   }
 }
 
+/**
+ * Update user profile information
+ * @param {string} accessToken - Valid access token
+ * @param {Object} profileData - Data to update
+ * @returns {Promise<void>}
+ */
+async function updateUserProfile(accessToken, profileData) {
+  try {
+    await axios.patch('https://graph.microsoft.com/v1.0/me', profileData, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    console.error('Error updating user profile:', error.response?.data || error.message);
+    throw new Error('Failed to update user profile');
+  }
+}
+
+/**
+ * Get user extended directory information
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Object>} User extended data
+ */
+async function getUserExtendedInfo(accessToken) {
+  try {
+    const response = await axios.get('https://graph.microsoft.com/v1.0/me', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching extended user info:', error.response?.data || error.message);
+    throw new Error('Failed to fetch extended user info');
+  }
+}
+
+/**
+ * Get joined teams and their channels
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array>} Array of teams with channels
+ */
+async function getJoinedTeamsAndChannels(accessToken) {
+  try {
+    // 1. Get joined teams
+    const teamsResponse = await axios.get('https://graph.microsoft.com/v1.0/me/joinedTeams', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const teams = teamsResponse.data.value || [];
+
+    // 2. Get channels for each team
+    const teamsWithChannels = await Promise.all(
+      teams.map(async (team) => {
+        try {
+          const channelsResponse = await axios.get(`https://graph.microsoft.com/v1.0/teams/${team.id}/channels`, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+          return {
+            ...team,
+            channels: channelsResponse.data.value || []
+          };
+        } catch (error) {
+          console.error(`Error fetching channels for team ${team.id}:`, error.message);
+          return { ...team, channels: [] };
+        }
+      })
+    );
+
+    return teamsWithChannels;
+  } catch (error) {
+    console.error('Error fetching joined teams:', error.response?.data || error.message);
+    throw new Error('Failed to fetch teams');
+  }
+}
+
+/**
+ * Get administrative directory roles for the user
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array>} Array of admin role names
+ */
+async function getUserAdminRoles(accessToken) {
+  try {
+    const url = 'https://graph.microsoft.com/v1.0/me/memberOf/microsoft.graph.directoryRole';
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    const roles = response.data.value || [];
+
+    return roles
+      .map(role => role.displayName);
+  } catch (error) {
+    console.error('Error fetching admin roles:', error.response?.data || error.message);
+    return [];
+  }
+}
+
+/**
+ * Check if the user has administrative directory roles
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<boolean>} True if user is an admin
+ */
+async function isUserAdmin(accessToken) {
+  const roles = await getUserAdminRoles(accessToken);
+  return roles.length > 0;
+}
+
+/**
+ * Get manager for a specific user by ID
+ * @param {string} accessToken - Valid access token
+ * @param {string} userId - User ID
+ * @returns {Promise<Object|null>} Manager data
+ */
+async function getUserManagerById(accessToken, userId) {
+  try {
+    const response = await axios.get(`https://graph.microsoft.com/v1.0/users/${userId}/manager`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 404) return null;
+    console.error(`Error fetching manager for ${userId}:`, error.message);
+    return null;
+  }
+}
+
+/**
+ * Reset user password via Microsoft Graph API
+ * @param {string} accessToken - Valid access token with appropriate permissions
+ * @param {string} userId - User ID
+ * @param {string} newPassword - New password
+ * @returns {Promise<void>}
+ */
+async function resetUserPassword(accessToken, userId, newPassword) {
+  try {
+    const passwordProfile = {
+      passwordProfile: {
+        password: newPassword,
+        forceChangePasswordNextSignIn: false,
+      },
+    };
+    await axios.patch(`https://graph.microsoft.com/v1.0/users/${userId}`, passwordProfile, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(`Password reset successfully for user ${userId}`);
+  } catch (error) {
+    console.error('Error resetting password:', error.response?.data || error.message);
+    throw new Error('Failed to reset password');
+  }
+}
+
 module.exports = {
   getUserProfile,
   getUserPhoto,
   getUserGroups,
   getUserManager,
+  getUserManagerById, // Exportada
   getAllUserData,
   getAllTenantGroups,
   getGroupsWithMembership,
-  getAllDistributionLists,
-  getDistributionListsWithMembership,
-  getAllSharedMailboxes,
-  getSharedMailboxesWithAccess,
   getAllUsers,
   sendEmail,
+  updateUserProfile,
+  getUserExtendedInfo,
+  getJoinedTeamsAndChannels,
+  isUserAdmin,
+  getUserAdminRoles,
+  resetUserPassword, // Exportada
 };

@@ -1,61 +1,59 @@
 <%- include('partials/header') %>
 
-<main class="error-container">
-  <fluent-card class="error-card">
-    <h1>Development Error</h1>
-    <fluent-divider></fluent-divider>
-    
-    <div class="error-details">
-      <div class="error-section">
-        <h2>Error Information</h2>
-        <p><strong>Status:</strong> <%= error.status %></p>
-        <p><strong>Message:</strong> <%= error.message %></p>
-        <p><strong>Timestamp:</strong> <%= error.timestamp %></p>
+<main class="container py-5 error-container page-shell page-error">
+  <div class="card shadow-sm border-0 app-panel error-card">
+    <div class="card-body p-4 p-md-5">
+      <h1 class="h3 text-danger mb-3">Error de desarrollo</h1>
+      <hr>
+
+      <div class="error-details">
+        <div class="error-section mb-4">
+          <h2 class="h5">Informacion del error</h2>
+          <p><strong>Estado:</strong> <%= error.status %></p>
+          <p><strong>Mensaje:</strong> <%= error.message %></p>
+          <p><strong>Marca de tiempo:</strong> <%= error.timestamp %></p>
+        </div>
+
+        <div class="error-section mb-4">
+          <h2 class="h5">Detalles de la solicitud</h2>
+          <p><strong>URL:</strong> <%= error.url %></p>
+          <p><strong>Metodo:</strong> <%= error.method %></p>
+        </div>
+
+        <% if (error.session) { %>
+          <div class="error-section mb-4">
+            <h2 class="h5">Estado de sesion</h2>
+            <p><strong>Tiene token de acceso:</strong> <%= error.session.hasAccessToken ? 'Si' : 'No' %></p>
+            <p><strong>Tiene cuenta:</strong> <%= error.session.hasAccount ? 'Si' : 'No' %></p>
+          </div>
+        <% } %>
+
+        <div class="error-section mb-4">
+          <h2 class="h5">Traza de pila</h2>
+          <pre class="stack-trace"><%= error.stack %></pre>
+        </div>
+
+        <% if (error.query && Object.keys(error.query).length > 0) { %>
+          <div class="error-section mb-4">
+            <h2 class="h5">Parametros de consulta</h2>
+            <pre class="stack-trace"><%= JSON.stringify(error.query, null, 2) %></pre>
+          </div>
+        <% } %>
+
+        <% if (error.body && Object.keys(error.body).length > 0) { %>
+          <div class="error-section mb-4">
+            <h2 class="h5">Cuerpo de la solicitud</h2>
+            <pre class="stack-trace"><%= JSON.stringify(error.body, null, 2) %></pre>
+          </div>
+        <% } %>
       </div>
 
-      <div class="error-section">
-        <h2>Request Details</h2>
-        <p><strong>URL:</strong> <%= error.url %></p>
-        <p><strong>Method:</strong> <%= error.method %></p>
+      <div class="d-flex flex-wrap gap-2 mt-4">
+        <a href="/" class="btn btn-primary">Ir al inicio</a>
+        <a href="/login" class="btn btn-outline-secondary">Ir a inicio de sesion</a>
       </div>
-
-      <% if (error.session) { %>
-        <div class="error-section">
-          <h2>Session Status</h2>
-          <p><strong>Has Access Token:</strong> <%= error.session.hasAccessToken ? 'Yes' : 'No' %></p>
-          <p><strong>Has Account:</strong> <%= error.session.hasAccount ? 'Yes' : 'No' %></p>
-        </div>
-      <% } %>
-
-      <div class="error-section">
-        <h2>Stack Trace</h2>
-        <pre class="stack-trace"><%= error.stack %></pre>
-      </div>
-
-      <% if (error.query && Object.keys(error.query).length > 0) { %>
-        <div class="error-section">
-          <h2>Query Parameters</h2>
-          <pre><%= JSON.stringify(error.query, null, 2) %></pre>
-        </div>
-      <% } %>
-
-      <% if (error.body && Object.keys(error.body).length > 0) { %>
-        <div class="error-section">
-          <h2>Request Body</h2>
-          <pre><%= JSON.stringify(error.body, null, 2) %></pre>
-        </div>
-      <% } %>
     </div>
-
-    <div class="error-actions">
-      <fluent-button appearance="accent" onclick="window.location.href='/'">
-        Go to Home
-      </fluent-button>
-      <fluent-button appearance="stealth" onclick="window.location.href='/login'">
-        Go to Login
-      </fluent-button>
-    </div>
-  </fluent-card>
+  </div>
 </main>
 
 <%- include('partials/footer') %>

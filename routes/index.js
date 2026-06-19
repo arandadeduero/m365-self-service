@@ -9,8 +9,74 @@
 
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
+const msal = require('@azure/msal-node');
+const { msalConfig } = require('../config/authConfig');
 const { isAuthenticated, redirectIfAuthenticated } = require('../middleware/auth');
-const { getAllUserData, getGroupsWithMembership, getDistributionListsWithMembership, getSharedMailboxesWithAccess, getAllUsers, sendEmail } = require('../services/graphService');
+const { sendResetEmail } = require('../services/emailService');
+const { 
+  getAllUserData, 
+  getGroupsWithMembership, 
+  getAllUsers, 
+  sendEmail,
+  updateUserProfile,
+  getUserExtendedInfo,
+  getJoinedTeamsAndChannels,
+  getUserManager,
+  getUserManagerById,
+  resetUserPassword
+} = require('../services/graphService');
+
+// Create MSAL confidential client for app-only operations
+const msalApp = new msal.ConfidentialClientApplication(msalConfig);
+
+const ALGORITHM = 'aes-256-cbc';
+const ENCRYPTION_KEY = crypto.scryptSync(process.env.TOKEN_SECRET, 'salt', 32);
+const IV_LENGTH = 16;
+
+function encrypt(text) {
+    const iv = crypto.randomBytes(IV_LENGTH);
+    const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+    const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
+    return iv.toString('hex') + ':' + encrypted.toString('hex');
+}
+
+function decrypt(text) {
+    const textParts = text.split(':');
+    const iv = Buffer.from(textParts.shift(), 'hex');
+    const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+    const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+    const decrypted = Buffer.concat([decipher.update(encryptedText), decipher.final()]);
+    return decrypted.toString();
+}
+
+/**
+ * GET /organigrama
+ * Org chart page
+ */
+router.get('/organigrama', isAuthenticated, async (req, res, next) => {
+  try {
+    const accessToken = req.session.accessToken;
+    const users = await getAllUsers(accessToken);
+    
+    // Obtenemos los managers para cada usuario
+    const usersWithManager = await Promise.all(users.map(async (user) => {
+        const manager = await getUserManagerById(accessToken, user.id);
+        return {
+            ...user,
+            managerId: manager ? manager.id : null
+        };
+    }));
+    
+    res.render('organigrama', {
+      title: 'Organigrama',
+      currentPage: 'organigrama',
+      users: JSON.stringify(usersWithManager)
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * GET /
@@ -23,6 +89,7 @@ router.get('/', isAuthenticated, async (req, res, next) => {
 
     // Fetch all user data from Microsoft Graph
     const userData = await getAllUserData(accessToken);
+    const extendedInfo = await getUserExtendedInfo(accessToken);
 
     // Convert photo buffer to base64 for display in HTML
     let photoBase64 = null;
@@ -32,18 +99,13 @@ router.get('/', isAuthenticated, async (req, res, next) => {
 
     // Render profile page with user data
     res.render('profile', {
-      title: 'Profile',
+      title: 'Perfil',
       currentPage: 'profile',
       user: userData.profile,
       photo: photoBase64,
       groups: userData.groups,
       manager: userData.manager,
-      // Pass raw JSON for display
-      rawJson: JSON.stringify({
-        profile: userData.profile,
-        groups: userData.groups,
-        manager: userData.manager,
-      }, null, 2),
+      extendedInfo: extendedInfo,
     });
   } catch (error) {
     console.error('Error fetching user data:', error);
@@ -59,8 +121,83 @@ router.get('/', isAuthenticated, async (req, res, next) => {
 });
 
 /**
+ * GET /profile/me/edit
+ * Edit profile page
+ */
+router.get('/profile/me/edit', isAuthenticated, async (req, res, next) => {
+  try {
+    const accessToken = req.session.accessToken;
+    const userData = await getAllUserData(accessToken);
+    res.render('edit-profile', {
+      title: 'Editar Perfil',
+      currentPage: 'profile',
+      user: userData.profile,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /profile/me/edit
+ * Handle profile update
+ */
+router.post('/profile/me/edit', isAuthenticated, async (req, res, next) => {
+  try {
+    const accessToken = req.session.accessToken;
+    const { mobilePhone, jobTitle, officeLocation, businessPhones } = req.body;
+    
+    // Prepare data
+    const updateData = {
+      mobilePhone,
+      jobTitle,
+      officeLocation,
+      businessPhones: businessPhones ? [businessPhones] : []
+    };
+
+    await updateUserProfile(accessToken, updateData);
+    res.redirect('/');
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    const err = new Error('Error al actualizar el perfil: ' + error.message);
+    err.status = 500;
+    return next(err);
+  }
+});
+
+/**
+ * GET /teams
+ * Teams management page - displays joined teams and their channels
+ */
+router.get('/teams', isAuthenticated, async (req, res, next) => {
+  try {
+    const accessToken = req.session.accessToken;
+    const teamsWithChannels = await getJoinedTeamsAndChannels(accessToken);
+
+    // Sort channels for every team
+    teamsWithChannels.forEach(team => {
+      team.channels.sort((a, b) => a.displayName.localeCompare(b.displayName));
+    });
+
+    // Separate and sort teams
+    let todoAyto = teamsWithChannels.find(t => t.displayName === 'Todo Ayuntamiento');
+    let otherTeams = teamsWithChannels.filter(t => t.displayName !== 'Todo Ayuntamiento');
+    otherTeams.sort((a, b) => a.displayName.localeCompare(b.displayName));
+
+    res.render('teams', {
+      title: 'Teams',
+      currentPage: 'teams',
+      todoAyto,
+      otherTeams,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * GET /groups
- * Groups management page - displays all tenant groups with membership status
+ * Groups management page - displays all tenant groups categorized by type
  */
 router.get('/groups', isAuthenticated, async (req, res, next) => {
   try {
@@ -70,12 +207,25 @@ router.get('/groups', isAuthenticated, async (req, res, next) => {
     // Fetch all groups with membership status
     const groupsData = await getGroupsWithMembership(accessToken);
 
+    // Categorize groups
+    const m365Groups = [];
+    const distributionLists = [];
+
+    groupsData.allGroups.forEach(group => {
+      // Logic for categorization based on name prefix
+      if (group.displayName && group.displayName.startsWith('DIST')) {
+        distributionLists.push(group);
+      } else {
+        m365Groups.push(group);
+      }
+    });
+
     // Render groups page
     res.render('groups', {
-      title: 'Groups',
+      title: 'Grupos',
       currentPage: 'groups',
-      allGroups: groupsData.allGroups,
-      memberCount: groupsData.memberCount,
+      m365Groups,
+      distributionLists,
       totalCount: groupsData.totalCount,
     });
   } catch (error) {
@@ -100,7 +250,9 @@ router.post('/groups/generate-report', isAuthenticated, async (req, res, next) =
     const { selectedGroups } = req.body;
     
     if (!selectedGroups || selectedGroups.length === 0) {
-      return res.status(400).json({ error: 'No groups selected' });
+      const err = new Error('No groups selected');
+      err.status = 400;
+      return next(err);
     }
 
     // Get access token to fetch group details
@@ -148,179 +300,23 @@ router.post('/groups/generate-report', isAuthenticated, async (req, res, next) =
 
 /**
  * GET /distribution-lists
- * Distribution Lists management page - displays all mail-enabled groups with membership status
+ * (Removed)
  */
-router.get('/distribution-lists', isAuthenticated, async (req, res, next) => {
-  try {
-    // Get access token from session
-    const accessToken = req.session.accessToken;
-
-    // Fetch all distribution lists with membership status
-    const distListsData = await getDistributionListsWithMembership(accessToken);
-
-    // Render distribution lists page
-    res.render('distribution-lists', {
-      title: 'Distribution Lists',
-      currentPage: 'distribution-lists',
-      allDistLists: distListsData.allDistLists,
-      memberCount: distListsData.memberCount,
-      totalCount: distListsData.totalCount,
-    });
-  } catch (error) {
-    console.error('Error fetching distribution lists data:', error);
-    // If token is expired or invalid, clear session and redirect to login
-    if (error.message.includes('token') || error.message.includes('unauthorized')) {
-      req.session.destroy(() => {
-        res.redirect('/login');
-      });
-    } else {
-      next(error);
-    }
-  }
-});
 
 /**
  * POST /distribution-lists/generate-report
- * Generate a text report of non-member distribution lists
+ * (Removed)
  */
-router.post('/distribution-lists/generate-report', isAuthenticated, async (req, res, next) => {
-  try {
-    const { selectedDistLists } = req.body;
-    
-    if (!selectedDistLists || selectedDistLists.length === 0) {
-      return res.status(400).json({ error: 'No distribution lists selected' });
-    }
-
-    // Get access token to fetch distribution list details
-    const accessToken = req.session.accessToken;
-    const distListsData = await getDistributionListsWithMembership(accessToken);
-
-    // Filter selected distribution lists
-    const selectedDistListDetails = distListsData.allDistLists.filter(dl => 
-      selectedDistLists.includes(dl.id)
-    );
-
-    // Generate report text
-    let report = 'Distribution Lists Access Request\n';
-    report += '='.repeat(50) + '\n\n';
-    report += `User: ${req.session.account?.name || req.session.account?.username}\n`;
-    report += `Date: ${new Date().toISOString().split('T')[0]}\n\n`;
-    report += 'Requesting access to the following distribution lists:\n\n';
-
-    selectedDistListDetails.forEach((list, index) => {
-      report += `${index + 1}. ${list.displayName}\n`;
-      if (list.description) {
-        report += `   Description: ${list.description}\n`;
-      }
-      if (list.mail) {
-        report += `   Email: ${list.mail}\n`;
-      }
-      report += `   Distribution List ID: ${list.id}\n`;
-      report += `   Current Status: Not a member\n\n`;
-    });
-
-    report += '\n' + '='.repeat(50) + '\n';
-    report += 'Please grant access to these distribution lists.\n';
-
-    // Return the report
-    res.json({ 
-      success: true, 
-      report,
-      distListCount: selectedDistListDetails.length,
-    });
-  } catch (error) {
-    console.error('Error generating report:', error);
-    next(error);
-  }
-});
 
 /**
  * GET /shared-mailboxes
- * Shared Mailboxes management page - displays all shared mailboxes with access status
+ * (Removed)
  */
-router.get('/shared-mailboxes', isAuthenticated, async (req, res, next) => {
-  try {
-    // Get access token from session
-    const accessToken = req.session.accessToken;
-
-    // Fetch all shared mailboxes with access status
-    const mailboxesData = await getSharedMailboxesWithAccess(accessToken);
-
-    // Render shared mailboxes page
-    res.render('shared-mailboxes', {
-      title: 'Shared Mailboxes',
-      currentPage: 'shared-mailboxes',
-      allMailboxes: mailboxesData.allMailboxes,
-      accessCount: mailboxesData.accessCount,
-      totalCount: mailboxesData.totalCount,
-    });
-  } catch (error) {
-    console.error('Error fetching shared mailboxes data:', error);
-    // If token is expired or invalid, clear session and redirect to login
-    if (error.message.includes('token') || error.message.includes('unauthorized')) {
-      req.session.destroy(() => {
-        res.redirect('/login');
-      });
-    } else {
-      next(error);
-    }
-  }
-});
 
 /**
  * POST /shared-mailboxes/generate-report
- * Generate a text report of shared mailboxes without access
+ * (Removed)
  */
-router.post('/shared-mailboxes/generate-report', isAuthenticated, async (req, res, next) => {
-  try {
-    const { selectedMailboxes } = req.body;
-    
-    if (!selectedMailboxes || selectedMailboxes.length === 0) {
-      return res.status(400).json({ error: 'No shared mailboxes selected' });
-    }
-
-    // Get access token to fetch mailbox details
-    const accessToken = req.session.accessToken;
-    const mailboxesData = await getSharedMailboxesWithAccess(accessToken);
-
-    // Filter selected mailboxes
-    const selectedMailboxDetails = mailboxesData.allMailboxes.filter(mb => 
-      selectedMailboxes.includes(mb.id)
-    );
-
-    // Generate report text
-    let report = 'Shared Mailboxes Access Request\n';
-    report += '='.repeat(50) + '\n\n';
-    report += `User: ${req.session.account?.name || req.session.account?.username}\n`;
-    report += `Date: ${new Date().toISOString().split('T')[0]}\n\n`;
-    report += 'Requesting access to the following shared mailboxes:\n\n';
-
-    selectedMailboxDetails.forEach((mailbox, index) => {
-      report += `${index + 1}. ${mailbox.displayName}\n`;
-      if (mailbox.mail) {
-        report += `   Email: ${mailbox.mail}\n`;
-      }
-      if (mailbox.userPrincipalName) {
-        report += `   User Principal Name: ${mailbox.userPrincipalName}\n`;
-      }
-      report += `   Mailbox ID: ${mailbox.id}\n`;
-      report += `   Current Status: No access\n\n`;
-    });
-
-    report += '\n' + '='.repeat(50) + '\n';
-    report += 'Please grant access to these shared mailboxes.\n';
-
-    // Return the report
-    res.json({ 
-      success: true, 
-      report,
-      mailboxCount: selectedMailboxDetails.length,
-    });
-  } catch (error) {
-    console.error('Error generating report:', error);
-    next(error);
-  }
-});
 
 /**
  * GET /api/users
@@ -350,24 +346,23 @@ router.get('/api/users', isAuthenticated, async (req, res, next) => {
  */
 router.post('/api/manager-correction', isAuthenticated, async (req, res, next) => {
   try {
-    const { selectedManagerId, selectedManagerName } = req.body;
+    const { selectedManagerId, selectedManagerName, selectedManagerEmail } = req.body;
     
     if (!selectedManagerId || !selectedManagerName) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Manager information is required' 
-      });
+      const err = new Error('Manager information is required');
+      err.status = 400;
+      return next(err);
     }
 
     const accessToken = req.session.accessToken;
     const currentUser = req.session.account?.name || req.session.account?.username;
-    const currentUserEmail = req.session.account?.username; // Usually the email
+    const currentUserEmail = req.session.account?.username;
 
     // Email configuration
     const emailData = {
       to: 'glopez@arandadeduero.es',
       subject: '[m365-admin] Change request',
-      body: `The user ${currentUser} (${currentUserEmail}) is requesting that their manager is ${selectedManagerName} (ID: ${selectedManagerId})`,
+      body: `The user ${currentUser} (${currentUserEmail}) is requesting that their manager is ${selectedManagerName} (${selectedManagerEmail || 'no email'}) (ID: ${selectedManagerId})`,
     };
 
     // Send the email
@@ -387,12 +382,201 @@ router.post('/api/manager-correction', isAuthenticated, async (req, res, next) =
 });
 
 /**
+ * POST /api/group-access-request
+ * Send email notification about group access request
+ */
+router.post('/api/group-access-request', isAuthenticated, async (req, res, next) => {
+  try {
+    const { selectedGroups } = req.body;
+    
+    if (!selectedGroups || selectedGroups.length === 0) {
+      const err = new Error('Group information is required');
+      err.status = 400;
+      return next(err);
+    }
+
+    const accessToken = req.session.accessToken;
+    const currentUser = req.session.account?.name || req.session.account?.username;
+    const currentUserEmail = req.session.account?.username;
+
+    // Fetch group details for the email body
+    const groupsData = await getGroupsWithMembership(accessToken);
+    const selectedGroupDetails = groupsData.allGroups.filter(g => 
+      selectedGroups.includes(g.id)
+    );
+
+    // Generate email body
+    let body = `The user ${currentUser} (${currentUserEmail}) is requesting access to the following groups:\n\n`;
+    selectedGroupDetails.forEach((group, index) => {
+      body += `${index + 1}. ${group.displayName} (ID: ${group.id})\n`;
+    });
+
+    // Email configuration
+    const emailData = {
+      to: 'glopez@arandadeduero.es',
+      subject: '[m365-admin] Group Access Request',
+      body: body,
+    };
+
+    // Send the email
+    await sendEmail(accessToken, emailData);
+
+    res.json({ 
+      success: true, 
+      message: 'Group access request sent successfully' 
+    });
+  } catch (error) {
+    console.error('Error sending group access request:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Failed to send group access request' 
+    });
+  }
+});
+
+/**
+ * GET /reset-password
+ */
+router.get('/reset-password', (req, res) => {
+  res.render('reset-password', { title: 'Recuperar contraseña' });
+});
+
+/**
+ * POST /reset-password
+ */
+router.post('/reset-password', async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email || !email.endsWith('@arandadeduero.es')) {
+        const err = new Error('El correo electrónico debe ser válido y pertenecer al dominio @arandadeduero.es');
+        err.status = 400;
+        return next(err);
+    }
+
+    // Verify user exists via Graph API (App-only token)
+    const tokenRequest = { scopes: ['https://graph.microsoft.com/.default'] };
+    const authResponse = await msalApp.acquireTokenByClientCredential(tokenRequest);
+    
+    // Get all users
+    const users = await getAllUsers(authResponse.accessToken);
+    const user = users.find(u => u.mail === email || u.userPrincipalName === email);
+    
+    if (!user) {
+        const err = new Error('Usuario no encontrado');
+        err.status = 404;
+        return next(err);
+    }
+    
+    // Create token payload
+    const payload = JSON.stringify({
+        userId: user.id,
+        email: user.mail,
+        expires: Date.now() + 15 * 60 * 1000 // 15 minutes
+    });
+
+    const token = encrypt(payload);
+      
+    // Create link
+    const resetUrl = `${req.protocol}://${req.get('host')}/reset-password/${token}`;
+    
+    if (process.env.NODE_ENV !== 'production') {
+        console.log('--- DEBUG: Reset Password Link ---');
+        console.log(resetUrl);
+        console.log('----------------------------------');
+    }
+    
+    // Send email
+    await sendResetEmail(user.mail, resetUrl);
+    
+    res.send('Se ha enviado un enlace a tu correo electrónico.');
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * GET /reset-password/:token
+ */
+router.get('/reset-password/:token', (req, res, next) => {
+    try {
+        const decrypted = decrypt(req.params.token);
+        const payload = JSON.parse(decrypted);
+        
+        if (Date.now() > payload.expires) {
+            const err = new Error('El enlace ha caducado');
+            err.status = 400;
+            return next(err);
+        }
+
+        if (!payload.email || !payload.email.endsWith('@arandadeduero.es')) {
+             const err = new Error('Correo electrónico no válido');
+             err.status = 400;
+             return next(err);
+        }
+
+        res.render('reset-password-form', { 
+            title: 'Nueva contraseña',
+            token: req.params.token,
+            email: payload.email,
+            userId: payload.userId
+        });
+    } catch (e) {
+        const err = new Error('Token no válido o corrupto');
+        err.status = 400;
+        return next(err);
+    }
+});
+
+/**
+ * POST /reset-password/:token
+ */
+router.post('/reset-password/:token', async (req, res, next) => {
+    try {
+        const decrypted = decrypt(req.params.token);
+        const payload = JSON.parse(decrypted);
+        
+        if (Date.now() > payload.expires) {
+            const err = new Error('El enlace ha caducado');
+            err.status = 400;
+            return next(err);
+        }
+
+        if (!payload.email || !payload.email.endsWith('@arandadeduero.es')) {
+             const err = new Error('Correo electrónico no válido');
+             err.status = 400;
+             return next(err);
+        }
+
+        const { newPassword, confirmPassword } = req.body;
+        
+        if (newPassword !== confirmPassword) {
+            const err = new Error('Las contraseñas no coinciden');
+            err.status = 400;
+            return next(err);
+        }
+        
+        // Reset password via Graph API (App-only token)
+        const tokenRequest = { scopes: ['https://graph.microsoft.com/.default'] };
+        const authResponse = await msalApp.acquireTokenByClientCredential(tokenRequest);
+        
+        await resetUserPassword(authResponse.accessToken, payload.userId, newPassword);
+        
+        res.send('Contraseña actualizada correctamente.');
+    } catch (error) {
+        const err = new Error('Error procesando el reseteo');
+        err.status = 400;
+        return next(err);
+    }
+});
+
+/**
  * GET /login
  * Login page (redirects to home if already authenticated)
  */
 router.get('/login', redirectIfAuthenticated, (req, res) => {
   res.render('login', {
-    title: 'Sign In',
+    title: 'Iniciar sesion',
     currentPage: 'login',
   });
 });

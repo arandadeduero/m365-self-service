@@ -1,0 +1,92 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-groups">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
+    <div>
+      <h1 class="h2 mb-1 page-title">Equipos de Teams</h1>
+      <p class="text-muted small">
+        Estos son los equipos de Teams a los que perteneces (no todos los del Ayuntamiento). 
+        Haz clic en el nombre de cualquier canal para abrirlo. 
+        Si necesitas acceder a más equipos, asegúrate de estar en el <a href="/groups">grupo correspondiente</a>.
+      </p>
+    </div>
+    <a href="/auth/logout" class="btn btn-outline-secondary">Cerrar sesion</a>
+  </div>
+
+  <% if ((todoAyto) || (otherTeams && otherTeams.length > 0)) { %>
+    <% if (todoAyto) { %>
+      <div class="card shadow-sm border-0 app-panel mb-4">
+        <div class="card-body">
+          <h3 class="h5 mb-3 text-primary"><%= todoAyto.displayName %></h3>
+          <% if (todoAyto.channels && todoAyto.channels.length > 0) { %>
+            <ul class="list-group list-group-flush">
+              <% todoAyto.channels.forEach(function(channel) { %>
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <% if (channel.webUrl) { %>
+                      <a href="<%= channel.webUrl %>" target="_blank" class="text-decoration-none">
+                        <strong><%= channel.displayName %></strong>
+                      </a>
+                    <% } else { %>
+                      <strong><%= channel.displayName %></strong>
+                    <% } %>
+                    <span class="badge <%= channel.membershipType === 'private' ? 'bg-danger' : 'bg-success' %>">
+                      <%= channel.membershipType === 'private' ? 'Post' : 'Chat' %>
+                    </span>
+                  </div>
+                  <% if (channel.description) { %>
+                    <p class="mb-0 small text-muted"><%= channel.description %></p>
+                  <% } %>
+                </li>
+              <% }); %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">No hay canales en este equipo.</p>
+          <% } %>
+        </div>
+      </div>
+      <hr class="my-4">
+    <% } %>
+
+    <% otherTeams.forEach(function(team) { %>
+      <div class="card shadow-sm border-0 app-panel mb-4">
+        <div class="card-body">
+          <h3 class="h5 mb-3 text-primary"><%= team.displayName %></h3>
+          <% if (team.channels && team.channels.length > 0) { %>
+            <ul class="list-group list-group-flush">
+              <% team.channels.forEach(function(channel) { %>
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <% if (channel.webUrl) { %>
+                      <a href="<%= channel.webUrl %>" target="_blank" class="text-decoration-none">
+                        <strong><%= channel.displayName %></strong>
+                      </a>
+                    <% } else { %>
+                      <strong><%= channel.displayName %></strong>
+                    <% } %>
+                    <span class="badge <%= channel.membershipType === 'private' ? 'bg-danger' : 'bg-success' %>">
+                      <%= channel.membershipType === 'private' ? 'Post' : 'Chat' %>
+                    </span>
+                  </div>
+                  <% if (channel.description) { %>
+                    <p class="mb-0 small text-muted"><%= channel.description %></p>
+                  <% } %>
+                </li>
+              <% }); %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">No hay canales en este equipo.</p>
+          <% } %>
+        </div>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <div class="card shadow-sm border-0 app-panel">
+      <div class="card-body">
+        <p class="text-center text-muted py-4 mb-0">No se encontraron equipos en los que seas miembro.</p>
+      </div>
+    </div>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

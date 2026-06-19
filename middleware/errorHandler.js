@@ -25,36 +25,14 @@ function errorHandler(err, req, res, next) {
 
   // Determine status code
   const statusCode = err.status || err.statusCode || 500;
+  const message = err.message || 'Ha ocurrido un error inesperado';
 
-  if (isDevelopment) {
-    // DEVELOPMENT MODE: Show detailed error information
-    res.status(statusCode).render('error-dev', {
-      title: 'Error',
-      error: {
-        message: err.message,
-        status: statusCode,
-        stack: err.stack,
-        details: err.details || {},
-        timestamp: new Date().toISOString(),
-        url: req.originalUrl,
-        method: req.method,
-        headers: req.headers,
-        body: req.body,
-        query: req.query,
-        params: req.params,
-        session: req.session ? {
-          hasAccessToken: !!req.session.accessToken,
-          hasAccount: !!req.session.account,
-        } : null,
-      },
-    });
-  } else {
-    // PRODUCTION MODE: Show simple, user-friendly error message
-    res.status(statusCode).render('error-prod', {
-      title: 'Error',
-      statusCode: statusCode,
-    });
-  }
+  // Always show the nice error page
+  res.status(statusCode).render('error', {
+    title: `Error ${statusCode}`,
+    statusCode: statusCode,
+    message: isDevelopment ? message : 'Lo sentimos, ha ocurrido un error. Por favor, intenta de nuevo más tarde.',
+  });
 }
 
 /**

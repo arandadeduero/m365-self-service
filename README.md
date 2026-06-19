@@ -1,6 +1,7 @@
-# Microsoft 365 Login Demo
+# Herramientas Microsoft 365 - Ayuntamiento de Aranda de Duero
 
-A modern Node.js application demonstrating Microsoft 365 authentication with extended user data display using Fluent UI Web Components.
+A modern Node.js application for Herramientas Microsoft 365 - Ayuntamiento de Aranda de Duero authentication with extended user data display using Bootstrap 5 and custom CSS.
+
 
 ## Features
 
@@ -8,12 +9,13 @@ A modern Node.js application demonstrating Microsoft 365 authentication with ext
 - ✅ **Extended User Data** - Profile, photo, groups, manager information
 - ✅ **Groups Management** - View all tenant groups with membership status
 - ✅ **Access Request Reports** - Generate text reports for group access requests
-- ✅ **Fluent UI Design** - Microsoft-consistent design using Web Components
+- ✅ **Publicar en Blog** - Publicar posts en WordPress vía email con adjuntos PDF y programación (delay)
 - ✅ **Dual Display Mode** - Formatted view + raw JSON data
 - ✅ **Smart Error Handling** - Detailed dev errors vs. simple production messages
 - ✅ **Testing Suite** - Ava test runner with c8 coverage
 - ✅ **Auto-restart Dev Server** - Nodemon for efficient development
-- ✅ **Heroku Ready** - Easy deployment to Heroku
+- ✅ **Password Reset** - Secure password reset for users via email (AWS SES)
+- ✅ **Persistent Sessions** - File-based session storage to maintain login across server restarts
 
 ## Screenshots
 
@@ -38,7 +40,6 @@ View and manage group access:
 - **Framework**: Express 5.0.1
 - **Template Engine**: EJS 3.1.10
 - **Authentication**: @azure/msal-node 2.15.0
-- **UI Components**: Fluent UI Web Components (beta)
 - **HTTP Client**: axios 1.7.9
 - **Session Management**: express-session 1.18.1
 - **Testing**: ava 6.2.0 + c8 10.1.3
@@ -65,7 +66,7 @@ Before running the application, you must register it in Azure Portal.
 
 ### Step 2: Fill Registration Form
 
-- **Name**: `M365 Login Demo` (or any name you prefer)
+- **Name**: `Herramientas Microsoft 365 - Ayuntamiento de Aranda de Duero` (or any name you prefer)
 - **Supported account types**: Select **"Accounts in this organizational directory only (Single tenant)"**
 - **Redirect URI**:
   - Platform: **Web**
@@ -91,22 +92,29 @@ After registration, you'll see the app's overview page. **Copy these values** (y
 
 ### Step 5: Configure API Permissions
 
-1. In the left menu, go to **API permissions**
-2. Click **Add a permission** → **Microsoft Graph** → **Delegated permissions**
-3. Add the following permissions:
-   - ✅ `User.Read` - Read user profile
-   - ✅ `User.ReadBasic.All` - Read all users' basic profiles
-   - ✅ `GroupMember.Read.All` - Read user's group memberships
-   - ✅ `Group.Read.All` - Read all groups in the tenant (for Groups page)
-   - ✅ `Directory.Read.All` - Read directory data
-   - ✅ `MailboxSettings.Read` - Read mailbox settings (for Shared Mailboxes detection)
-   - ✅ `Mail.Send` - Send emails as the signed-in user (for manager correction requests)
-   - ✅ `offline_access` - Maintain access to data
-4. Click **Add permissions**
-5. (Recommended) Click **Grant admin consent for [Your Organization]**
-   - This allows users to sign in without individual consent prompts
+  1. In the left menu, go to **API permissions**
+  2. Click **Add a permission** → **Microsoft Graph** → **Delegated permissions**
+  3. Add the following permissions:
+     - ✅ `User.Read` - Read user profile
+     - ✅ `User.ReadBasic.All` - Read all users' basic profiles
+     - ✅ `GroupMember.Read.All` - Read user's group memberships
+     - ✅ `Group.Read.All` - Read all groups in the tenant (for Groups page)
+     - ✅ `Directory.Read.All` - Read directory data
+     - ✅ `MailboxSettings.Read` - Read mailbox settings (for Shared Mailboxes detection)
+     - ✅ `Mail.Send` - Send emails as the signed-in user (for manager correction requests & blog posts)
+     - ✅ `offline_access` - Maintain access to data
+  4. Click **Add permissions**
+  5. (Recommended) Click **Grant admin consent for [Your Organization]**
+     - This allows users to sign in without individual consent prompts
 
-### Step 6: Verify Settings
+### Step 6: Add WordPress Integration (Jetpack)
+
+  1. Enable **Post by Email** in your WordPress site Jetpack settings.
+  2. Copy the generated email address.
+  3. Add it to your `.env` file as `JETPACK_POST_BY_EMAIL`.
+
+### Step 7: Verify Settings
+
 
 - Go to **Authentication** tab
 - Ensure **Allow public client flows** is set to **No**
@@ -301,6 +309,8 @@ Current tests cover:
 | `TENANT_ID` | Directory (tenant) ID from Azure | `87654321-4321-...` | Yes |
 | `REDIRECT_URI` | OAuth callback URL | `http://localhost:3000/auth/callback` | Yes |
 | `SESSION_SECRET` | Random string for session encryption | Generated random value | Yes |
+| `JETPACK_POST_BY_EMAIL` | Email for Jetpack Post-by-email | `user@post.wordpress.com` | Yes |
+| `FROM_EMAIL` | Email address for password reset emails | `no-responder@arandadeduero.dev` | Yes |
 | `PORT` | Port for the server | `3000` | No (default: 3000) |
 | `NODE_ENV` | Environment mode | `development` or `production` | No (default: development) |
 
@@ -322,16 +332,17 @@ Current tests cover:
    - Profile photo
    - Group memberships
    - Manager details
-9. **Profile page rendered** with Fluent UI components
+9. **Profile page rendered**
 10. **User clicks "Logout"** → Session cleared → Redirected to login
 
 ### Session Management
 
-- Sessions are stored in memory (server-side)
+- Sessions are stored in files (persistent across server restarts)
 - Session cookies are HTTP-only (XSS protection)
 - Secure flag enabled in production (HTTPS only)
 - SameSite=lax (CSRF protection)
 - Session lifetime: 24 hours
+- Sessions persist in `sessions/` directory (excluded from git)
 
 ---
 
@@ -527,6 +538,7 @@ Now test your production deployment!
 - ✅ Never exposed to client-side JavaScript
 - ✅ Tokens not stored in cookies
 - ✅ Session cookies are HTTP-only
+- ✅ Sessions persist across server restarts (file-based storage)
 
 ### Secrets
 
@@ -601,6 +613,18 @@ cp .env.example .env
 
 **Solution:** This is normal. The app will show a default avatar if no photo exists.
 
+### Issue: Password reset email not received
+
+**Possible causes:**
+1. Email is in spam folder
+2. AWS SES not configured correctly
+3. Email address not ending in @arandadeduero.es
+
+**Solution:**
+1. Check spam/junk folder for emails from `no-responder@arandadeduero.dev`
+2. Verify AWS SES credentials in `.env`
+3. Ensure email domain is @arandadeduero.es
+
 ### Issue: Port 3000 already in use
 
 **Solution:** Change the port in `.env`:
@@ -669,33 +693,34 @@ console.log('User data:', userData);
 
 ---
 
-## Part 14: Fluent UI Web Components
+## Part 14: UI & Styling Design
 
-This application uses [Fluent UI Web Components](https://github.com/microsoft/fluentui/tree/master/packages/web-components) for Microsoft-consistent design.
+This application uses **Bootstrap 5** alongside custom CSS and variables to achieve a modern, responsive layout consistent with corporate web applications.
 
-### Components Used
+### Design Elements Used
 
-- `<fluent-card>` - Card containers
-- `<fluent-button>` - Buttons with Fluent styling
-- `<fluent-divider>` - Section dividers
-- `<fluent-accordion>` - Collapsible sections
-- `<fluent-accordion-item>` - Individual accordion items
+- **Typography**: Google Fonts integration (`Manrope` and `Sora`) for a clean, professional aesthetic.
+- **Card Panels**: `.app-panel` classes with subtle shadows and border-top accents based on the current page section.
+- **Responsive Layout**: Bootstrap's responsive grid system ensures the interface functions well on both desktop and mobile screens.
+- **Dynamic Backgrounds**: CSS radial gradients matching page accents.
 
 ### Customization
 
-Edit `public/css/custom.css` to customize:
+Edit `public/css/custom.css` to customize the primary/secondary palette and accent colors:
 
 ```css
-/* Override Fluent UI variables */
-fluent-button[appearance="accent"] {
-  --accent-fill-rest: #0078d4; /* Microsoft Blue */
+:root {
+  --app-ink: #182433;
+  --app-muted: #5a6678;
+  --app-primary: #0d6efd;
+  --app-secondary: #f59f00;
+  --app-surface: #ffffff;
 }
 ```
 
 ### Documentation
 
-- [Fluent UI Web Components Docs](https://learn.microsoft.com/en-us/fluent-ui/web-components/)
-- [Component Examples](https://explore.fast.design/components/fast-button)
+- [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
 
 ---
 
@@ -747,10 +772,10 @@ SOFTWARE.
 - [MSAL Node.js](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-node-migration)
 - [Entra ID (Azure AD)](https://learn.microsoft.com/en-us/azure/active-directory/)
 
-### Fluent UI
+### Bootstrap & CSS
 
-- [Fluent UI](https://developer.microsoft.com/en-us/fluentui)
-- [Fluent Design System](https://www.microsoft.com/design/fluent/)
+- [Bootstrap 5](https://getbootstrap.com)
+- [Bootstrap 5 Docs](https://getbootstrap.com/docs/5.3/)
 
 ### Node.js & Express
 

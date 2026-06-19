@@ -1,0 +1,55 @@
+<%- include('partials/header') %>
+<main class="container py-4">
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <h1 class="h3 mb-4">Publicar en Blog</h1>
+      
+      <form action="/blog" method="POST" enctype="multipart/form-data" id="blogForm">
+        <div class="mb-3">
+          <label class="form-label">Título</label>
+          <input type="text" name="title" class="form-control" placeholder="BANDO: <titulo>" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Texto</label>
+          <textarea name="content" class="form-control" rows="5" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Categorías</label>
+          <select name="categories" class="form-select" multiple required>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.name %>"><%= cat.name %></option>
+            <% }) %>
+          </select>
+          <small class="text-muted">Seleccione una o varias categorías (Ctrl/Cmd + click).</small>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Archivos PDF adjuntos</label>
+          <input type="file" name="files" class="form-control" multiple accept=".pdf">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Delay (horas, 0-100)</label>
+          <input type="number" name="delay" class="form-control" min="0" max="100" value="0" id="delayInput">
+          <small class="text-muted" id="publishTimeInfo"></small>
+        </div>
+        <input type="hidden" name="status" value="draft">
+        <button type="submit" class="btn btn-primary">Enviar email para publicar</button>
+      </form>
+
+      <script>
+        const delayInput = document.getElementById('delayInput');
+        const publishTimeInfo = document.getElementById('publishTimeInfo');
+
+        function updatePublishTime() {
+          const hours = parseInt(delayInput.value) || 0;
+          const date = new Date();
+          date.setHours(date.getHours() + hours);
+          publishTimeInfo.innerText = 'Se publicará aproximadamente el: ' + date.toLocaleString();
+        }
+
+        delayInput.addEventListener('input', updatePublishTime);
+        updatePublishTime();
+      </script>
+    </div>
+  </div>
+</main>
+<%- include('partials/footer') %>

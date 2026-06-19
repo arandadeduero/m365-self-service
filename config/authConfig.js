@@ -38,7 +38,8 @@ const redirectUri = process.env.REDIRECT_URI || 'http://localhost:3000/auth/call
 // Microsoft Graph API scopes (permissions)
 // These determine what data the app can access
 const scopes = [
-  'user.read',              // Basic user profile
+  'User.Read',              // Basic user profile
+  'User.ReadWrite',         // Update user profile
   'User.ReadBasic.All',     // Extended user information
   'GroupMember.Read.All',   // User's group memberships
   'Group.Read.All',         // Read all groups in the tenant
@@ -46,6 +47,8 @@ const scopes = [
   'MailboxSettings.Read',   // Read mailbox settings (needed for shared mailbox detection)
   'Mail.Send',              // Send emails as the signed-in user
   'offline_access',         // Refresh tokens for long-lived sessions
+  'Team.ReadBasic.All',     // Read teams the user is in
+  'Channel.ReadBasic.All',  // Read channels in those teams
 ];
 
 module.exports = {

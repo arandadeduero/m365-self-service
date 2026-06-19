@@ -1,132 +1,134 @@
 <%- include('partials/header') %>
 
-<main class="groups-container">
-  <div class="groups-header">
+<main class="container py-4 groups-container page-shell page-groups">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
     <div>
-      <h1>Groups</h1>
-      <p class="groups-stats">
-        Member of <%= memberCount %> out of <%= totalCount %> groups
-      </p>
+      <h1 class="h2 mb-1 page-title">Grupos</h1>
     </div>
-    <fluent-button appearance="stealth" onclick="window.location.href='/auth/logout'">
-      Logout
-    </fluent-button>
+    <a href="/auth/logout" class="btn btn-outline-secondary">Cerrar sesion</a>
   </div>
 
-  <!-- Groups Actions -->
-  <fluent-card class="groups-actions">
-    <div class="action-header">
-      <h3>Select groups you want to join</h3>
-      <div class="action-buttons">
-        <fluent-button id="selectAllBtn" appearance="outline" onclick="selectAllNonMember()">
-          Select All Non-Member
-        </fluent-button>
-        <fluent-button id="clearBtn" appearance="outline" onclick="clearSelection()">
-          Clear Selection
-        </fluent-button>
-        <fluent-button id="generateBtn" appearance="accent" onclick="generateReport()" disabled>
-          Generate Report
-        </fluent-button>
-      </div>
-    </div>
-    <p class="selected-count">Selected: <span id="selectedCount">0</span> groups</p>
-  </fluent-card>
-
-  <!-- Groups List -->
-  <fluent-card class="groups-list-card">
-    <h3>All Tenant Groups</h3>
-    <fluent-divider></fluent-divider>
-    
-    <% if (allGroups && allGroups.length > 0) { %>
-      <div class="groups-table">
-        <div class="table-header">
-          <div class="col-checkbox"></div>
-          <div class="col-status">Status</div>
-          <div class="col-name">Group Name</div>
-          <div class="col-email">Email</div>
-          <div class="col-type">Type</div>
+  <div class="card shadow-sm border-0 app-panel mb-3">
+    <div class="card-body">
+      <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
+        <h3 class="h5 mb-0">Selecciona los grupos a los que quieres unirte</h3>
+        <div class="d-flex flex-wrap gap-2">
+          <button id="generateBtn" class="btn btn-primary btn-sm" onclick="sendGroupAccessRequest()" disabled>Enviar petición</button>
         </div>
-        
-        <% allGroups.forEach(function(group) { %>
-          <div class="table-row <%= group.isMember ? 'is-member' : 'not-member' %>">
-            <div class="col-checkbox">
-              <% if (!group.isMember) { %>
-                <fluent-checkbox 
-                  class="group-checkbox" 
-                  data-group-id="<%= group.id %>"
-                  data-group-name="<%= group.displayName %>"
-                  onchange="updateSelection()">
-                </fluent-checkbox>
-              <% } %>
-            </div>
-            
-            <div class="col-status">
-              <% if (group.isMember) { %>
-                <span class="status-badge member">✓ Member</span>
-              <% } else { %>
-                <span class="status-badge non-member">✗ Not Member</span>
-              <% } %>
-            </div>
-            
-            <div class="col-name">
-              <strong><%= group.displayName %></strong>
-              <% if (group.description) { %>
-                <p class="group-description"><%= group.description %></p>
-              <% } %>
-            </div>
-            
-            <div class="col-email">
-              <% if (group.mail) { %>
-                <%= group.mail %>
-              <% } else { %>
-                <span class="no-email">—</span>
-              <% } %>
-            </div>
-            
-            <div class="col-type">
-              <% if (group.securityEnabled && group.mailEnabled) { %>
-                <span class="type-badge">Security + Mail</span>
-              <% } else if (group.securityEnabled) { %>
-                <span class="type-badge">Security</span>
-              <% } else if (group.mailEnabled) { %>
-                <span class="type-badge">Mail</span>
-              <% } else { %>
-                <span class="type-badge">Other</span>
-              <% } %>
-            </div>
-          </div>
-        <% }); %>
       </div>
-    <% } else { %>
-      <p class="no-groups">No groups found in the tenant.</p>
-    <% } %>
-  </fluent-card>
+      <p class="mt-3 mb-0 fw-semibold">Seleccionados: <span id="selectedCount">0</span> grupos</p>
+    </div>
+  </div>
 
-  <!-- Report Modal -->
-  <fluent-dialog id="reportDialog" modal hidden>
-    <div class="dialog-content">
-      <h2>Groups Access Request Report</h2>
-      <fluent-divider></fluent-divider>
-      <fluent-text-area id="reportText" rows="20" readonly resize="vertical"></fluent-text-area>
-      <div class="dialog-actions">
-        <fluent-button appearance="accent" onclick="copyReport()">
-          Copy to Clipboard
-        </fluent-button>
-        <fluent-button appearance="outline" onclick="closeDialog()">
-          Close
-        </fluent-button>
+  <!-- Listas de Distribución -->
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body">
+      <h3 class="h5 mb-3">Listas de Distribución</h3>
+      <% if (distributionLists && distributionLists.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 50px;"></th>
+                <th>Estado</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% distributionLists.forEach(function(group) { %>
+                <tr class="<%= group.isMember ? 'table-secondary' : '' %>">
+                  <td>
+                    <% if (!group.isMember) { %>
+                      <input class="form-check-input group-checkbox" type="checkbox" data-group-id="<%= group.id %>" data-group-name="<%= group.displayName %>" onchange="updateSelection()">
+                    <% } %>
+                  </td>
+                  <td><%= group.isMember ? 'Miembro' : 'No miembro' %></td>
+                  <td><strong><%= group.displayName %></strong></td>
+                  <td><%= group.mail %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="text-muted">No hay listas de distribución.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Grupos de Herramientas Microsoft 365 - Ayuntamiento de Aranda de Duero -->
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body">
+      <h3 class="h5 mb-3">Grupos de Herramientas Microsoft 365 - Ayuntamiento de Aranda de Duero</h3>
+      <% if (m365Groups && m365Groups.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 50px;"></th>
+                <th>Estado</th>
+                <th>Nombre</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% m365Groups.forEach(function(group) { %>
+                <tr class="<%= group.isMember ? 'table-secondary' : '' %>">
+                  <td>
+                    <% if (!group.isMember) { %>
+                      <input class="form-check-input group-checkbox" type="checkbox" data-group-id="<%= group.id %>" data-group-name="<%= group.displayName %>" onchange="updateSelection()">
+                    <% } %>
+                  </td>
+                  <td><%= group.isMember ? 'Miembro' : 'No miembro' %></td>
+                  <td><strong><%= group.displayName %></strong></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="text-muted">No hay grupos de Microsoft 365.</p>
+      <% } %>
+    </div>
+  </div>
+
+
+  <div class="modal fade" id="reportDialog" tabindex="-1" aria-labelledby="groupsReportDialogLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="groupsReportDialogLabel">Solicitud de acceso a grupos</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>Se enviara un email con la solicitud de acceso a los siguientes grupos:</p>
+          <ul id="selectedGroupsList"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="submitGroupRequest()">Enviar email</button>
+          <button type="button" class="btn btn-outline-secondary" onclick="closeDialog()">Cancelar</button>
+        </div>
       </div>
     </div>
-  </fluent-dialog>
+  </div>
 </main>
 
 <script>
   let selectedGroups = [];
+  let reportModal;
+
+  function getReportModal() {
+    if (!reportModal) {
+      const modalElement = document.getElementById('reportDialog');
+      reportModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+    }
+    return reportModal;
+  }
 
   function updateSelection() {
     const checkboxes = document.querySelectorAll('.group-checkbox');
     selectedGroups = [];
-    
+
     checkboxes.forEach(cb => {
       if (cb.checked) {
         selectedGroups.push({
@@ -135,220 +137,70 @@
         });
       }
     });
-    
+
     document.getElementById('selectedCount').textContent = selectedGroups.length;
     document.getElementById('generateBtn').disabled = selectedGroups.length === 0;
   }
 
   function selectAllNonMember() {
-    const checkboxes = document.querySelectorAll('.group-checkbox');
-    checkboxes.forEach(cb => {
+    document.querySelectorAll('.group-checkbox').forEach(cb => {
       cb.checked = true;
     });
     updateSelection();
   }
 
   function clearSelection() {
-    const checkboxes = document.querySelectorAll('.group-checkbox');
-    checkboxes.forEach(cb => {
+    document.querySelectorAll('.group-checkbox').forEach(cb => {
       cb.checked = false;
     });
     updateSelection();
   }
 
-  async function generateReport() {
+  function sendGroupAccessRequest() {
     if (selectedGroups.length === 0) return;
     
+    const list = document.getElementById('selectedGroupsList');
+    list.innerHTML = '';
+    selectedGroups.forEach(g => {
+      const li = document.createElement('li');
+      li.textContent = g.name;
+      list.appendChild(li);
+    });
+    
+    getReportModal().show();
+  }
+
+  async function submitGroupRequest() {
+    if (selectedGroups.length === 0) return;
+
     try {
-      const response = await fetch('/groups/generate-report', {
+      const response = await fetch('/api/group-access-request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           selectedGroups: selectedGroups.map(g => g.id)
         })
       });
-      
+
       const data = await response.json();
-      
+
       if (data.success) {
-        document.getElementById('reportText').value = data.report;
-        document.getElementById('reportDialog').removeAttribute('hidden');
+        alert('Solicitud de acceso enviada correctamente');
+        getReportModal().hide();
       } else {
-        alert('Error generating report: ' + (data.error || 'Unknown error'));
+        alert('Error al enviar la solicitud: ' + (data.error || 'Error desconocido'));
       }
     } catch (error) {
-      console.error('Error generating report:', error);
-      alert('Failed to generate report. Please try again.');
+      console.error('Error sending request:', error);
+      alert('No se pudo enviar la solicitud. Intentalo de nuevo.');
     }
   }
 
-  function copyReport() {
-    const reportText = document.getElementById('reportText').value;
-    navigator.clipboard.writeText(reportText).then(() => {
-      alert('Report copied to clipboard!');
-    }).catch(err => {
-      console.error('Failed to copy:', err);
-      alert('Failed to copy to clipboard. Please copy manually.');
-    });
-  }
-
   function closeDialog() {
-    document.getElementById('reportDialog').setAttribute('hidden', '');
+    getReportModal().hide();
   }
 </script>
-
-<style>
-  .groups-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .groups-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 2rem;
-  }
-
-  .groups-stats {
-    color: var(--neutral-foreground-rest);
-    margin-top: 0.5rem;
-    font-size: 0.95rem;
-  }
-
-  .groups-actions {
-    margin-bottom: 1.5rem;
-    padding: 1.5rem;
-  }
-
-  .action-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-
-  .action-header h3 {
-    margin: 0;
-  }
-
-  .action-buttons {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .selected-count {
-    margin: 0;
-    font-weight: 600;
-    color: var(--accent-foreground-rest);
-  }
-
-  .groups-list-card {
-    padding: 1.5rem;
-  }
-
-  .groups-list-card h3 {
-    margin-top: 0;
-  }
-
-  .groups-table {
-    margin-top: 1rem;
-  }
-
-  .table-header,
-  .table-row {
-    display: grid;
-    grid-template-columns: 40px 140px 1fr 200px 150px;
-    gap: 1rem;
-    padding: 0.75rem;
-    align-items: center;
-  }
-
-  .table-header {
-    font-weight: 600;
-    border-bottom: 2px solid var(--neutral-stroke-rest);
-    background: var(--neutral-layer-2);
-  }
-
-  .table-row {
-    border-bottom: 1px solid var(--neutral-stroke-rest);
-    transition: background-color 0.2s;
-  }
-
-  .table-row:hover {
-    background: var(--neutral-layer-1);
-  }
-
-  .table-row.is-member {
-    opacity: 0.7;
-  }
-
-  .status-badge {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    font-weight: 600;
-  }
-
-  .status-badge.member {
-    background: #10b981;
-    color: white;
-  }
-
-  .status-badge.non-member {
-    background: #ef4444;
-    color: white;
-  }
-
-  .group-description {
-    margin: 0.25rem 0 0 0;
-    font-size: 0.85rem;
-    color: var(--neutral-foreground-hint);
-  }
-
-  .no-email {
-    color: var(--neutral-foreground-hint);
-  }
-
-  .type-badge {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    background: var(--neutral-layer-3);
-    border-radius: 4px;
-    font-size: 0.8rem;
-  }
-
-  .no-groups {
-    padding: 2rem;
-    text-align: center;
-    color: var(--neutral-foreground-hint);
-  }
-
-  .dialog-content {
-    padding: 1.5rem;
-    min-width: 600px;
-  }
-
-  .dialog-content h2 {
-    margin-top: 0;
-  }
-
-  .dialog-content fluent-text-area {
-    width: 100%;
-    margin: 1rem 0;
-    font-family: 'Courier New', monospace;
-    font-size: 0.9rem;
-  }
-
-  .dialog-actions {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-  }
-</style>
 
 <%- include('partials/footer')%>

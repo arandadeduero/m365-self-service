@@ -56,3 +56,7 @@ sessions/
 # Build outputs (if any)
 dist/
 build/
+
+# Local config override
+config/local.js
+

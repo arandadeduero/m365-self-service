@@ -1,38 +1,38 @@
 <%- include('partials/header') %>
 
-<main class="error-container error-production">
-  <fluent-card class="error-card-prod">
-    <div class="error-status">
-      <h1 class="status-code"><%= statusCode %></h1>
-    </div>
-    
-    <fluent-divider></fluent-divider>
-    
-    <div class="error-message">
-      <% if (statusCode === 401) { %>
-        <h2>Authentication Required</h2>
-        <p>Please sign in to continue</p>
-      <% } else if (statusCode === 403) { %>
-        <h2>Access Denied</h2>
-        <p>You don't have permission to access this resource</p>
-      <% } else if (statusCode === 404) { %>
-        <h2>Page Not Found</h2>
-        <p>The page you're looking for doesn't exist</p>
-      <% } else if (statusCode === 500) { %>
-        <h2>Internal Server Error</h2>
-        <p>Something went wrong on our end</p>
-      <% } else { %>
-        <h2>Error</h2>
-        <p>An unexpected error occurred</p>
-      <% } %>
-    </div>
+<main class="container py-5 error-container error-production page-shell page-error">
+  <div class="card shadow-sm border-0 app-panel error-card-prod text-center">
+    <div class="card-body p-4 p-md-5">
+      <div class="error-status">
+        <h1 class="status-code"><%= statusCode %></h1>
+      </div>
 
-    <div class="error-actions">
-      <fluent-button appearance="accent" onclick="window.location.href='/'">
-        Return to Home
-      </fluent-button>
+      <hr>
+
+      <div class="error-message">
+        <% if (statusCode === 401) { %>
+          <h2>Autenticacion requerida</h2>
+          <p>Inicia sesion para continuar</p>
+        <% } else if (statusCode === 403) { %>
+          <h2>Acceso denegado</h2>
+          <p>No tienes permiso para acceder a este recurso</p>
+        <% } else if (statusCode === 404) { %>
+          <h2>Pagina no encontrada</h2>
+          <p>La pagina que buscas no existe</p>
+        <% } else if (statusCode === 500) { %>
+          <h2>Error interno del servidor</h2>
+          <p>Algo salio mal de nuestro lado</p>
+        <% } else { %>
+          <h2>Error</h2>
+          <p>Ocurrio un error inesperado</p>
+        <% } %>
+      </div>
+
+      <div class="mt-4">
+        <a href="/" class="btn btn-primary">Volver al inicio</a>
+      </div>
     </div>
-  </fluent-card-prod>
+  </div>
 </main>
 
 <%- include('partials/footer') %>

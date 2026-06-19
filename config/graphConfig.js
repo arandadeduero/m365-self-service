@@ -12,24 +12,7 @@ const graphConfig = {
   // We select specific fields to optimize the API call
   userProfile: {
     endpoint: `${GRAPH_API_BASE}/me`,
-    scopes: ['user.read', 'User.ReadBasic.All'],
-    // Fields to retrieve
-    select: [
-      'id',
-      'displayName',
-      'givenName',
-      'surname',
-      'mail',
-      'userPrincipalName',
-      'jobTitle',
-      'department',
-      'officeLocation',
-      'mobilePhone',
-      'businessPhones',
-      'companyName',
-      'employeeId',
-      'preferredLanguage',
-    ].join(','),
+    scopes: ['user.read', 'User.ReadWrite', 'User.ReadBasic.All'],
   },
 
   // User profile photo endpoint

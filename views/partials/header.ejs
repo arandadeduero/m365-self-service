@@ -1,36 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %> - M365 Login Demo</title>
+  <title><%= title %> - Herramienta 365 - Ayuntamiento de Aranda de Duero</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet">
   
-  <!-- Fluent UI Web Components -->
-  <script type="module" src="https://unpkg.com/@fluentui/web-components@beta"></script>
+  <!-- Bootstrap 5 -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  >
   
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/custom.css">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100 app-shell">
+  <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
+    <div class="bg-danger text-white text-center py-1 fw-bold">
+      ADMIN
+    </div>
+  <% } %>
   <% if (typeof currentPage !== 'undefined' && currentPage !== 'login') { %>
-  <nav class="app-navigation">
-    <div class="nav-container">
-      <div class="nav-brand">
-        <h2>M365 Manager</h2>
-      </div>
-      <div class="nav-links">
-        <a href="/" class="nav-link <%= currentPage === 'profile' ? 'active' : '' %>">
-          Profile
-        </a>
-        <a href="/groups" class="nav-link <%= currentPage === 'groups' ? 'active' : '' %>">
-          Groups
-        </a>
-        <a href="/distribution-lists" class="nav-link <%= currentPage === 'distribution-lists' ? 'active' : '' %>">
-          Distribution Lists
-        </a>
-        <a href="/shared-mailboxes" class="nav-link <%= currentPage === 'shared-mailboxes' ? 'active' : '' %>">
-          Shared Mailboxes
-        </a>
+  <nav class="navbar navbar-expand-lg app-nav border-bottom shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-semibold" href="/">Gestor M365</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Mostrar navegacion">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a href="/" class="nav-link <%= currentPage === 'profile' ? 'active' : '' %>">Perfil</a>
+          </li>
+          <li class="nav-item">
+            <a href="/groups" class="nav-link <%= currentPage === 'groups' ? 'active' : '' %>">Grupos</a>
+          </li>
+          <li class="nav-item">
+            <a href="/teams" class="nav-link <%= currentPage === 'teams' ? 'active' : '' %>">Teams</a>
+          </li>
+          <li class="nav-item">
+            <a href="/organigrama" class="nav-link <%= currentPage === 'organigrama' ? 'active' : '' %>">Organigrama</a>
+          </li>
+          <li class="nav-item">
+            <a href="/blog" class="nav-link <%= currentPage === 'blog' ? 'active' : '' %>">Blog</a>
+          </li>
+        </ul>
       </div>
     </div>
   </nav>
