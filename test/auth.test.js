@@ -8,6 +8,7 @@ process.env.CLIENT_ID = process.env.CLIENT_ID || 'test-client-id';
 process.env.CLIENT_SECRET = process.env.CLIENT_SECRET || 'test-client-secret';
 process.env.TENANT_ID = process.env.TENANT_ID || 'test-tenant-id';
 process.env.SESSION_SECRET = process.env.SESSION_SECRET || 'test-session-secret';
+process.env.TOKEN_SECRET = process.env.TOKEN_SECRET || 'test-token-secret';
 
 const test = require('ava').default;
 const request = require('supertest');
