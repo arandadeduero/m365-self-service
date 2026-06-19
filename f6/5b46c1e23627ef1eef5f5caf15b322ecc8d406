@@ -1,0 +1,12 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "f65b46c1e23627ef1eef5f5caf15b322ecc8d406",
+  "prompts": {},
+  "humans": {
+    "h_3aa52f59e1a7c5": {
+      "author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
