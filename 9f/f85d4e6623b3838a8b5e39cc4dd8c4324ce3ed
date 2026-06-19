@@ -1,0 +1,285 @@
+views/error-prod.ejs
+  s_4269fc5b1c3bd0::t_4bc7cece85083c 3
+  s_4269fc5b1c3bd0::t_a638dbd05d9abb 4
+  s_4269fc5b1c3bd0::t_d0a029416b469b 5-13,16,19,22,25-26,28-29,31,33,35
+  s_4269fc5b1c3bd0::t_9ac706d7abef67 14-15,17-18,20-21,23-24,27,32
+middleware/auth.js
+  s_4269fc5b1c3bd0::t_87a752fa177f8f 42-48,52-54,56-58,60-63,95
+  s_21a2b07eb60dc2::t_906f71f5db337a 96
+  s_4269fc5b1c3bd0::t_7cae70d308169b 8,49-51,55,59
+  s_21a2b07eb60dc2::t_50b14c46665d89 9-15,27-32,36-41
+  s_21a2b07eb60dc2::t_b50f3b820c1f51 20-26
+  s_21a2b07eb60dc2::t_0d8b28f84f6663 16-19,35
+services/wpService.js
+  s_4269fc5b1c3bd0::t_7dfa64044d4468 47,51
+  s_4269fc5b1c3bd0::t_2e64b8c8baa6ce 1-24,26-46,48-50,52-68
+  s_21a2b07eb60dc2::t_73f9d4c10d1d19 25
+views/groups.ejs
+  s_4269fc5b1c3bd0::t_3443fdd24bff16 61,64,75,90
+  s_4269fc5b1c3bd0::t_b0ab5b4a383a54 100
+  s_4269fc5b1c3bd0::t_0e0c95d51618bb 23-40,42-43,46-52,54-58,62,65-74,76,78-79,82-83,94
+  s_d8aaaea82d284d::t_7dd67f0322119c 60,63
+  s_4269fc5b1c3bd0::t_1e9ed653e1e133 101
+  s_4269fc5b1c3bd0::t_0b492b4fbbbaa7 6,8,14,19
+  h_3aa52f59e1a7c5 16
+  s_4269fc5b1c3bd0::t_4a53a6f50427b8 104-105,108-109
+  s_4269fc5b1c3bd0::t_94a33d157ee6ba 11
+  s_4269fc5b1c3bd0::t_b1aea6bbebcf1b 159,162-174,177,190-191,193,196-197
+  s_4269fc5b1c3bd0::t_0dc92447b2df83 3
+  s_4269fc5b1c3bd0::t_958ad479381e0d 4,12-13,15,17,21,41,44-45,77,80-81,84-89,91-93,95-99,102-103,106-107,110,113,118-126,131,140,146,153,175,180,186,188,202
+config/permissions.js
+  s_21a2b07eb60dc2::t_6a644237803e19 1-6,11,16
+  s_21a2b07eb60dc2::t_51510cd4d0d51d 7-8,13
+config/graphConfig.js
+  s_ce7ee18692edee::t_1e8dde90d7f363 15
+views/teams.ejs
+  s_4269fc5b1c3bd0::t_65cd65b15cc61b 16-17,20-24,31,37-53,58
+  s_4269fc5b1c3bd0::t_8f8aa9083e9048 1-6,12-15,18-19,54-57,71-92
+  s_4269fc5b1c3bd0::t_07b2b3b52ec64d 25-30,32-36
+  s_4269fc5b1c3bd0::t_402015730f4f6c 59-64,66-70
+  s_4269fc5b1c3bd0::t_ee3d116e150736 65
+  s_4269fc5b1c3bd0::t_c70c3c69f681f0 7-11
+views/edit-profile.ejs
+  s_4269fc5b1c3bd0::t_6262e1d2127e39 8,32-40
+  s_4269fc5b1c3bd0::t_7db0ad39c0e467 1-3,5-7,9-12,14-15,22,27-31,41-44
+  s_4269fc5b1c3bd0::t_5f14e94e8e3446 16,18-19
+  s_4269fc5b1c3bd0::t_3f0ce2af36b463 4,13,17,20-21,23-26,45
+test/middleware.test.js
+  s_d8aaaea82d284d::t_4aab77d2cc07ba 2-34
+views/partials/footer.ejs
+  s_4269fc5b1c3bd0::t_ee78137f50157b 4-8
+  s_d8aaaea82d284d::t_720c68416d839c 2
+views/login.ejs
+  s_4269fc5b1c3bd0::t_ff07069207ccf3 9,11,18,20-24
+  s_4269fc5b1c3bd0::t_7f6b3c88179d55 3
+  s_d8aaaea82d284d::t_22179f618da667 8
+  s_4269fc5b1c3bd0::t_87e461e28ed12f 4-5,7,10,16-17,19,25-27,30
+  s_4269fc5b1c3bd0::t_7097eddf9cc39c 6
+  s_d8aaaea82d284d::t_f11ee0a7f944b2 12-15
+views/error.ejs
+  s_d8aaaea82d284d::t_c5e4a5480f0c31 1-18
+views/profile.ejs
+  s_4269fc5b1c3bd0::t_06e3da88bd4c06 126-136,138-139
+  s_4269fc5b1c3bd0::t_ea507bb332401c 5,36,41,46,51,56,61,66,71,76,87,89,94-96,145,149,151,153,159,191,195,202,219,243,246,250
+  s_4269fc5b1c3bd0::t_5146fd69468810 6-9
+  s_4269fc5b1c3bd0::t_f21164c20e2ef4 146
+  s_4269fc5b1c3bd0::t_a7e80cfc8014c3 12,34,84
+  s_4269fc5b1c3bd0::t_066b355ff8f607 4,10-11,13-31,35,37-40,42-45,47-50,52,54-55,57-60,62-65,67-70,72-75,77,81,83,85-86,88,90,92-93,123,141-144,147-148,150,152,154-158,160,163,168-176,179-181,186,203,217,231,255,258-263
+  s_4269fc5b1c3bd0::t_30e3e62e140e14 3
+  s_4269fc5b1c3bd0::t_f24ed15e6ec64f 102-107,109-111
+  s_4269fc5b1c3bd0::t_0cbac9f5915f3a 209,225,235-236
+  s_4269fc5b1c3bd0::t_28f36554ff5f4a 98,112-121
+README.md
+  s_d8aaaea82d284d::t_f73a290bb7a3f0 17
+  s_0edc496bcc144c::t_5dae7cacf28863 340,345
+  s_21a2b07eb60dc2::t_aae9effd6fb376 12
+  s_21a2b07eb60dc2::t_8884e2d48908fa 104
+  s_0edc496bcc144c::t_cd41d5f8176cce 616-627
+  s_d8aaaea82d284d::t_e3098cc14c848c 69
+  s_0edc496bcc144c::t_05210d98c33abf 18
+  s_0edc496bcc144c::t_bd4983af052a95 541
+  s_21a2b07eb60dc2::t_12e16e173b67b1 312
+  s_0edc496bcc144c::t_294631df626164 313
+  s_d8aaaea82d284d::t_903c31cbab2ee4 1
+  s_21a2b07eb60dc2::t_71dfbcc13e8e85 95-103,105-117
+middleware/errorHandler.js
+  s_d8aaaea82d284d::t_d147b2dcfdedf1 28,30-35
+views/error-dev.ejs
+  s_4269fc5b1c3bd0::t_b9e968368ce8c9 4
+  s_4269fc5b1c3bd0::t_9f2962a8f14a52 6,11-14,18,20,25-27,32,38,45,52-53
+  s_4269fc5b1c3bd0::t_2860c4cfbe982b 3
+  s_4269fc5b1c3bd0::t_ea2e13c0426411 5,7-10,17,19,23-24,28-31,33,36-37,39-44,46-51,54,56
+test/reset-password.test.js
+  s_d8aaaea82d284d::t_189058b27e8712 1-5,7-43
+config/wpConfig.js
+  s_21a2b07eb60dc2::t_e888ab83c2c9dc 1-4,6
+test/auth.test.js
+  s_d8aaaea82d284d::t_1b5b3cee70f667 28,31,33
+routes/blog.js
+  s_21a2b07eb60dc2::t_d801dc168e0482 4,11,24
+  s_21a2b07eb60dc2::t_7adec4817872f0 31-33
+  s_21a2b07eb60dc2::t_a7c39b8325ef33 16
+  s_4269fc5b1c3bd0::t_441e811be038f2 6
+  s_21a2b07eb60dc2::t_fabfcd76957f11 15,17-23,25-30,34-49,52-54,56-62
+  s_21a2b07eb60dc2::t_ec50fb33828cca 7
+  s_21a2b07eb60dc2::t_3d7019fbe0f2c3 50-51,55
+  s_4269fc5b1c3bd0::t_0e6f5491a71ebb 1-3,8-10,12-14,63-66
+public/css/custom.css
+  s_4269fc5b1c3bd0::t_cf1d1c5775efae 145-146,151,154-155,169,174,187-188,191-192,196-197,207-208,213,217-220,224,228
+  s_4269fc5b1c3bd0::t_2da2a76e393997 12-14,17-19,22,27-29,32-34,37-39,42-44,96-97,100-102,105-112,115-121,124-130,133-134,137-138,141-142
+  s_4269fc5b1c3bd0::t_239a2575f59e31 1-9,47-53,56-64,67-69,72-73,76-77,79-80,83-86,89-93,147-150,163,173,178,180,186,193,200-204,212,215,225,227,232-234
+  s_4269fc5b1c3bd0::t_1ab5054951eb10 23-24
+.env.example
+  s_4269fc5b1c3bd0::t_cd1d68e06d6b94 26-31
+  s_d8aaaea82d284d::t_5584255f39e699 32-39
+views/blog.ejs
+  s_4269fc5b1c3bd0::t_57819ac2757e0d 11-12
+  s_4269fc5b1c3bd0::t_2f11c24f4cda9c 6-7,37-38,48,51
+  s_4269fc5b1c3bd0::t_38180e17f05870 1-5,8-9,15-16,19,21-22,28-29,33,36,52-55
+  s_21a2b07eb60dc2::t_ad4302bbacf133 10,13-14,17-18,20,23-27,30-32,34-35,39-47,49-50
+config/authConfig.js
+  s_ce7ee18692edee::t_61d0d7f64c648a 41-42
+  s_4269fc5b1c3bd0::t_2b2ab6c635efb4 50-51
+views/reset-password.ejs
+  s_d8aaaea82d284d::t_acb83eed64b2ec 16
+  s_d8aaaea82d284d::t_2fc54f854e3557 1-15,17,27-39
+  s_0edc496bcc144c::t_10b497952044c9 18-26
+views/reset-password-form.ejs
+  s_d8aaaea82d284d::t_6980e51fa16911 3-12,14,16-21,24-29,32-34,37,41-46,48,61
+  s_d8aaaea82d284d::t_17b176923113ed 13
+  s_d8aaaea82d284d::t_1770ccd61888d9 49-58
+server.js
+  s_4269fc5b1c3bd0::t_735089d917db8e 17
+  s_4269fc5b1c3bd0::t_c2f378da3efd90 21
+  s_0edc496bcc144c::t_81f7ee66f8bb2b 44-46
+  s_0edc496bcc144c::t_e3bfa36660d87a 11
+  s_4269fc5b1c3bd0::t_243b28f59ece16 73
+  s_4269fc5b1c3bd0::t_51479b3885b6ee 59-61
+services/graphService.js
+  s_21a2b07eb60dc2::t_522a1b0e142a73 81,100-108
+  s_d8aaaea82d284d::t_2522999a825c2d 589-616,633
+  s_4269fc5b1c3bd0::t_1341f3b22d5b9c 534,536,538,540,543-548,552,555,566-567
+  s_4269fc5b1c3bd0::t_53d8f31f462529 491-533,630
+  s_4269fc5b1c3bd0::t_49a43a41facced 535,537,539,550-551,553-554,556-565,632
+  s_4269fc5b1c3bd0::t_d77d573a584618 541-542
+  s_8ccaf33e664998::t_edfbc8a326ebb6 568-588,622
+  s_4269fc5b1c3bd0::t_3c6d935b346d48 452-471,628
+  s_4269fc5b1c3bd0::t_899afbdd506eab 472-478,480-490,629
+  s_4269fc5b1c3bd0::t_85b755481c9175 479
+  s_4269fc5b1c3bd0::t_49b8e16e53d813 631
+package.json
+  s_d8aaaea82d284d::t_239aa429d5b88f 2,4
+  s_0edc496bcc144c::t_0881e9d7d81981 39
+  s_4269fc5b1c3bd0::t_1f29f7ef70b94f 36
+  s_d8aaaea82d284d::t_ae7366e8d704c6 30
+services/emailService.js
+  s_d8aaaea82d284d::t_c0c5c439c62aa5 1-29,31-47
+test/routes.test.js
+  s_d8aaaea82d284d::t_e71b1f1ae568ad 45-82
+  s_d8aaaea82d284d::t_2cef229d25de1d 32
+  s_4269fc5b1c3bd0::t_ba6acf08b825a5 31
+  s_4269fc5b1c3bd0::t_6156363539c049 41
+views/partials/header.ejs
+  s_4269fc5b1c3bd0::t_1fcef7e7a80cad 12-18
+  s_4269fc5b1c3bd0::t_2a0e1f5c6e019d 7-10,23,30
+  s_4269fc5b1c3bd0::t_bd068c5135219b 24-28
+  s_d8aaaea82d284d::t_85d9619d4f7d35 6
+  s_4269fc5b1c3bd0::t_795a0671e017bb 44-46
+  s_4269fc5b1c3bd0::t_84648d0b626daf 2,32-33,39,42
+  s_4269fc5b1c3bd0::t_9fd647d67743be 47,51-52
+  s_8ccaf33e664998::t_ba10afbd664303 48-50
+routes/index.js
+  s_d8aaaea82d284d::t_ef3762fd431e5f 438-449,457-465,469-470,479-480,482,489-500,529-535,552-553,557-562,564-566,570-572
+  s_4269fc5b1c3bd0::t_3a9d210af18214 385-392,400-432
+  s_d8aaaea82d284d::t_548e850a35bcdf 507-509,513-515,525-527
+  s_21a2b07eb60dc2::t_d154ee0dd2dc25 57
+  s_d8aaaea82d284d::t_55361c2bcaf370 33-52
+  s_d8aaaea82d284d::t_8cea1be6773523 501
+  s_d8aaaea82d284d::t_c6c717e69cad61 471-478,481,502-506,510-512,516-524,528,536-539,543-545,549-551,563
+  s_4269fc5b1c3bd0::t_869d02589156fb 17-21,28
+  s_8ccaf33e664998::t_c670394ccf8160 25,62,64-68,74
+  s_8ccaf33e664998::t_ef365af9b81666 24,58-61,63,69-73,75-78
+  s_4269fc5b1c3bd0::t_1059ecd3450351 215-216,218-219
+  s_d8aaaea82d284d::t_a1f34ef7a048c7 540-542,546-548,554-556,567-569
+  s_4269fc5b1c3bd0::t_069c11a96370ff 102,225,579
+  s_4269fc5b1c3bd0::t_06ddccab8d430b 155
+  s_4269fc5b1c3bd0::t_0e1d7b959e2953 22,92,108
+  s_4269fc5b1c3bd0::t_a35c3f4e5d629c 177-186,190-191
+  s_21a2b07eb60dc2::t_b59449388d4c87 145
+  s_4269fc5b1c3bd0::t_694ddf556d013b 349,359,365,384
+  s_d8aaaea82d284d::t_c0e5d48ab80aa7 450-451,455-456
+  s_4269fc5b1c3bd0::t_724b7113b3cbb5 217
+  s_d8aaaea82d284d::t_3ed568f280cb75 452-454,466-468
+  s_21a2b07eb60dc2::t_b3de7aa853cce0 172
+  s_d8aaaea82d284d::t_850c3845b32da6 352-354
+  s_d8aaaea82d284d::t_47d8e7e38f6e28 162-164
+  s_8ccaf33e664998::t_5b5c99c6603854 54-56,79
+  s_4269fc5b1c3bd0::t_1d736e6e1963eb 211,227
+  s_d8aaaea82d284d::t_737536ac1f8c05 12-14,16,26-27,29-31
+  s_4269fc5b1c3bd0::t_5beecaf087f84f 148,154
+  s_d8aaaea82d284d::t_7a9ec6313383a2 483-488
+  s_d8aaaea82d284d::t_10b9558474a6aa 393-395
+  s_4269fc5b1c3bd0::t_e85dae9ce23e23 200,210,212-214,220-222,228
+  s_21a2b07eb60dc2::t_72dd979da65427 127
+  s_4269fc5b1c3bd0::t_23bbdd30ba1104 303,308,313,318
+  s_4269fc5b1c3bd0::t_db6e44c212058a 23,165-171,173-176,187-189,192-194
+  s_d8aaaea82d284d::t_230c8ebf837d01 253-255
+  s_4269fc5b1c3bd0::t_df4a3f9caf073f 124-126,128-144,146-147,149-153,156-161,195-197
+views/organigrama.ejs
+  s_d8aaaea82d284d::t_f9af5a754bf8a9 80
+  s_d8aaaea82d284d::t_1bf2501eaabf7c 91
+  s_d8aaaea82d284d::t_5716ad424ddc74 81-88
+  s_8ccaf33e664998::t_379f627025bfb7 23-26,28,31,68-69,77,99-102
+  s_d8aaaea82d284d::t_a3d411736d8069 136-141
+  s_8ccaf33e664998::t_b4b8180f87e54e 3,15,19,150
+  s_d8aaaea82d284d::t_2d95d28797d540 4-8
+  s_ce7ee18692edee::t_9f1d212183579a 11,27,29-30,64-66,70-76,78-79,89-90,92-98
+  s_8ccaf33e664998::t_75b0057d297922 14,16-17,32
+  s_8ccaf33e664998::t_60badde4153b3a 37-45,49-51,53-58,61-63,67
+  s_d8aaaea82d284d::t_114edcc4757099 107-124,135,142-145,147
+  s_d8aaaea82d284d::t_206a402178e865 125-134
+  s_8ccaf33e664998::t_eb667e8bc17529 20-21
+  s_8ccaf33e664998::t_4a6ec43860d65c 22
+  s_8ccaf33e664998::t_ef8bfaa40198c0 33-36,103-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.8",
+  "base_commit_sha": "9ff85d4e6623b3838a8b5e39cc4dd8c4324ce3ed",
+  "prompts": {},
+  "humans": {
+    "h_3aa52f59e1a7c5": {
+      "author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_0edc496bcc144c": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_122d6d487ffeJwkUbabwWHDkPM",
+        "model": "gemini-3.1-flash-lite"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    },
+    "s_21a2b07eb60dc2": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_132d979f5ffes1DbL96Ntv4sVG",
+        "model": "gemini-3.1-flash-lite"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    },
+    "s_4269fc5b1c3bd0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_15274bc08ffepEJgak3YdwGnql",
+        "model": "gpt-5.3-codex"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    },
+    "s_8ccaf33e664998": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1477bd3d6ffeG32GJi4xGUTJoB",
+        "model": "gemini-3.1-flash-lite"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    },
+    "s_ce7ee18692edee": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_147687cd8ffel8vglBM4ZnguFp",
+        "model": "gemini-3.1-flash-lite"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    },
+    "s_d8aaaea82d284d": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_123000a41fferW3qPhmZTQoeNS",
+        "model": "gemini-3.1-flash-lite"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
