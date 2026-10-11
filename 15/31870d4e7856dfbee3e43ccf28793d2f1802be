@@ -1,0 +1,35 @@
+views/partials/header.ejs
+  s_011367d8e8fa7a::t_79f2e941bdca72 8-11
+CLAUDE.md
+  s_011367d8e8fa7a::t_79f2e941bdca72 33
+test/routes.test.js
+  s_011367d8e8fa7a::t_79f2e941bdca72 38-50
+views/partials/footer.ejs
+  s_011367d8e8fa7a::t_79f2e941bdca72 4
+public/css/custom.css
+  s_011367d8e8fa7a::t_79f2e941bdca72 1-19
+README.md
+  s_011367d8e8fa7a::t_22c21cc6c66cf9 352
+public/vendor/README.md
+  s_011367d8e8fa7a::t_b127ddc4fe43bb 1-14
+public/vendor/bootstrap-5.3.3.bundle.min.js
+  s_011367d8e8fa7a::t_73e645dcb1a212 1-7
+public/vendor/bootstrap-5.3.3.min.css
+  s_011367d8e8fa7a::t_feeac46175cec7 1-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1531870d4e7856dfbee3e43ccf28793d2f1802be",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
