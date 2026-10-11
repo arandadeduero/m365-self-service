@@ -1,0 +1,28 @@
+server.js
+  s_011367d8e8fa7a::t_14cbeec5792fdf 60-61
+  s_011367d8e8fa7a::t_6ed490095646b6 34
+middleware/securityHeaders.js
+  s_011367d8e8fa7a::t_185e4978d12302 1-42
+CLAUDE.md
+  s_011367d8e8fa7a::t_3079397fcc20b8 29-30
+README.md
+  s_011367d8e8fa7a::t_9588d1e8dbe7e6 835,903-906
+test/routes.test.js
+  s_011367d8e8fa7a::t_3134c2a6d482b7 51-65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "25592abd1e90d2bc8a72c3634ea3825394ec5880",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "unknown"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
