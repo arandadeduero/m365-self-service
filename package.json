@@ -28,7 +28,7 @@
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-ses": "^3.1148.0",
-    "@azure/msal-node": "^5.2.5",
+    "@azure/msal-node": "^7.0.1",
     "axios": "^1.20.0",
     "dotenv": "^17.4.2",
     "ejs": "^7.0.1",
