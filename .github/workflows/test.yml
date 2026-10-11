@@ -1,10 +1,22 @@
 name: Test Application
 
+# Every push to any branch (a merge into main is one), every pull request
+# whatever branch it targets, and on demand from the Actions tab.
+# Dependabot branches are left to the pull request event, so its updates are
+# not tested twice.
 on:
   push:
-    branches: [ main ]
+    branches-ignore: [ 'dependabot/**' ]
   pull_request:
-    branches: [ main ]
+  workflow_dispatch:
+
+# A newer push to the same branch or pull request replaces the run in progress
+concurrency:
+  group: test-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
 
 jobs:
   test:
