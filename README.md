@@ -306,6 +306,7 @@ mi-microsoft-365/
 ├── .env.example                      # Plantilla de las variables de entorno
 ├── nodemon.json                      # Configuración del reinicio automático
 ├── Dockerfile / .dockerignore        # Imagen de producción
+├── docker-compose.yml                # Cómo ejecutarla en producción (imagen de GHCR, volúmenes, proxy delante)
 ├── Procfile                          # Configuración para desplegar en Heroku
 ├── CLAUDE.md                         # Notas para trabajar en el código con Claude Code
 │
@@ -819,17 +820,24 @@ heroku logs --tail
 
 Cada push a `main` construye el `Dockerfile` y publica la imagen en GitHub Container Registry (`.github/workflows/docker-publish.yml`), con las etiquetas `latest` y `sha-<commit>`.
 
+En producción, con `docker-compose.yml` (en el repositorio) y un `.env` al lado con los valores reales:
+
+```bash
+docker compose pull && docker compose up -d
+docker compose logs -f
+```
+
+El compose arranca la imagen de GHCR con `NODE_ENV=production` y `TRUST_PROXY=1`, guarda `sessions/`, `audit/` y `data/` en volúmenes con nombre, publica el puerto solo en `127.0.0.1:3000` (para un proxy inverso con TLS en la misma máquina) y comprueba la salud con `/login`. Para actualizar, repite `pull` y `up -d`. Si usas la lista de permitidos del blog o los buzones compartidos, descomenta en el compose el montaje de `config/local.js`.
+
+Para construir la imagen en local:
+
 ```bash
 docker build -t m365-tools .
-docker run --env-file .env -e NODE_ENV=production -p 3000:3000 \
-  -v m365-sessions:/usr/src/app/sessions \
-  -v m365-audit:/usr/src/app/audit \
-  -v m365-data:/usr/src/app/data m365-tools
 ```
 
 Notas:
 
-- `.env` y `config/local.js` no forman parte de la imagen (`.env` está excluido y git ignora `local.js`), así que pasa el entorno al ejecutar y monta `config/local.js` si usas la lista de permitidos del blog.
+- `.env` y `config/local.js` no forman parte de la imagen (los dos están en `.dockerignore`), así que pasa el entorno al ejecutar (el compose lee `.env`) y monta `config/local.js` si usas la lista de permitidos del blog.
 - El registro de auditoría se escribe en `audit/` y las solicitudes de grupos pendientes en `data/`. Sin volúmenes se pierden con el contenedor.
 - Las sesiones son archivos en `sessions/`. Sin un volumen, todo el mundo pierde la sesión cuando se sustituye el contenedor. Lo mismo pasa en las plataformas con sistema de archivos efímero, como Heroku.
 - En producción la cookie de sesión es `Secure`, así que hay que llegar a la aplicación por HTTPS, y la aplicación envía HSTS.

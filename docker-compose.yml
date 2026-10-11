@@ -1,0 +1,51 @@
+# Mi Microsoft 365 in production, from the image GitHub builds on every push
+# to main. Needs a .env next to this file with the real settings (copy
+# .env.example and fill it in); it is read as the container's environment and
+# never enters the image.
+#
+#   docker compose pull && docker compose up -d
+#   docker compose logs -f
+#
+# The app has to be reached over HTTPS (the session cookie is Secure and HSTS
+# is sent), so put a reverse proxy with TLS in front of it and leave the port
+# bound to localhost as below. Run one instance only: sessions, rate limits
+# and the group requests are per process.
+
+name: mi-microsoft-365
+
+services:
+  app:
+    image: ghcr.io/arandadeduero/mi-microsoft-365:latest
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      # These win over .env, so a development .env cannot turn production off
+      NODE_ENV: production
+      PORT: "3000"
+      # One reverse proxy in front: lets the app see the real client address
+      TRUST_PROXY: "1"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      # Everything the app writes; lost with the container otherwise
+      - sessions:/usr/src/app/sessions
+      - audit:/usr/src/app/audit
+      - data:/usr/src/app/data
+      # Blog allow-list and shared mailboxes, if you use them (see config/local.example.js)
+      # - ./config/local.js:/usr/src/app/config/local.js:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:3000/login"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  sessions:
+  audit:
+  data:
