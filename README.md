@@ -1,239 +1,240 @@
 # Mi Microsoft 365 - Ayuntamiento de Aranda de Duero
 
-Internal self-service portal for Microsoft 365 users of the Ayuntamiento de Aranda de Duero. Staff sign in with their Microsoft 365 account to see and edit their profile, browse groups and Teams, view the org chart, publish to the municipal WordPress blog and reset a forgotten password. Built with Node.js, Express, EJS and Bootstrap 5.
+Portal interno de autoservicio para los usuarios de Microsoft 365 del Ayuntamiento de Aranda de Duero. El personal inicia sesión con su cuenta de Microsoft 365 para ver y editar su perfil, consultar grupos y Teams, ver el organigrama, publicar en el blog municipal de WordPress y restablecer una contraseña olvidada. Hecho con Node.js, Express, EJS y Bootstrap 5.
 
 
-## Features
+## Funciones
 
-- ✅ **Microsoft 365 Authentication** - Single tenant OAuth 2.0 authorization code flow with MSAL
-- ✅ **Profile** - Profile, photo, groups, manager and raw Graph data; users can edit their job title, phones, office and photo. Fields Microsoft does not let a user change are shown read-only
-- ✅ **Directory** - Searchable staff directory with phones and offices
-- ✅ **My Account** - What the license includes in plain language with a link to each app, OneDrive space, an account checklist, password age and expiry, sign-in methods with a warning when there is no second factor, devices, inbox rules with a warning when mail is forwarded outside, and the recovery address
-- ✅ **My Groups** - What each group the user belongs to is (a Team, a mailing list, a security group) and what it gives them
-- ✅ **My Sign-ins** - Where and when the account was used recently, with a "No fui yo" button that tells IT and closes every session of the account
-- ✅ **Calendar Sharing** - Who can see the user's calendar and what each of them can do, with a warning for people outside the organization
-- ✅ **Shared Mailboxes** - Which of the organization's shared mailboxes the user can open
-- ✅ **Owner Tools** - Owners see the members and guests of their groups, add and remove members, and are warned when a group has a single owner
-- ✅ **Rooms** - Which meeting rooms are free at a given time, with a link that books them in Outlook
-- ✅ **Help** - What Microsoft 365 is and which tools the organization has, answers to the usual questions, and a form to write to IT with the state of the account attached
-- ✅ **Intranet Link** - The home page, the help page and the footer link to the organization's intranet
-- ✅ **Regional Settings** - Every account is put back on Madrid time and Spanish at each sign-in
-- ✅ **Audit Viewer** - Administrators can read and filter the audit log in the app
-- ✅ **Service Status** - A banner on every page while Microsoft reports an incident in Microsoft 365
-- ✅ **Automatic Replies** - Turn out-of-office replies on, off or on between two dates
-- ✅ **Groups** - All tenant groups with membership status; requests to join go to the group's owners, who approve or reject in the app
-- ✅ **Teams** - Joined teams and their channels
-- ✅ **Organigrama** - Org chart built from each user's manager, with a search box and a list of the accounts outside the tree
-- ✅ **Publicar en Blog** - Publicar posts en WordPress vía email con adjuntos PDF y programación (delay)
-- ✅ **Password Reset** - Self-service reset link sent by email (AWS SES) to the user's alternate address: valid for 15 minutes, single use and rate limited
-- ✅ **Audit Log** - Who signed in, changed what and requested what, one JSON line per event
-- ✅ **CSRF Protection** - Every form and client-side request carries a per-session token
-- ✅ **Silent Token Renewal** - Access tokens are renewed in the background, so users stay signed in for the whole session
-- ✅ **Admin Banner** - Users holding an Entra directory role see an ADMIN banner and their roles
-- ✅ **Per-route Permissions** - `/blog` is restricted to an allow-list kept in `config/local.js`
-- ✅ **Persistent Sessions** - File-based session storage to maintain login across server restarts
-- ✅ **Error Pages** - Friendly error page; the real message is only shown outside production
-- ✅ **Testing Suite** - Ava + supertest, with Microsoft Graph, MSAL, AWS SES and WordPress stubbed
-- ✅ **Docker Image** - Built and published to GitHub Container Registry on every push to `main`
-- ✅ **Auto-restart Dev Server** - Nodemon for efficient development
+- ✅ **Autenticación con Microsoft 365** - Flujo de código de autorización OAuth 2.0 con MSAL, para un solo inquilino (tenant)
+- ✅ **Perfil** - Perfil, foto, grupos, responsable y datos en bruto de Graph; cada usuario puede editar su puesto, teléfonos, oficina y foto. Los campos que Microsoft no deja cambiar a un usuario se muestran en solo lectura
+- ✅ **Directorio** - Directorio del personal con buscador, teléfonos y oficinas
+- ✅ **Mi cuenta** - Qué incluye la licencia en lenguaje llano con un enlace a cada aplicación, espacio de OneDrive, una lista de comprobación de la cuenta, antigüedad y caducidad de la contraseña, métodos de inicio de sesión con un aviso cuando no hay segundo factor, dispositivos, reglas de la bandeja de entrada con un aviso cuando el correo se reenvía fuera, y la dirección de recuperación
+- ✅ **Mis grupos** - Qué es cada grupo al que pertenece el usuario (un Team, una lista de correo, un grupo de seguridad) y qué le da
+- ✅ **Mis inicios de sesión** - Dónde y cuándo se ha usado la cuenta últimamente, con un botón «No fui yo» que avisa a Informática y cierra todas las sesiones de la cuenta
+- ✅ **Calendario compartido** - Quién puede ver el calendario del usuario y qué puede hacer cada uno, con un aviso para las personas de fuera de la organización
+- ✅ **Buzones compartidos** - Cuáles de los buzones compartidos de la organización puede abrir el usuario
+- ✅ **Herramientas para propietarios** - Los propietarios ven los miembros e invitados de sus grupos, añaden y quitan miembros, y reciben un aviso cuando un grupo tiene un único propietario
+- ✅ **Salas** - Qué salas de reuniones están libres a una hora dada, con un enlace que las reserva en Outlook
+- ✅ **Ayuda** - Qué es Microsoft 365 y qué herramientas tiene la organización, respuestas a las preguntas habituales y un formulario para escribir a Informática con el estado de la cuenta adjunto
+- ✅ **Enlace a la intranet** - La página de inicio, la de ayuda y el pie enlazan a la intranet de la organización
+- ✅ **Configuración regional** - Cada cuenta se vuelve a poner en hora de Madrid y en español en cada inicio de sesión
+- ✅ **Visor de auditoría** - Los administradores pueden leer y filtrar el registro de auditoría desde la aplicación
+- ✅ **Estado del servicio** - Un aviso en todas las páginas mientras Microsoft informa de una incidencia en Microsoft 365
+- ✅ **Respuestas automáticas** - Activar, desactivar o programar entre dos fechas las respuestas de fuera de la oficina
+- ✅ **Grupos** - Todos los grupos del inquilino con el estado de pertenencia; las solicitudes para entrar van a los propietarios del grupo, que aprueban o rechazan en la aplicación
+- ✅ **Teams** - Los equipos a los que pertenece el usuario y sus canales
+- ✅ **Organigrama** - Organigrama construido con el responsable de cada usuario, con buscador y una lista de las cuentas que quedan fuera del árbol
+- ✅ **Publicar en Blog** - Publicar entradas en WordPress por correo, con adjuntos PDF y programación (retraso)
+- ✅ **Restablecer contraseña** - Enlace de autoservicio enviado por correo (AWS SES) a la dirección alternativa del usuario: válido 15 minutos, de un solo uso y con límite de intentos
+- ✅ **Registro de auditoría** - Quién inició sesión, quién cambió qué y quién pidió qué, una línea JSON por evento
+- ✅ **Protección CSRF** - Cada formulario y cada petición desde el navegador lleva un token propio de la sesión
+- ✅ **Renovación silenciosa de tokens** - Los tokens de acceso se renuevan en segundo plano, así que los usuarios siguen con la sesión iniciada todo el tiempo que dura
+- ✅ **Aviso de administrador** - Quien tiene un rol de directorio de Entra ve un aviso ADMIN y sus roles
+- ✅ **Permisos por ruta** - `/blog` está restringido a una lista de usuarios que se guarda en `config/local.js`
+- ✅ **Sesiones persistentes** - Las sesiones se guardan en archivos, para mantener el inicio de sesión aunque se reinicie el servidor
+- ✅ **Páginas de error** - Página de error amable; el mensaje real solo se muestra fuera de producción
+- ✅ **Sin llamadas a otros servidores** - Bootstrap, la tipografía y las librerías del organigrama las sirve la propia aplicación; las páginas no cargan nada de CDN ni de servicios externos
+- ✅ **Batería de tests** - Ava + supertest, con Microsoft Graph, MSAL, AWS SES y WordPress simulados
+- ✅ **Imagen Docker** - Se construye y se publica en GitHub Container Registry en cada push a `main`
+- ✅ **Servidor de desarrollo con reinicio automático** - Nodemon, para desarrollar con comodidad
 
-## Screenshots
+## Pantallas
 
-### Profile Page
-After logging in, you'll see:
-- Your profile photo and basic information
-- Contact details
-- Group memberships
-- Manager information
-- Collapsible raw JSON data
+### Página de perfil
+Después de iniciar sesión verás:
+- Tu foto de perfil y tus datos básicos
+- Datos de contacto
+- Grupos a los que perteneces
+- Datos de tu responsable
+- Los datos JSON en bruto, plegables
 
-### Groups Page
-View and manage group access:
-- All tenant groups with visual membership indicators (✓ green check / ✗ red cross)
-- Select non-member groups to request access
-- Generate formatted access request reports
-- Filter and search through groups
+### Página de grupos
+Consulta y gestiona el acceso a los grupos:
+- Todos los grupos del inquilino con un indicador visual de pertenencia (✓ verde / ✗ rojo)
+- Selecciona grupos a los que no perteneces para pedir acceso
+- Genera informes con formato de las solicitudes de acceso
+- Filtra y busca entre los grupos
 
-## Technology Stack
+## Tecnología
 
-Exact versions are in `package.json`.
+Las versiones exactas están en `package.json`.
 
-- **Runtime**: Node.js >= 25
+- **Entorno de ejecución**: Node.js >= 25
 - **Framework**: Express 5
-- **Template Engine**: EJS
-- **Authentication**: @azure/msal-node
-- **HTTP Client**: axios (Microsoft Graph and WordPress REST API)
-- **Sessions**: express-session + session-file-store
-- **Email**: Microsoft Graph `sendMail` (as the signed-in user) and AWS SES (password reset)
-- **Uploads**: multer (in memory, blog attachments)
-- **Testing**: ava + supertest
-- **Dev Server**: nodemon
+- **Motor de plantillas**: EJS
+- **Autenticación**: @azure/msal-node
+- **Cliente HTTP**: axios (Microsoft Graph y la API REST de WordPress)
+- **Sesiones**: express-session + session-file-store
+- **Correo**: `sendMail` de Microsoft Graph (como el usuario que ha iniciado sesión) y AWS SES (restablecimiento de contraseña)
+- **Subida de archivos**: multer (en memoria, adjuntos del blog)
+- **Tests**: ava + supertest
+- **Servidor de desarrollo**: nodemon
 
-## Prerequisites
+## Requisitos previos
 
-- **Node.js** version 25 or higher
-- **npm** version 10 or higher
-- **Azure account** with Entra ID (Azure AD) access
-- **Microsoft 365** account for testing
+- **Node.js** versión 25 o superior
+- **npm** versión 10 o superior
+- **Cuenta de Azure** con acceso a Entra ID (Azure AD)
+- **Cuenta de Microsoft 365** para probar
 
 ---
 
-## Part 1: Azure/Entra ID Setup
+## Parte 1: Configuración en Azure/Entra ID
 
-Before running the application, you must register it in Azure Portal.
+Antes de ejecutar la aplicación hay que registrarla en Azure Portal.
 
-### Step 1: Register Your Application
+### Paso 1: Registrar la aplicación
 
-1. Go to [Azure Portal](https://portal.azure.com)
-2. Navigate to **Microsoft Entra ID** → **App registrations**
-3. Click **New registration**
+1. Ve a [Azure Portal](https://portal.azure.com)
+2. Entra en **Microsoft Entra ID** → **Registros de aplicaciones**
+3. Pulsa **Nuevo registro**
 
-### Step 2: Fill Registration Form
+### Paso 2: Rellenar el formulario de registro
 
-- **Name**: `Mi Microsoft 365 - Ayuntamiento de Aranda de Duero` (or any name you prefer)
-- **Supported account types**: Select **"Accounts in this organizational directory only (Single tenant)"**
-- **Redirect URI**:
-  - Platform: **Web**
+- **Nombre**: `Mi Microsoft 365 - Ayuntamiento de Aranda de Duero` (o el que prefieras)
+- **Tipos de cuenta compatibles**: elige **«Solo las cuentas de este directorio organizativo (inquilino único)»**
+- **URI de redirección**:
+  - Plataforma: **Web**
   - URI: `http://localhost:3000/auth/callback`
 
-Click **Register**
+Pulsa **Registrar**
 
-### Step 3: Copy Important Values
+### Paso 3: Copiar los valores importantes
 
-After registration, you'll see the app's overview page. **Copy these values** (you'll need them later):
+Tras el registro verás la página de información general de la aplicación. **Copia estos valores** (los necesitarás después):
 
-- **Application (client) ID** - Example: `12345678-1234-1234-1234-123456789abc`
-- **Directory (tenant) ID** - Example: `87654321-4321-4321-4321-cba987654321`
+- **Id. de aplicación (cliente)** - Ejemplo: `12345678-1234-1234-1234-123456789abc`
+- **Id. de directorio (inquilino)** - Ejemplo: `87654321-4321-4321-4321-cba987654321`
 
-### Step 4: Create a Client Secret
+### Paso 4: Crear un secreto de cliente
 
-1. In the left menu, go to **Certificates & secrets**
-2. Click **Client secrets** → **New client secret**
-3. Add a description: `Production Secret`
-4. Choose expiration period: **24 months** (or your preference)
-5. Click **Add**
-6. **⚠️ IMMEDIATELY COPY THE SECRET VALUE** - You won't be able to see it again!
+1. En el menú de la izquierda, ve a **Certificados y secretos**
+2. Pulsa **Secretos de cliente** → **Nuevo secreto de cliente**
+3. Añade una descripción: `Production Secret`
+4. Elige el periodo de caducidad: **24 meses** (o el que prefieras)
+5. Pulsa **Agregar**
+6. **⚠️ COPIA EL VALOR DEL SECRETO EN ESE MOMENTO** - ¡No podrás volver a verlo!
 
-### Step 5: Configure API Permissions
+### Paso 5: Configurar los permisos de API
 
-  1. In the left menu, go to **API permissions**
-  2. Click **Add a permission** → **Microsoft Graph** → **Delegated permissions**
-  3. Add the following permissions:
-     - ✅ `User.Read` - Read user profile
-     - ✅ `User.ReadWrite` - Let users edit their own profile
-     - ✅ `User.ReadBasic.All` - Read all users' basic profiles
-     - ✅ `GroupMember.Read.All` - Read user's group memberships
-     - ✅ `GroupMember.ReadWrite.All` - Let a group's owner add the person whose request they approve
-     - ✅ `UserAuthenticationMethod.Read` - Read the user's own sign-in methods (account page)
-     - ✅ `Group.Read.All` - Read all groups in the tenant (for Groups page)
-     - ✅ `Directory.Read.All` - Read directory data
-     - ✅ `MailboxSettings.ReadWrite` - Read and change the user's automatic replies
-     - ✅ `Mail.Send` - Send emails as the signed-in user (for manager correction requests & blog posts)
-     - ✅ `Files.Read` - Read how much OneDrive space the user has used. The permission covers the user's files in general; the app only asks for the quota
-     - ✅ `User.RevokeSessions.All` - Close the user's own sessions when they report a sign-in ("No fui yo")
-     - ✅ `Calendars.Read` - Read who the calendar is shared with, and whether rooms are free. The permission covers the user's calendar in general; the app does not read appointments
-     - ✅ `Mail.Read.Shared` - Check which shared mailboxes the user can open. The permission lets an app read the user's mail and the shared mail they have access to; the app only asks whether each inbox exists and never reads a message
-     - ✅ `Place.Read.All` - Read the list of meeting rooms
-     - ✅ `offline_access` - Maintain access to data
-     - ✅ `Team.ReadBasic.All` - Read the teams the user has joined (Teams page)
-     - ✅ `Channel.ReadBasic.All` - Read the channels of those teams
-  4. Click **Add permissions**
-  5. (Recommended) Click **Grant admin consent for [Your Organization]**
-     - This allows users to sign in without individual consent prompts
+  1. En el menú de la izquierda, ve a **Permisos de API**
+  2. Pulsa **Agregar un permiso** → **Microsoft Graph** → **Permisos delegados**
+  3. Añade estos permisos:
+     - ✅ `User.Read` - Leer el perfil del usuario
+     - ✅ `User.ReadWrite` - Permitir que los usuarios editen su propio perfil
+     - ✅ `User.ReadBasic.All` - Leer el perfil básico de todos los usuarios
+     - ✅ `GroupMember.Read.All` - Leer los grupos a los que pertenece el usuario
+     - ✅ `GroupMember.ReadWrite.All` - Permitir que el propietario de un grupo añada a la persona cuya solicitud aprueba
+     - ✅ `UserAuthenticationMethod.Read` - Leer los métodos de inicio de sesión del propio usuario (página de la cuenta)
+     - ✅ `Group.Read.All` - Leer todos los grupos del inquilino (para la página de grupos)
+     - ✅ `Directory.Read.All` - Leer datos del directorio
+     - ✅ `MailboxSettings.ReadWrite` - Leer y cambiar las respuestas automáticas del usuario
+     - ✅ `Mail.Send` - Enviar correos como el usuario que ha iniciado sesión (para las correcciones de responsable y las entradas del blog)
+     - ✅ `Files.Read` - Leer cuánto espacio de OneDrive ha usado el usuario. El permiso cubre los archivos del usuario en general; la aplicación solo pide la cuota
+     - ✅ `User.RevokeSessions.All` - Cerrar las sesiones del propio usuario cuando denuncia un inicio de sesión («No fui yo»)
+     - ✅ `Calendars.Read` - Leer con quién está compartido el calendario y si las salas están libres. El permiso cubre el calendario del usuario en general; la aplicación no lee las citas
+     - ✅ `Mail.Read.Shared` - Comprobar qué buzones compartidos puede abrir el usuario. El permiso deja a una aplicación leer el correo del usuario y el correo compartido al que tiene acceso; la aplicación solo pregunta si existe cada bandeja de entrada y nunca lee un mensaje
+     - ✅ `Place.Read.All` - Leer la lista de salas de reuniones
+     - ✅ `offline_access` - Mantener el acceso a los datos
+     - ✅ `Team.ReadBasic.All` - Leer los equipos a los que pertenece el usuario (página de Teams)
+     - ✅ `Channel.ReadBasic.All` - Leer los canales de esos equipos
+  4. Pulsa **Agregar permisos**
+  5. (Recomendado) Pulsa **Conceder consentimiento de administrador para [tu organización]**
+     - Así los usuarios pueden iniciar sesión sin que a cada uno se le pida consentimiento
 
-  The list above must match `scopes` in `config/authConfig.js`.
+  La lista anterior tiene que coincidir con `scopes` en `config/authConfig.js`.
 
-  **"My sign-ins" needs an application permission and a license.** Add `AuditLog.Read.All` as an *Application* permission, with admin consent. Microsoft only serves the sign-in log to tenants with Entra ID P1 or P2. Without either, the page says the log is unavailable. The app only ever reads the log of the user who is signed in.
+  **«Mis inicios de sesión» necesita un permiso de aplicación y una licencia.** Añade `AuditLog.Read.All` como permiso de *Aplicación*, con consentimiento de administrador. Microsoft solo sirve el registro de inicios de sesión a los inquilinos con Entra ID P1 o P2. Sin cualquiera de las dos cosas, la página dice que el registro no está disponible. La aplicación solo lee el registro del usuario que ha iniciado sesión.
 
-  **The service status banner needs an application permission.** Add `ServiceHealth.Read.All` as an *Application* permission, with admin consent. Without it the app works and simply never shows the banner.
+  **El aviso de estado del servicio necesita un permiso de aplicación.** Añade `ServiceHealth.Read.All` como permiso de *Aplicación*, con consentimiento de administrador. Sin él la aplicación funciona y simplemente nunca muestra el aviso.
 
-  **Password reset needs application permissions too.** The reset pages work without a signed-in user, so they call Microsoft Graph with an app-only token (client credentials). The app registration therefore also needs *Application* permissions, with admin consent, to read users (including `lastPasswordChangeDateTime`, which is what makes reset links single use) and to update a user's `passwordProfile`. Check the current Microsoft Graph documentation for "Update user" for the exact permission and directory role required to change passwords, as it is more restrictive than a normal profile update.
+  **El restablecimiento de contraseña también necesita permisos de aplicación.** Las páginas de restablecimiento funcionan sin un usuario con sesión iniciada, así que llaman a Microsoft Graph con un token solo de aplicación (credenciales de cliente). Por eso el registro de la aplicación necesita además permisos de *Aplicación*, con consentimiento de administrador, para leer usuarios (incluido `lastPasswordChangeDateTime`, que es lo que hace que los enlaces sean de un solo uso) y para actualizar el `passwordProfile` de un usuario. Consulta en la documentación actual de Microsoft Graph, en «Update user», el permiso exacto y el rol de directorio necesarios para cambiar contraseñas, porque es más restrictivo que una actualización normal del perfil.
 
-### Step 6: Fill In Alternate Email Addresses
+### Paso 6: Rellenar las direcciones de correo alternativas
 
-A password reset link is sent to the first **alternate email address** of the account (`otherMails` in Entra ID, "Other emails" in the admin portal), because someone who forgot their password usually cannot open the mailbox of that same account. Accounts without one still get the link in their Microsoft 365 mailbox. The "Mi cuenta" page tells each user which of the two applies to them.
+El enlace para restablecer la contraseña se envía a la primera **dirección de correo alternativa** de la cuenta (`otherMails` en Entra ID, «Otros correos electrónicos» en el portal de administración), porque quien ha olvidado su contraseña normalmente no puede abrir el buzón de esa misma cuenta. Las cuentas que no tienen ninguna reciben el enlace en su buzón de Microsoft 365. La página «Mi cuenta» le dice a cada usuario cuál de los dos casos es el suyo.
 
-### Step 7: Add WordPress Integration (Jetpack)
+### Paso 7: Añadir la integración con WordPress (Jetpack)
 
-  1. Enable **Post by Email** in your WordPress site Jetpack settings.
-  2. Copy the generated email address.
-  3. Add it to your `.env` file as `JETPACK_POST_BY_EMAIL`.
+  1. Activa **Publicar por correo electrónico** en los ajustes de Jetpack de tu sitio WordPress.
+  2. Copia la dirección de correo que se genera.
+  3. Añádela a tu archivo `.env` como `JETPACK_POST_BY_EMAIL`.
 
-### Step 8: Verify Settings
+### Paso 8: Comprobar los ajustes
 
 
-- Go to **Authentication** tab
-- Ensure **Allow public client flows** is set to **No**
-- Under **Implicit grant and hybrid flows**, leave all checkboxes unchecked
-- We're using Authorization Code Flow (most secure)
+- Ve a la pestaña **Autenticación**
+- Comprueba que **Permitir flujos de clientes públicos** está en **No**
+- En **Flujos de concesión implícita e híbridos**, deja todas las casillas sin marcar
+- Usamos el flujo de código de autorización (el más seguro)
 
-**✅ Azure setup complete!** Now you can set up the application.
+**✅ ¡Azure está configurado!** Ya puedes preparar la aplicación.
 
 ---
 
-## Part 2: Local Development Setup
+## Parte 2: Preparar el entorno de desarrollo
 
-### Step 1: Clone or Download the Repository
+### Paso 1: Clonar o descargar el repositorio
 
 ```bash
-# If using git
+# Con git
 git clone <repository-url>
 cd mi-microsoft-365
 
-# Or download and extract the ZIP file
+# O descarga y descomprime el archivo ZIP
 ```
 
-### Step 2: Install Dependencies
+### Paso 2: Instalar las dependencias
 
 ```bash
 npm install
 ```
 
-This will install all required packages including Express, MSAL, axios, EJS, and development tools.
+Esto instala todos los paquetes necesarios, entre ellos Express, MSAL, axios, EJS y las herramientas de desarrollo.
 
-### Step 3: Configure Environment Variables
+### Paso 3: Configurar las variables de entorno
 
-1. Copy the example environment file:
+1. Copia el archivo de ejemplo:
 
 ```bash
 cp .env.example .env
 ```
 
-2. Open `.env` in your editor and fill in the values from Azure:
+2. Abre `.env` en tu editor y rellena los valores de Azure:
 
 ```env
-# From Azure App Registration
+# Del registro de la aplicación en Azure
 CLIENT_ID=your-application-client-id-here
 CLIENT_SECRET=your-client-secret-value-here
 TENANT_ID=your-tenant-id-here
 
-# Local development configuration
+# Configuración para desarrollo en local
 REDIRECT_URI=http://localhost:3000/auth/callback
 PORT=3000
 NODE_ENV=development
 
-# Generate a random secret for sessions
+# Genera un secreto aleatorio para las sesiones
 SESSION_SECRET=your-random-session-secret-here
 
-# Encrypts password reset links. Without it password reset does not work
+# Cifra los enlaces de restablecimiento de contraseña. Sin él, el restablecimiento no funciona
 TOKEN_SECRET=another-random-secret-here
 ```
 
-`.env.example` also lists the WordPress and AWS SES settings; see [Part 5](#part-5-environment-variables) for all of them.
+`.env.example` recoge también los ajustes de WordPress y de AWS SES; todos están en la [Parte 5](#parte-5-variables-de-entorno).
 
-**How to generate SESSION_SECRET and TOKEN_SECRET:**
+**Cómo generar SESSION_SECRET y TOKEN_SECRET:**
 
 ```bash
 # macOS/Linux
 openssl rand -base64 32
 
-# Or using Node.js
+# O con Node.js
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-### Step 4: Configure Route Permissions (optional)
+### Paso 4: Configurar los permisos por ruta (opcional)
 
-The blog page is closed to everyone until you say who may use it. Copy the example and list the usernames (the part of the email before `@`):
+La página del blog está cerrada para todos hasta que digas quién puede usarla. Copia el ejemplo y pon los nombres de usuario (la parte del correo que va antes de `@`):
 
 ```bash
 cp config/local.example.js config/local.js
@@ -248,9 +249,9 @@ module.exports = {
 };
 ```
 
-`config/local.js` is ignored by git. Restart the server after changing it.
+git ignora `config/local.js`. Reinicia el servidor después de cambiarlo.
 
-The same file lists the shared mailboxes of the organization, which Microsoft Graph cannot list by itself:
+En el mismo archivo va la lista de buzones compartidos de la organización, que Microsoft Graph no puede listar por sí solo:
 
 ```javascript
 module.exports = {
@@ -259,19 +260,19 @@ module.exports = {
 };
 ```
 
-Each user then sees, under "Mi cuenta" → "Buzones compartidos", the ones of that list they can open. Without the list the link is not shown.
+Con ella, cada usuario ve en «Mi cuenta» → «Buzones compartidos» los de esa lista que puede abrir. Sin la lista, el enlace no se muestra.
 
-### Step 5: Start the Development Server
+### Paso 5: Arrancar el servidor de desarrollo
 
 ```bash
-# Start with auto-restart on file changes
+# Arranca con reinicio automático al cambiar archivos
 npm run dev
 
-# Or start normally
+# O arranca de forma normal
 npm start
 ```
 
-You should see:
+Deberías ver:
 
 ```
 =================================
@@ -281,75 +282,85 @@ URL: http://localhost:3000
 =================================
 ```
 
-### Step 6: Test the Application
+### Paso 6: Probar la aplicación
 
-1. Open your browser to `http://localhost:3000`
-2. You'll see the login page
-3. Click **"Sign in with Microsoft"**
-4. Sign in with your Microsoft 365 account
-5. You'll be redirected to your profile page with:
-   - Your profile photo
-   - Contact information
-   - Group memberships
-   - Manager details
-   - Raw JSON data (collapsible)
+1. Abre `http://localhost:3000` en el navegador
+2. Verás la página de inicio de sesión
+3. Pulsa **«Iniciar sesión con Microsoft»**
+4. Inicia sesión con tu cuenta de Microsoft 365
+5. Volverás a tu página de perfil, con:
+   - Tu foto de perfil
+   - Datos de contacto
+   - Grupos a los que perteneces
+   - Datos de tu responsable
+   - Los datos JSON en bruto (plegables)
 
 ---
 
-## Part 3: Project Structure
+## Parte 3: Estructura del proyecto
 
 ```
 mi-microsoft-365/
-├── server.js                         # Express app: middleware, sessions, routes
-├── package.json                      # Dependencies and scripts
-├── .env.example                      # Environment variables template
-├── nodemon.json                      # Auto-restart configuration
-├── Dockerfile / .dockerignore        # Production image
-├── Procfile                          # Heroku deployment config
-├── CLAUDE.md                         # Notes for working on the code with Claude Code
+├── server.js                         # Aplicación Express: middleware, sesiones, rutas
+├── package.json                      # Dependencias y scripts
+├── .env.example                      # Plantilla de las variables de entorno
+├── nodemon.json                      # Configuración del reinicio automático
+├── Dockerfile / .dockerignore        # Imagen de producción
+├── Procfile                          # Configuración para desplegar en Heroku
+├── CLAUDE.md                         # Notas para trabajar en el código con Claude Code
 │
 ├── .github/
 │   ├── dependabot.yml
 │   └── workflows/
-│       ├── test.yml                  # Runs npm test on pushes and pull requests
-│       └── docker-publish.yml        # Builds and pushes the image to GHCR
+│       ├── test.yml                  # Ejecuta npm test en cada push y pull request
+│       └── docker-publish.yml        # Construye la imagen y la sube a GHCR
 │
 ├── config/
-│   ├── authConfig.js                 # MSAL configuration and Graph scopes
-│   ├── graphConfig.js                # Microsoft Graph API endpoints
-│   ├── permissions.js                # Allowed domain and per-route allow-lists
-│   ├── local.example.js              # Template for config/local.js (git-ignored)
-│   ├── appConfig.js                  # Admin mailbox, public address, time zone and language
-│   ├── licenseCatalog.js             # Licenses and services in plain Spanish
-│   └── wpConfig.js                   # Jetpack Post-by-Email address
+│   ├── authConfig.js                 # Configuración de MSAL y permisos (scopes) de Graph
+│   ├── graphConfig.js                # Direcciones de la API de Microsoft Graph
+│   ├── permissions.js                # Dominio permitido y listas de usuarios por ruta
+│   ├── local.example.js              # Plantilla de config/local.js (ignorado por git)
+│   ├── appConfig.js                  # Buzón de administración, dirección pública, zona horaria e idioma
+│   ├── licenseCatalog.js             # Licencias y servicios en castellano llano
+│   ├── helpGuide.js                  # Texto de la introducción a Microsoft 365 de la página de ayuda
+│   ├── helpTopics.js                 # Preguntas y respuestas de la página de ayuda
+│   └── wpConfig.js                   # Dirección de Publicar por correo de Jetpack
 │
 ├── middleware/
-│   ├── auth.js                       # Authentication, token renewal, admin status, permissions
-│   ├── rateLimit.js                  # Limits on the password reset pages
-│   ├── csrf.js                       # CSRF token for forms and client-side requests
-│   └── errorHandler.js               # 404, rejected tokens and error page
+│   ├── auth.js                       # Autenticación, renovación de tokens, rol de administrador, permisos
+│   ├── rateLimit.js                  # Límites de las páginas de restablecimiento de contraseña
+│   ├── csrf.js                       # Token CSRF para formularios y peticiones desde el navegador
+│   └── errorHandler.js               # 404, tokens rechazados y página de error
 │
 ├── routes/
-│   ├── auth.js                       # Sign in, OAuth callback, logout
-│   ├── index.js                      # Profile, groups, teams, org chart, APIs, password reset
-│   ├── account.js                    # Directory, account pages, automatic replies, photo
-│   ├── admin.js                      # Audit viewer for administrators
-│   ├── groupRequests.js              # Asking to join a group, owners approving
-│   └── blog.js                       # Publish to the WordPress blog
+│   ├── auth.js                       # Inicio de sesión, retorno de OAuth, cierre de sesión
+│   ├── index.js                      # Perfil, grupos, teams, organigrama, APIs, restablecimiento de contraseña
+│   ├── account.js                    # Directorio, páginas de la cuenta, respuestas automáticas, foto
+│   ├── admin.js                      # Visor de auditoría para administradores
+│   ├── groupRequests.js              # Pedir entrar en un grupo, aprobación de los propietarios
+│   ├── ownedGroups.js                # Propietarios: ver y cambiar los miembros de sus grupos
+│   ├── help.js                       # Página de ayuda y su formulario de contacto
+│   ├── rooms.js                      # Salas de reuniones libres
+│   └── blog.js                       # Publicar en el blog de WordPress
 │
 ├── services/
-│   ├── graphService.js               # Microsoft Graph API calls
-│   ├── tokenService.js               # MSAL: sign in, token renewal, app-only tokens
-│   ├── resetTokenService.js          # Encrypted token carried by reset links
-│   ├── accountInsights.js            # Turns Graph data into what the account pages say
-│   ├── regionalSettings.js           # Keeps accounts on Madrid time and Spanish
-│   ├── auditService.js               # Audit log
-│   ├── requestStore.js               # Requests to join groups (JSON file)
-│   ├── serviceHealthService.js       # Microsoft 365 incidents, cached
-│   ├── emailService.js               # Password reset emails (AWS SES)
-│   └── wpService.js                  # WordPress REST API (categories)
+│   ├── graphService.js               # Llamadas a la API de Microsoft Graph
+│   ├── tokenService.js               # MSAL: inicio de sesión, renovación de tokens, tokens solo de aplicación
+│   ├── resetTokenService.js          # Token cifrado que llevan los enlaces de restablecimiento
+│   ├── accountInsights.js            # Convierte los datos de Graph en lo que dicen las páginas de la cuenta
+│   ├── orgChart.js                   # Convierte el directorio en el árbol del organigrama
+│   ├── regionalSettings.js           # Mantiene las cuentas en hora de Madrid y en español
+│   ├── auditService.js               # Registro de auditoría
+│   ├── requestStore.js               # Solicitudes para entrar en grupos (archivo JSON)
+│   ├── serviceHealthService.js       # Incidencias de Microsoft 365, en caché
+│   ├── emailService.js               # Correos de restablecimiento de contraseña (AWS SES)
+│   └── wpService.js                  # API REST de WordPress (categorías)
 │
-├── public/                           # custom.css, profile.js, organigrama.js, default avatar, vendor/ (Bootstrap, Outfit and d3, served locally)
+├── public/
+│   ├── css/custom.css                # Estilos propios y declaración de la tipografía
+│   ├── js/                           # profile.js, organigrama.js
+│   ├── images/                       # Avatar por defecto
+│   └── vendor/                       # Bootstrap, Outfit y d3, servidos por la aplicación (ver su README.md)
 │
 ├── views/
 │   ├── partials/                     # header.ejs, footer.ejs
@@ -357,218 +368,230 @@ mi-microsoft-365/
 │   ├── profile.ejs / edit-profile.ejs
 │   ├── groups.ejs / group-requests.ejs / teams.ejs / organigrama.ejs
 │   ├── directory.ejs / account.ejs / auto-reply.ejs
-│   ├── my-groups.ejs / sign-ins.ejs / audit.ejs
+│   ├── my-groups.ejs / mailboxes.ejs / audit.ejs
+│   ├── sign-ins.ejs / sign-in-reported.ejs
+│   ├── owned-groups.ejs / owned-group.ejs
+│   ├── rooms.ejs / help.ejs
 │   ├── blog.ejs
 │   ├── reset-password.ejs / reset-password-form.ejs
-│   └── error.ejs                     # Error page
+│   └── error.ejs                     # Página de error
 │
-├── sessions/                         # Session files (created at runtime, git-ignored)
-├── audit/                            # Audit log, a file per day (created at runtime, git-ignored)
-├── data/                             # Requests to join groups (created at runtime, git-ignored)
+├── sessions/                         # Archivos de sesión (se crean al ejecutar, ignorados por git)
+├── audit/                            # Registro de auditoría, un archivo por día (se crea al ejecutar, ignorado por git)
+├── data/                             # Solicitudes para entrar en grupos (se crea al ejecutar, ignorado por git)
 │
 └── test/
     ├── helpers/
-    │   ├── env.js                    # Fixed environment for tests
-    │   └── stubs.js                  # Stubs for axios, MSAL and AWS SES
-    ├── auth.test.js                  # OAuth routes without a session
-    ├── routes.test.js                # Route protection and login page
-    ├── authenticated.test.js         # Profile, groups, teams, blog and APIs as a signed-in user
-    ├── account.test.js               # Directory, account pages, automatic replies, photo
-    ├── accountInsights.test.js       # Licenses, groups, rules, checklist in plain language
-    ├── regional-settings.test.js     # Madrid time and Spanish at sign-in
-    ├── audit-viewer.test.js          # Audit page for administrators
-    ├── group-requests.test.js        # Group requests with several users
-    ├── requestStore.test.js          # Request storage
-    ├── service-status.test.js        # Incident banner and its cache
-    ├── csrf.test.js                  # CSRF protection
-    ├── auditService.test.js          # Audit log
-    ├── reset-password.test.js        # Reset request validation
-    ├── reset-password-flow.test.js   # Full reset: link, expiry, single use, new password
-    ├── resetTokenService.test.js     # Reset link token
-    ├── rate-limit.test.js            # Limits on the reset pages
-    ├── token-refresh.test.js         # Expired and rejected access tokens
-    ├── tokenService.test.js          # Real MSAL against a fake Entra ID endpoint
-    ├── middleware.test.js            # Authentication, permissions, admin status
-    ├── errorHandler.test.js          # Error page behaviour
-    └── graphService.test.js          # Microsoft Graph service
+    │   ├── env.js                    # Entorno fijo para los tests
+    │   └── stubs.js                  # Simulaciones de axios, MSAL y AWS SES
+    ├── auth.test.js                  # Rutas de OAuth sin sesión
+    ├── routes.test.js                # Protección de rutas y página de inicio de sesión
+    ├── authenticated.test.js         # Perfil, grupos, teams, blog y APIs con sesión iniciada
+    ├── account.test.js               # Directorio, páginas de la cuenta, respuestas automáticas, foto
+    ├── accountInsights.test.js       # Licencias, grupos, reglas y lista de comprobación en lenguaje llano
+    ├── orgChart.test.js              # Árbol del organigrama y cuentas que quedan fuera
+    ├── regional-settings.test.js     # Hora de Madrid y español al iniciar sesión
+    ├── audit-viewer.test.js          # Página de auditoría para administradores
+    ├── group-requests.test.js        # Solicitudes de grupos con varios usuarios
+    ├── owned-groups.test.js          # Herramientas para propietarios
+    ├── shared-mailboxes.test.js      # Buzones compartidos que puede abrir cada usuario
+    ├── sign-in-report.test.js        # «No fui yo»: aviso, cierre de sesiones y su orden
+    ├── rooms.test.js                 # Salas libres y enlace de reserva
+    ├── help.test.js                  # Página de ayuda y formulario de contacto
+    ├── requestStore.test.js          # Almacén de solicitudes
+    ├── service-status.test.js        # Aviso de incidencias y su caché
+    ├── csrf.test.js                  # Protección CSRF
+    ├── auditService.test.js          # Registro de auditoría
+    ├── reset-password.test.js        # Validación de la petición de restablecimiento
+    ├── reset-password-flow.test.js   # Restablecimiento completo: enlace, caducidad, un solo uso, contraseña nueva
+    ├── resetTokenService.test.js     # Token del enlace de restablecimiento
+    ├── rate-limit.test.js            # Límites de las páginas de restablecimiento
+    ├── token-refresh.test.js         # Tokens de acceso caducados y rechazados
+    ├── tokenService.test.js          # MSAL real contra un Entra ID simulado
+    ├── middleware.test.js            # Autenticación, permisos, rol de administrador
+    ├── errorHandler.test.js          # Comportamiento de la página de error
+    └── graphService.test.js          # Servicio de Microsoft Graph
 ```
 
 ---
 
-## Part 4: Testing
+## Parte 4: Tests
 
-This project uses **ava** as the test runner and **supertest** to drive the Express app.
+El proyecto usa **ava** para ejecutar los tests y **supertest** para manejar la aplicación Express.
 
-### Run All Tests
+### Ejecutar todos los tests
 
 ```bash
 npm test
 ```
 
-### Run One File or One Test
+### Ejecutar un archivo o un test
 
 ```bash
 NODE_ENV=test npx ava test/graphService.test.js
 NODE_ENV=test npx ava --match='*reset link*'
 ```
 
-### Run Tests in Watch Mode (for development)
+### Ejecutar los tests en modo vigilancia (para desarrollar)
 
 ```bash
 npm run test:watch
 ```
 
-### How the Tests Work
+### Cómo funcionan los tests
 
-No test talks to Microsoft, AWS or WordPress:
+Ningún test habla con Microsoft, AWS ni WordPress:
 
-- `test/helpers/env.js` sets every environment variable to a fixed test value, so a real `.env` is not needed (or used) by the files that require it.
-- `test/helpers/stubs.js` replaces axios, the MSAL token calls and the SES client, and records what the app tried to send.
-- `test/authenticated.test.js` signs in through the real `/auth/callback` route with MSAL stubbed, then reuses the session cookie.
+- `test/helpers/env.js` pone cada variable de entorno a un valor fijo de prueba, así que los archivos que lo cargan no necesitan (ni usan) un `.env` real.
+- `test/helpers/stubs.js` sustituye axios, las llamadas de tokens de MSAL y el cliente de SES, y apunta lo que la aplicación ha intentado enviar.
+- `test/authenticated.test.js` inicia sesión por la ruta real `/auth/callback` con MSAL simulado, y luego reutiliza la cookie de sesión.
 
-### What Is Covered
+### Qué está cubierto
 
-- ✅ OAuth routes: sign in redirect, callback, logout
-- ✅ Route protection for anonymous users, login page, 404
-- ✅ Profile, edit profile, groups, teams, org chart as a signed-in user
-- ✅ `/api/users`, manager correction and group access request emails
-- ✅ Blog: allow-list, categories, Jetpack email body, attachments
-- ✅ Password reset: same answer for unknown users, forged Host header, expired, used and tampered links, rate limits, password update
-- ✅ Access tokens: silent renewal, sign-out when renewal fails or Microsoft Graph rejects the token
-- ✅ Directory, account page (sign-in methods, devices), automatic replies and photo upload
-- ✅ Group requests: routing to owners or admin, approval, rejection, who may decide
-- ✅ Service status banner and its caching
-- ✅ What the license includes, the account checklist, inbox rules, my groups and my sign-ins
-- ✅ Regional settings corrected at sign-in, and sign-in working when they cannot be
-- ✅ Audit viewer: administrators only, filters, damaged lines
-- ✅ CSRF protection of every form, upload and JSON request
-- ✅ Audit log entries, and that they never contain passwords, links or messages
-- ✅ Middleware: authentication, permissions, admin status, error pages
-- ✅ Microsoft Graph service: request shape, paging and error handling of each call
+- ✅ Rutas de OAuth: redirección de inicio de sesión, retorno, cierre de sesión
+- ✅ Protección de rutas para usuarios anónimos, página de inicio de sesión, 404
+- ✅ Perfil, edición del perfil, grupos, teams y organigrama con sesión iniciada
+- ✅ `/api/users`, y los correos de corrección de responsable y de solicitud de acceso a grupos
+- ✅ Blog: lista de usuarios permitidos, categorías, cuerpo del correo para Jetpack, adjuntos
+- ✅ Restablecimiento de contraseña: misma respuesta para usuarios desconocidos, cabecera Host falsificada, enlaces caducados, usados y manipulados, límites de intentos, cambio de contraseña
+- ✅ Tokens de acceso: renovación silenciosa, cierre de sesión cuando la renovación falla o Microsoft Graph rechaza el token
+- ✅ Directorio, página de la cuenta (métodos de inicio de sesión, dispositivos), respuestas automáticas y subida de foto
+- ✅ Solicitudes de grupos: envío a propietarios o al administrador, aprobación, rechazo, quién puede decidir
+- ✅ Aviso de estado del servicio y su caché
+- ✅ Qué incluye la licencia, la lista de comprobación de la cuenta, las reglas de la bandeja de entrada, mis grupos y mis inicios de sesión
+- ✅ «No fui yo», calendario compartido, buzones compartidos, herramientas para propietarios, salas y página de ayuda
+- ✅ Organigrama: construcción del árbol, cuentas que quedan fuera y nombres que no pueden inyectar HTML
+- ✅ Configuración regional corregida al iniciar sesión, y que el inicio de sesión funciona cuando no se puede corregir
+- ✅ Visor de auditoría: solo administradores, filtros, líneas dañadas
+- ✅ Protección CSRF de cada formulario, subida y petición JSON
+- ✅ Entradas del registro de auditoría, y que nunca contienen contraseñas, enlaces ni mensajes
+- ✅ Middleware: autenticación, permisos, rol de administrador, páginas de error
+- ✅ Servicio de Microsoft Graph: forma de la petición, paginación y tratamiento de errores de cada llamada
+- ✅ Que las páginas no cargan estilos, scripts ni tipografías de otros servidores
 
-### Coverage
+### Cobertura
 
-`npm run coverage` only prints a notice: c8 does not run on current Node.js versions, so there is no coverage report at the moment.
-
----
-
-## Part 5: Environment Variables
-
-| Variable | Description | Example | Required |
-|----------|-------------|---------|----------|
-| `CLIENT_ID` | Application (client) ID from Azure | `12345678-1234-...` | Yes |
-| `CLIENT_SECRET` | Client secret value from Azure | `abc123...` | Yes |
-| `TENANT_ID` | Directory (tenant) ID from Azure | `87654321-4321-...` | Yes |
-| `REDIRECT_URI` | OAuth callback URL; also used to build the post-logout URL | `http://localhost:3000/auth/callback` | Yes |
-| `SESSION_SECRET` | Random string that signs the session cookie | Generated random value | Yes |
-| `TOKEN_SECRET` | Random string that encrypts password reset links | Generated random value | For password reset |
-| `JETPACK_POST_BY_EMAIL` | Jetpack Post-by-Email address the blog page sends to | `user@post.wordpress.com` | For the blog |
-| `WP_URL` | WordPress site URL (categories are read from its REST API) | `https://example.es` | For the blog |
-| `WP_USER` | WordPress user for the REST API | `editor` | For the blog |
-| `WP_APP_PASSWORD` | WordPress application password of that user | Generated in WordPress | For the blog |
-| `AWS_REGION` | AWS region of the SES identity | `eu-west-1` | For password reset |
-| `AWS_ACCESS_KEY_ID` | AWS access key allowed to send with SES | `AKIA...` | For password reset |
-| `AWS_SECRET_ACCESS_KEY` | Secret of that access key | | For password reset |
-| `FROM_EMAIL` | SES-verified sender of password reset emails | `no-responder@arandadeduero.dev` | For password reset |
-| `AUDIT_DIR` | Directory of the audit log | `/var/log/m365-tools` | No (default: `./audit`) |
-| `DATA_DIR` | Directory of the requests to join groups | `/var/lib/m365-tools` | No (default: `./data`) |
-| `PASSWORD_MAX_AGE_DAYS` | Days a password lasts in your tenant; makes the account page show the days left | `90` | No (no expiry shown) |
-| `PROFILE_EDITABLE_FIELDS` | Profile fields users may change themselves, out of `mobilePhone`, `businessPhones`, `jobTitle`, `officeLocation`; the rest are shown read-only | `mobilePhone,businessPhones` | No (default: all four) |
-| `INTRANET_URL` | Address of the organization's intranet, linked from the home page, the help page and the footer | `https://example.sharepoint.com` | No (default: the Ayuntamiento's) |
-| `ORG_CHART_ROOT` | Address of the person at the top of the org chart; accounts that do not hang from them are listed below the chart | `top-person@example.com` | No (default: the Ayuntamiento's; without a match, whoever has people below and no manager) |
-| `ADMIN_EMAIL` | Mailbox that receives manager correction and group access requests, reported sign-ins and messages from the help page | `informatica@example.es` | Recommended (a built-in address is used otherwise) |
-| `TRUST_PROXY` | Number of reverse proxies in front of the app, so it sees the real client address and protocol | `1` | When behind a proxy |
-| `RESET_RATE_LIMIT` | Reset links one IP address may request every 15 minutes | `5` | No (default: 5) |
-| `PORT` | Port for the server | `3000` | No (default: 3000) |
-| `NODE_ENV` | Environment mode | `development` or `production` | No (default: development) |
-
-`REDIRECT_URI` also decides the address used in password reset links: they point at its origin (for example `https://herramientas.example.es`), never at the host of the incoming request.
-
-Who may use `/blog` is not an environment variable: it is set in `config/local.js` (see Part 2, Step 4).
+`npm run coverage` solo muestra un aviso: c8 no funciona en las versiones actuales de Node.js, así que por ahora no hay informe de cobertura.
 
 ---
 
-## Part 6: Application Flow
+## Parte 5: Variables de entorno
 
-### Authentication Flow
+| Variable | Descripción | Ejemplo | Obligatoria |
+|----------|-------------|---------|-------------|
+| `CLIENT_ID` | Id. de aplicación (cliente) de Azure | `12345678-1234-...` | Sí |
+| `CLIENT_SECRET` | Valor del secreto de cliente de Azure | `abc123...` | Sí |
+| `TENANT_ID` | Id. de directorio (inquilino) de Azure | `87654321-4321-...` | Sí |
+| `REDIRECT_URI` | URL de retorno de OAuth; también se usa para construir la URL tras cerrar sesión | `http://localhost:3000/auth/callback` | Sí |
+| `SESSION_SECRET` | Cadena aleatoria que firma la cookie de sesión | Valor aleatorio generado | Sí |
+| `TOKEN_SECRET` | Cadena aleatoria que cifra los enlaces de restablecimiento de contraseña | Valor aleatorio generado | Para restablecer contraseñas |
+| `JETPACK_POST_BY_EMAIL` | Dirección de Publicar por correo de Jetpack a la que envía la página del blog | `user@post.wordpress.com` | Para el blog |
+| `WP_URL` | URL del sitio WordPress (las categorías se leen de su API REST) | `https://example.es` | Para el blog |
+| `WP_USER` | Usuario de WordPress para la API REST | `editor` | Para el blog |
+| `WP_APP_PASSWORD` | Contraseña de aplicación de WordPress de ese usuario | Generada en WordPress | Para el blog |
+| `AWS_REGION` | Región de AWS de la identidad de SES | `eu-west-1` | Para restablecer contraseñas |
+| `AWS_ACCESS_KEY_ID` | Clave de acceso de AWS con permiso para enviar con SES | `AKIA...` | Para restablecer contraseñas |
+| `AWS_SECRET_ACCESS_KEY` | Secreto de esa clave de acceso | | Para restablecer contraseñas |
+| `FROM_EMAIL` | Remitente, verificado en SES, de los correos de restablecimiento | `no-responder@arandadeduero.dev` | Para restablecer contraseñas |
+| `AUDIT_DIR` | Directorio del registro de auditoría | `/var/log/m365-tools` | No (por defecto: `./audit`) |
+| `DATA_DIR` | Directorio de las solicitudes para entrar en grupos | `/var/lib/m365-tools` | No (por defecto: `./data`) |
+| `PASSWORD_MAX_AGE_DAYS` | Días que dura una contraseña en tu inquilino; hace que la página de la cuenta muestre los días que quedan | `90` | No (no se muestra caducidad) |
+| `PROFILE_EDITABLE_FIELDS` | Campos del perfil que los usuarios pueden cambiar por sí mismos, de entre `mobilePhone`, `businessPhones`, `jobTitle` y `officeLocation`; el resto se muestra en solo lectura | `mobilePhone,businessPhones` | No (por defecto: los cuatro) |
+| `INTRANET_URL` | Dirección de la intranet de la organización, enlazada desde la página de inicio, la de ayuda y el pie | `https://example.sharepoint.com` | No (por defecto: la del Ayuntamiento) |
+| `ORG_CHART_ROOT` | Dirección de la persona que está en lo alto del organigrama; las cuentas que no dependen de ella se listan debajo del gráfico | `top-person@example.com` | No (por defecto: la del Ayuntamiento; si nadie tiene esa dirección, quien tenga gente a su cargo y ningún responsable) |
+| `ADMIN_EMAIL` | Buzón que recibe las correcciones de responsable, las solicitudes de acceso a grupos, los inicios de sesión denunciados y los mensajes de la página de ayuda | `informatica@example.es` | Recomendada (si falta se usa una dirección incluida en el código) |
+| `TRUST_PROXY` | Número de proxies inversos delante de la aplicación, para que vea la dirección y el protocolo reales del cliente | `1` | Cuando hay un proxy delante |
+| `RESET_RATE_LIMIT` | Enlaces de restablecimiento que una dirección IP puede pedir cada 15 minutos | `5` | No (por defecto: 5) |
+| `PORT` | Puerto del servidor | `3000` | No (por defecto: 3000) |
+| `NODE_ENV` | Modo de ejecución | `development` o `production` | No (por defecto: development) |
 
-1. **User visits `/`** → Not authenticated → Redirected to `/login`
-2. **User clicks "Sign in with Microsoft"** → Redirected to `/auth/signin`
-3. **App generates auth URL** → Redirects to Microsoft login page
-4. **User signs in** → Microsoft validates credentials
-5. **Microsoft redirects to `/auth/callback`** with authorization code
-6. **App exchanges code for access token** → Stores in session
-7. **User redirected to `/`** → Now authenticated
-8. **App fetches user data** from Microsoft Graph API:
-   - Profile information
-   - Profile photo
-   - Group memberships
-   - Manager details
-9. **Profile page rendered**
-10. **User clicks "Logout"** → Session cleared → Redirected to login
+`REDIRECT_URI` decide también la dirección de los enlaces de restablecimiento de contraseña: apuntan a su origen (por ejemplo `https://herramientas.example.es`), nunca al host de la petición que llega.
 
-### Routes
-
-| Method | Path | Access | Purpose |
-|--------|------|--------|---------|
-| GET | `/login` | Public | Login page |
-| GET | `/auth/signin` | Public | Redirect to Microsoft sign in |
-| GET | `/auth/callback` | Public | OAuth callback, creates the session |
-| GET | `/auth/logout` | Public | Destroys the session and signs out of Microsoft |
-| GET | `/` | Signed in | Profile |
-| GET, POST | `/profile/me/edit` | Signed in | Edit job title, phones and office |
-| POST | `/profile/me/photo` | Signed in | Upload a new profile photo (JPG or PNG, up to 4 MB) |
-| GET, POST | `/profile/me/auto-reply` | Signed in | Automatic (out-of-office) replies |
-| GET | `/account` | Signed in | What the user has and how their account is set up and protected |
-| GET | `/account/groups` | Signed in | The user's groups and what each one gives them |
-| GET | `/account/sign-ins` | Signed in | The user's own recent sign-ins |
-| POST | `/account/sign-ins/report` | Signed in | "No fui yo": tell IT about a sign-in and close every session |
-| GET | `/account/mailboxes` | Signed in | The shared mailboxes the user can open |
-| GET | `/groups/owned` | Signed in | The groups the user owns |
-| GET | `/groups/owned/:id` | Owners of the group | Its members, guests and owners |
-| POST | `/groups/owned/:id/members` | Owners of the group | Add a member |
-| POST | `/groups/owned/:id/members/:userId/remove` | Owners of the group | Remove a member |
-| GET | `/salas` | Signed in | Meeting rooms that are free at a given time |
-| GET | `/ayuda` | Signed in | Help page |
-| POST | `/ayuda/contacto` | Signed in | Write to IT from the user's mailbox |
-| GET | `/admin/audit` | Administrators | The audit log, with filters |
-| GET | `/directorio` | Signed in | Staff directory |
-| GET | `/groups` | Signed in | Tenant groups and distribution lists (names starting with `DIST`) |
-| POST | `/groups/generate-report` | Signed in | Text report of the selected groups (JSON) |
-| GET | `/teams` | Signed in | Joined teams and channels |
-| GET | `/organigrama` | Signed in | Org chart |
-| GET | `/api/users` | Signed in | Users of the organization (JSON) |
-| POST | `/api/manager-correction` | Signed in | Emails a manager correction request |
-| POST | `/api/group-access-request` | Signed in | Asks to join the selected groups |
-| GET | `/groups/requests` | Signed in | Requests for the groups I own, and the ones I made |
-| POST | `/groups/requests/:id/approve`, `/reject` | Owner of the group | Decide on a request |
-| GET, POST | `/blog` | Signed in and on the allow-list | Publish a post to WordPress by email |
-| GET, POST | `/reset-password` | Public | Ask for a password reset link |
-| GET, POST | `/reset-password/:token` | Public (link from the email) | Choose a new password |
-
-### Session Management
-
-- Microsoft access tokens last about an hour. The session also keeps the MSAL token cache (with the refresh token), and the app renews the access token shortly before it expires, so users stay signed in for the whole session
-- If the token cannot be renewed, or Microsoft Graph rejects it (for example after the account is disabled), the session is emptied and the user is sent back to the login page
-
-- Sessions are stored in files (persistent across server restarts)
-- Session cookies are HTTP-only (XSS protection)
-- Secure flag enabled in production (HTTPS only)
-- SameSite=lax, plus a CSRF token in every form and client-side request
-- Session lifetime: 24 hours
-- Sessions persist in `sessions/` directory (excluded from git)
+Quién puede usar `/blog` no es una variable de entorno: se configura en `config/local.js` (ver Parte 2, Paso 4).
 
 ---
 
-## Part 7: Microsoft Graph API Usage
+## Parte 6: Funcionamiento de la aplicación
 
-The application makes the following Microsoft Graph API calls:
+### Flujo de autenticación
 
-### 1. User Profile (Extended)
+1. **El usuario entra en `/`** → No está autenticado → Se le lleva a `/login`
+2. **El usuario pulsa «Iniciar sesión con Microsoft»** → Se le lleva a `/auth/signin`
+3. **La aplicación genera la URL de autorización** → Redirige a la página de inicio de sesión de Microsoft
+4. **El usuario inicia sesión** → Microsoft valida las credenciales
+5. **Microsoft redirige a `/auth/callback`** con el código de autorización
+6. **La aplicación cambia el código por un token de acceso** → Lo guarda en la sesión
+7. **El usuario vuelve a `/`** → Ya está autenticado
+8. **La aplicación pide los datos del usuario** a la API de Microsoft Graph:
+   - Datos del perfil
+   - Foto de perfil
+   - Grupos a los que pertenece
+   - Datos del responsable
+9. **Se muestra la página de perfil**
+10. **El usuario pulsa «Cerrar sesión»** → Se borra la sesión → Vuelve al inicio de sesión
 
-**Endpoint:** `GET /v1.0/me`
+### Rutas
 
-**Fields Retrieved:**
+| Método | Ruta | Acceso | Para qué |
+|--------|------|--------|----------|
+| GET | `/login` | Pública | Página de inicio de sesión |
+| GET | `/auth/signin` | Pública | Redirige al inicio de sesión de Microsoft |
+| GET | `/auth/callback` | Pública | Retorno de OAuth, crea la sesión |
+| GET | `/auth/logout` | Pública | Destruye la sesión y cierra la de Microsoft |
+| GET | `/` | Con sesión | Perfil |
+| GET, POST | `/profile/me/edit` | Con sesión | Editar puesto, teléfonos y oficina |
+| POST | `/profile/me/photo` | Con sesión | Subir una foto de perfil nueva (JPG o PNG, hasta 4 MB) |
+| GET, POST | `/profile/me/auto-reply` | Con sesión | Respuestas automáticas (fuera de la oficina) |
+| GET | `/account` | Con sesión | Qué tiene el usuario y cómo está configurada y protegida su cuenta |
+| GET | `/account/groups` | Con sesión | Los grupos del usuario y qué le da cada uno |
+| GET | `/account/sign-ins` | Con sesión | Los inicios de sesión recientes del propio usuario |
+| POST | `/account/sign-ins/report` | Con sesión | «No fui yo»: avisa a Informática de un inicio de sesión y cierra todas las sesiones |
+| GET | `/account/mailboxes` | Con sesión | Los buzones compartidos que el usuario puede abrir |
+| GET | `/groups/owned` | Con sesión | Los grupos de los que el usuario es propietario |
+| GET | `/groups/owned/:id` | Propietarios del grupo | Sus miembros, invitados y propietarios |
+| POST | `/groups/owned/:id/members` | Propietarios del grupo | Añadir un miembro |
+| POST | `/groups/owned/:id/members/:userId/remove` | Propietarios del grupo | Quitar un miembro |
+| GET | `/salas` | Con sesión | Salas de reuniones libres a una hora dada |
+| GET | `/ayuda` | Con sesión | Página de ayuda |
+| POST | `/ayuda/contacto` | Con sesión | Escribir a Informática desde el buzón del usuario |
+| GET | `/admin/audit` | Administradores | El registro de auditoría, con filtros |
+| GET | `/directorio` | Con sesión | Directorio del personal |
+| GET | `/groups` | Con sesión | Grupos del inquilino y listas de distribución (nombres que empiezan por `DIST`) |
+| POST | `/groups/generate-report` | Con sesión | Informe en texto de los grupos seleccionados (JSON) |
+| GET | `/teams` | Con sesión | Equipos a los que pertenece el usuario y sus canales |
+| GET | `/organigrama` | Con sesión | Organigrama |
+| GET | `/api/users` | Con sesión | Usuarios de la organización (JSON) |
+| POST | `/api/manager-correction` | Con sesión | Envía por correo una corrección de responsable |
+| POST | `/api/group-access-request` | Con sesión | Pide entrar en los grupos seleccionados |
+| GET | `/groups/requests` | Con sesión | Solicitudes de los grupos de los que soy propietario, y las que he hecho yo |
+| POST | `/groups/requests/:id/approve`, `/reject` | Propietario del grupo | Decidir sobre una solicitud |
+| GET, POST | `/blog` | Con sesión y en la lista de permitidos | Publicar una entrada en WordPress por correo |
+| GET, POST | `/reset-password` | Pública | Pedir un enlace para restablecer la contraseña |
+| GET, POST | `/reset-password/:token` | Pública (enlace del correo) | Elegir una contraseña nueva |
+
+### Gestión de sesiones
+
+- Los tokens de acceso de Microsoft duran alrededor de una hora. La sesión guarda también la caché de tokens de MSAL (con el token de renovación), y la aplicación renueva el token de acceso poco antes de que caduque, así que los usuarios siguen con la sesión iniciada todo el tiempo que dura
+- Si el token no se puede renovar, o Microsoft Graph lo rechaza (por ejemplo después de deshabilitar la cuenta), la sesión se vacía y el usuario vuelve a la página de inicio de sesión
+
+- Las sesiones se guardan en archivos (se conservan aunque se reinicie el servidor)
+- Las cookies de sesión son HTTP-only (protección frente a XSS)
+- La marca Secure está activa en producción (solo HTTPS)
+- SameSite=lax, más un token CSRF en cada formulario y en cada petición desde el navegador
+- Duración de la sesión: 24 horas
+- Las sesiones se guardan en el directorio `sessions/` (excluido de git)
+
+---
+
+## Parte 7: Uso de la API de Microsoft Graph
+
+Todas las llamadas a Microsoft Graph están en `services/graphService.js`. Estas son las de la página de perfil; el resto de páginas (cuenta, grupos, salas, organigrama…) hacen las suyas, descritas más abajo.
+
+### 1. Perfil del usuario (ampliado)
+
+**Dirección:** `GET /v1.0/me`
+
+**Campos que se piden:**
 - `id`, `displayName`, `givenName`, `surname`
 - `mail`, `userPrincipalName`
 - `jobTitle`, `department`, `companyName`
@@ -576,162 +599,166 @@ The application makes the following Microsoft Graph API calls:
 - `mobilePhone`, `businessPhones`
 - `preferredLanguage`
 
-### 2. Profile Photo
+### 2. Foto de perfil
 
-**Endpoint:** `GET /v1.0/me/photo/$value`
+**Dirección:** `GET /v1.0/me/photo/$value`
 
-Returns binary image data. If no photo exists, uses default avatar.
+Devuelve la imagen en binario. Si no hay foto, se usa el avatar por defecto.
 
-### 3. Group Memberships
+### 3. Grupos a los que pertenece
 
-**Endpoint:** `GET /v1.0/me/memberOf`
+**Dirección:** `GET /v1.0/me/memberOf`
 
-Returns array of groups the user belongs to.
+Devuelve la lista de grupos a los que pertenece el usuario.
 
-### 4. Manager
+### 4. Responsable
 
-**Endpoint:** `GET /v1.0/me/manager`
+**Dirección:** `GET /v1.0/me/manager`
 
-Returns manager's profile information. If no manager assigned, returns null.
+Devuelve los datos del perfil del responsable. Si no hay responsable asignado, devuelve null.
 
-All calls are made in parallel for optimal performance.
+Estas cuatro llamadas se hacen en paralelo para que la página cargue lo antes posible.
 
 ---
 
-### Regional Settings
+### Configuración regional
 
-Everybody works in the same place, so every account is kept on the same settings. Each time a user signs in to this app, it checks and, where they differ, corrects:
+Todo el mundo trabaja en el mismo sitio, así que todas las cuentas se mantienen con la misma configuración. Cada vez que un usuario inicia sesión en esta aplicación, se comprueba y, donde difiera, se corrige:
 
-| Setting | Value | Affects |
-|---------|-------|---------|
-| Mailbox time zone | Madrid (`Romance Standard Time`) | Outlook, and the calendar shown in Teams |
-| Mailbox language | Spanish (`es-ES`) | Outlook, folder names and dates |
-| Working hours time zone | Madrid | Calendar and scheduling; the user's own days and hours are kept |
-| Account preferred language | Spanish (`es-ES`) | Microsoft 365 web apps, Teams included |
+| Ajuste | Valor | Afecta a |
+|--------|-------|----------|
+| Zona horaria del buzón | Madrid (`Romance Standard Time`) | Outlook, y el calendario que se ve en Teams |
+| Idioma del buzón | Español (`es-ES`) | Outlook, nombres de las carpetas y fechas |
+| Zona horaria del horario laboral | Madrid | Calendario y programación; se conservan los días y horas del propio usuario |
+| Idioma preferido de la cuenta | Español (`es-ES`) | Las aplicaciones web de Microsoft 365, Teams incluido |
 
-What this cannot do: it does not lock anything. A user can still change a setting in Outlook, and it is put back the next time they sign in here, not before. Users who never open this app are not corrected. The desktop Teams app also follows the computer's own language and time zone, which the app cannot reach. Each correction is written to the audit log. The values are in `config/appConfig.js`.
+Lo que esto no puede hacer: no bloquea nada. Un usuario puede seguir cambiando un ajuste en Outlook, y se vuelve a poner la próxima vez que inicie sesión aquí, no antes. A los usuarios que nunca abren esta aplicación no se les corrige. La aplicación de escritorio de Teams sigue además el idioma y la zona horaria del propio ordenador, a los que la aplicación no llega. Cada corrección se apunta en el registro de auditoría. Los valores están en `config/appConfig.js`.
 
-### Reporting a Sign-in ("No fui yo")
+### Denunciar un inicio de sesión («No fui yo»)
 
-Each entry of "Mis inicios de sesión" has a button for the user who does not recognise it. The app emails `ADMIN_EMAIL` the details of that sign-in (read again from the log, not taken from the browser), closes every session of the account on every device (`revokeSignInSessions`), and ends the session in this app. The page that follows says honestly which of the two steps worked, and sends the user to change their password: closing sessions does not help if somebody knows it. Tokens already issued can stay valid for up to an hour.
+Cada entrada de «Mis inicios de sesión» tiene un botón para el usuario que no la reconoce. La aplicación envía a `ADMIN_EMAIL` los datos de ese inicio de sesión (leídos de nuevo del registro, no tomados del navegador), cierra todas las sesiones de la cuenta en todos los dispositivos (`revokeSignInSessions`) y termina la sesión en esta aplicación. La página siguiente dice con honestidad cuál de los dos pasos ha funcionado y manda al usuario a cambiar su contraseña: cerrar las sesiones no sirve de nada si alguien la conoce. Los tokens ya emitidos pueden seguir siendo válidos hasta una hora.
 
-### Profile Fields Users May Not Change
+### Campos del perfil que los usuarios no pueden cambiar
 
-Tenants differ in which profile fields a user may edit, and accounts with an admin role are stricter still. The app sends each changed field on its own, saves the ones Microsoft accepts, and shows the refused ones read-only for the rest of the session with "pide el cambio a Informática". If you already know which fields your tenant refuses, set `PROFILE_EDITABLE_FIELDS` so they are read-only from the start.
+Cada inquilino deja a los usuarios editar unos campos distintos de su perfil, y las cuentas con un rol de administrador son todavía más estrictas. La aplicación envía cada campo cambiado por separado, guarda los que Microsoft acepta y muestra los rechazados en solo lectura durante el resto de la sesión, con «pide el cambio a Informática». Si ya sabes qué campos rechaza tu inquilino, configura `PROFILE_EDITABLE_FIELDS` para que estén en solo lectura desde el principio.
 
-### Owner Tools
+### Herramientas para propietarios
 
-`/groups/owned` lists the groups the signed-in user owns and flags the ones where they are the only owner. Each group page shows its members, marks external guests, and lets the owner add or remove members, with their own token, so the app cannot do anything the owner could not do in Outlook or Teams. Distribution lists and mail-enabled security groups are shown but cannot be changed, because Microsoft Graph cannot change them. Owners are not managed here.
+`/groups/owned` lista los grupos de los que es propietario el usuario con sesión iniciada y señala aquellos en los que es el único propietario. La página de cada grupo muestra sus miembros, marca a los invitados externos y deja al propietario añadir o quitar miembros con su propio token, de modo que la aplicación no puede hacer nada que el propietario no pudiera hacer en Outlook o en Teams. Las listas de distribución y los grupos de seguridad con correo se muestran pero no se pueden cambiar, porque Microsoft Graph no puede cambiarlos. Los propietarios no se gestionan aquí.
 
-### Rooms
+### Organigrama
 
-`/salas` asks for a day and a time and shows which meeting rooms are free. It only looks: "Reservar en Outlook" opens a new meeting with the room and time filled in, and the room is booked when the user sends it. It needs rooms to exist as room mailboxes in Exchange.
+`/organigrama` dibuja quién depende de quién a partir del responsable que figura en el perfil de cada persona, con una sola consulta al directorio. Arriba está la persona indicada en `ORG_CHART_ROOT`; las cuentas que no dependen de ella (buzones, cuentas de servicio, quien no tiene responsable puesto) se listan debajo del gráfico en lugar de desaparecer. El buscador encuentra por nombre, puesto, departamento o correo, sin distinguir acentos, y lleva hasta la tarjeta o hasta la fila de esa lista. Las tarjetas muestran las iniciales como texto: no se pide ninguna imagen ni se envía ningún nombre a otro servidor.
 
-### Audit Viewer
+### Salas
 
-Users who hold an Entra ID directory role (the same ones who see the red ADMIN banner) have an "Auditoría" entry in the menu. `/admin/audit` shows the last seven days of the audit log, newest first, and can be narrowed to one day, one kind of event or one person. Any directory role counts, not only Global Administrator.
+`/salas` pide un día y una hora y muestra qué salas de reuniones están libres. Solo consulta: «Reservar en Outlook» abre una reunión nueva con la sala y la hora ya puestas, y la sala queda reservada cuando el usuario la envía. Hace falta que las salas existan como buzones de sala en Exchange.
 
-### Group Requests
+### Visor de auditoría
 
-When a user asks to join groups on the Groups page, each group is handled on its own:
+Los usuarios que tienen un rol de directorio de Entra ID (los mismos que ven el aviso rojo ADMIN) tienen una entrada «Auditoría» en el menú. `/admin/audit` muestra los últimos siete días del registro de auditoría, lo más reciente primero, y se puede acotar a un día, a un tipo de evento o a una persona. Vale cualquier rol de directorio, no solo el de Administrador global.
 
-- **Microsoft 365 groups and security groups that have owners**: a pending request is stored and the owners get an email with a link to `/groups/requests`. Any owner can approve or reject there. Approving adds the person to the group immediately, using the owner's own permissions, and the requester is told by email either way.
-- **Groups without owners, distribution lists and mail-enabled security groups**: these go to `ADMIN_EMAIL` in one email, as before. Microsoft Graph cannot change the membership of lists managed in Exchange, so their owners could not approve here.
+### Solicitudes de grupos
 
-Requests are kept in `DATA_DIR/group-requests.json` and never deleted, so users can see the outcome of theirs. The app is meant to run as a single instance; several instances sharing that file would overwrite each other.
+Cuando un usuario pide entrar en grupos desde la página de grupos, cada grupo se trata por separado:
 
-### Service Status
+- **Grupos de Microsoft 365 y grupos de seguridad que tienen propietarios**: se guarda una solicitud pendiente y los propietarios reciben un correo con un enlace a `/groups/requests`. Cualquier propietario puede aprobarla o rechazarla ahí. Al aprobarla, la persona entra en el grupo en ese momento, con los permisos del propio propietario, y en cualquiera de los dos casos se avisa por correo a quien la pidió.
+- **Grupos sin propietarios, listas de distribución y grupos de seguridad con correo**: van a `ADMIN_EMAIL` en un solo correo, como antes. Microsoft Graph no puede cambiar los miembros de las listas que se gestionan en Exchange, así que sus propietarios no podrían aprobar aquí.
 
-While Microsoft reports an open incident for any Microsoft 365 service, signed-in users see a banner with the service and a short description at the top of every page. Advisories are not shown. The list is read at most once every five minutes and shared by all users. If it cannot be read, no banner is shown and the next attempt is an hour later.
+Las solicitudes se guardan en `DATA_DIR/group-requests.json` y nunca se borran, para que cada usuario pueda ver en qué quedó la suya. La aplicación está pensada para ejecutarse en una sola instancia; varias instancias compartiendo ese archivo se pisarían unas a otras.
 
-### Audit Log
+### Estado del servicio
 
-Every action that changes something, and every sign in, is appended to a file per day in `AUDIT_DIR` (`./audit` by default), one JSON object per line:
+Mientras Microsoft informa de una incidencia abierta en cualquier servicio de Microsoft 365, los usuarios con sesión iniciada ven arriba, en todas las páginas, un aviso con el servicio y una descripción breve. Los avisos informativos (advisories) no se muestran. La lista se lee como mucho una vez cada cinco minutos y es la misma para todos los usuarios. Si no se puede leer, no se muestra ningún aviso y el siguiente intento es una hora después.
+
+### Registro de auditoría
+
+Cada acción que cambia algo, y cada inicio de sesión, se añade a un archivo por día en `AUDIT_DIR` (`./audit` por defecto), un objeto JSON por línea:
 
 ```json
 {"time":"2026-10-10T15:04:05.123Z","event":"profile.update","actor":"usuario@arandadeduero.es","ip":"203.0.113.5","fields":["mobilePhone"]}
 ```
 
-| Event | Recorded when |
-|-------|---------------|
-| `auth.sign_in`, `auth.sign_out` | A user signs in or out |
-| `account.regional_settings_corrected` | Time zone or language was put back at sign-in (which settings) |
-| `permission.denied` | A user is refused a page: the blog allow-list, the audit viewer, or deciding on a request for a group they do not own |
-| `profile.update`, `profile.photo_update` | Profile details or photo change |
-| `mail.auto_reply_update` | Automatic replies change (status only, never the message) |
-| `account.sign_in_reported` | A user reported a sign-in as not theirs (its id and address, whether IT was told and the sessions closed) |
-| `group.member_added`, `group.member_removed` | An owner changed the members of their group |
-| `help.contact` | A user wrote to IT from the help page (never the message) |
-| `request.manager_correction`, `request.group_access` | A request is emailed to the admin mailbox |
-| `group_request.created`, `group_request.approved`, `group_request.rejected` | A request to join a group is sent to its owners, and their decision |
-| `blog.post` | A post is sent to WordPress (title, status, number of attachments) |
-| `reset.link_requested` | A reset link is asked for: the address and whether it went to the `alternate` address, the `mailbox`, or `nobody` |
-| `reset.link_failed` | The link could not be sent |
-| `reset.password_changed`, `reset.rejected` | A password is reset, or an attempt is refused |
+| Evento | Se apunta cuando |
+|--------|------------------|
+| `auth.sign_in`, `auth.sign_out` | Un usuario inicia o cierra sesión |
+| `account.regional_settings_corrected` | Se ha vuelto a poner la zona horaria o el idioma al iniciar sesión (qué ajustes) |
+| `permission.denied` | A un usuario se le niega una página: la lista de permitidos del blog, el visor de auditoría, o decidir sobre una solicitud de un grupo del que no es propietario |
+| `profile.update`, `profile.photo_update` | Cambian los datos o la foto del perfil |
+| `mail.auto_reply_update` | Cambian las respuestas automáticas (solo el estado, nunca el mensaje) |
+| `account.sign_in_reported` | Un usuario ha denunciado un inicio de sesión como ajeno (su id y su dirección, si se avisó a Informática y si se cerraron las sesiones) |
+| `group.member_added`, `group.member_removed` | Un propietario ha cambiado los miembros de su grupo |
+| `help.contact` | Un usuario ha escrito a Informática desde la página de ayuda (nunca el mensaje) |
+| `request.manager_correction`, `request.group_access` | Se envía una solicitud por correo al buzón de administración |
+| `group_request.created`, `group_request.approved`, `group_request.rejected` | Se envía a los propietarios una solicitud para entrar en un grupo, y lo que deciden |
+| `blog.post` | Se envía una entrada a WordPress (título, estado, número de adjuntos) |
+| `reset.link_requested` | Se pide un enlace de restablecimiento: la dirección y si fue a la dirección alternativa (`alternate`), al buzón (`mailbox`) o a nadie (`nobody`) |
+| `reset.link_failed` | No se pudo enviar el enlace |
+| `reset.password_changed`, `reset.rejected` | Se restablece una contraseña, o se rechaza un intento |
 
-Passwords, reset links and message contents are never written. The app only appends; rotating or archiving old files is up to you. If the log cannot be written the action still goes ahead and the failure is reported in the server log.
+Nunca se escriben contraseñas, enlaces de restablecimiento ni el contenido de los mensajes. La aplicación solo añade líneas; rotar o archivar los archivos antiguos es cosa tuya. Si no se puede escribir en el registro, la acción sigue adelante y el fallo queda en el registro del servidor.
 
 ```bash
-# Who reset a password this month?
+# ¿Quién ha restablecido una contraseña este mes?
 grep -h '"reset.password_changed"' audit/2026-10-*.log
 ```
 
 ---
 
-## Part 8: Error Handling
+## Parte 8: Tratamiento de errores
 
-Pages report errors through one template, `views/error.ejs`, which shows the HTTP status code, a message and a link back to the home page.
+Las páginas informan de los errores con una única plantilla, `views/error.ejs`, que muestra el código de estado HTTP, un mensaje y un enlace para volver al inicio.
 
-- **Outside production** the message is the real error message.
-- **In production** (`NODE_ENV=production`) the message is always a generic "Lo sentimos, ha ocurrido un error" text.
+- **Fuera de producción** el mensaje es el mensaje real del error.
+- **En producción** (`NODE_ENV=production`) el mensaje es siempre un texto genérico, «Lo sentimos, ha ocurrido un error».
 
-The stack trace, URL and method are written to the server log in both modes and never sent to the browser.
+La traza, la URL y el método se escriben en el registro del servidor en los dos modos y nunca se envían al navegador.
 
-Some endpoints answer differently:
+Algunas direcciones responden de otra forma:
 
-- `/api/*` returns JSON: `{ "success": false, "error": "..." }`
-- A failed `POST /blog` and a denied permission check answer in plain text
+- `/api/*` devuelve JSON: `{ "success": false, "error": "..." }`
+- Un `POST /blog` fallido y una comprobación de permisos denegada responden en texto plano
 
-Two cases are not treated as plain errors:
+Hay dos casos que no se tratan como errores sin más:
 
-- Messages written for the user (an expired or already used reset link, too many attempts, passwords that do not match) are shown in production as well.
-- When Microsoft Graph answers 401 for the signed-in user, the user is redirected to the login page instead of seeing an error.
+- Los mensajes escritos para el usuario (un enlace de restablecimiento caducado o ya usado, demasiados intentos, contraseñas que no coinciden) se muestran también en producción.
+- Cuando Microsoft Graph responde 401 para el usuario con sesión iniciada, se le lleva a la página de inicio de sesión en lugar de mostrarle un error.
 
 ---
 
-## Part 9: Heroku Deployment
+## Parte 9: Despliegue en Heroku
 
-### Prerequisites
+### Requisitos previos
 
-1. Install Heroku CLI:
+1. Instala la CLI de Heroku:
 
 ```bash
 npm install -g heroku
 ```
 
-2. Create a Heroku account at [heroku.com](https://heroku.com)
+2. Crea una cuenta de Heroku en [heroku.com](https://heroku.com)
 
-### Deployment Steps
+### Pasos del despliegue
 
-#### 1. Login to Heroku
+#### 1. Iniciar sesión en Heroku
 
 ```bash
 heroku login
 ```
 
-#### 2. Create Heroku App
+#### 2. Crear la aplicación en Heroku
 
 ```bash
-# Let Heroku generate a name
+# Deja que Heroku genere un nombre
 heroku create
 
-# Or specify your own name
+# O indica el tuyo
 heroku create my-m365-login-demo
 ```
 
-Note the app URL (e.g., `https://mysterious-ocean-12345.herokuapp.com`)
+Apunta la URL de la aplicación (por ejemplo `https://mysterious-ocean-12345.herokuapp.com`)
 
-#### 3. Set Environment Variables
+#### 3. Configurar las variables de entorno
 
 ```bash
 heroku config:set CLIENT_ID=your-client-id-from-azure
@@ -742,9 +769,9 @@ heroku config:set NODE_ENV=production
 heroku config:set REDIRECT_URI=https://your-app-name.herokuapp.com/auth/callback
 ```
 
-Replace `your-app-name` with your actual Heroku app name.
+Cambia `your-app-name` por el nombre real de tu aplicación en Heroku.
 
-#### 4. Deploy to Heroku
+#### 4. Desplegar en Heroku
 
 ```bash
 git add .
@@ -752,45 +779,45 @@ git commit -m "Ready for Heroku deployment"
 git push heroku main
 ```
 
-Or if your branch is `master`:
+O, si tu rama es `master`:
 
 ```bash
 git push heroku master
 ```
 
-#### 5. Open Your App
+#### 5. Abrir la aplicación
 
 ```bash
 heroku open
 ```
 
-#### 6. View Logs (if needed)
+#### 6. Ver los registros (si hace falta)
 
 ```bash
 heroku logs --tail
 ```
 
-### Post-Deployment: Update Azure Redirect URI
+### Después de desplegar: actualizar la URI de redirección en Azure
 
-**IMPORTANT:** After deploying to Heroku, you must update your Azure app registration:
+**IMPORTANTE:** Después de desplegar en Heroku tienes que actualizar el registro de la aplicación en Azure:
 
-1. Go to [Azure Portal](https://portal.azure.com)
-2. Navigate to your app registration
-3. Go to **Authentication**
-4. Under **Platform configurations** → **Web**
-5. Click **Add URI**
-6. Add: `https://your-app-name.herokuapp.com/auth/callback`
-7. Click **Save**
+1. Ve a [Azure Portal](https://portal.azure.com)
+2. Entra en el registro de tu aplicación
+3. Ve a **Autenticación**
+4. En **Configuraciones de plataforma** → **Web**
+5. Pulsa **Agregar URI**
+6. Añade: `https://your-app-name.herokuapp.com/auth/callback`
+7. Pulsa **Guardar**
 
-Now test your production deployment!
+¡Ya puedes probar el despliegue de producción!
 
 ---
 
-## Part 10: Alternative Deployment Options
+## Parte 10: Otras formas de desplegar
 
 ### Docker
 
-Every push to `main` builds the `Dockerfile` and publishes the image to GitHub Container Registry (`.github/workflows/docker-publish.yml`), tagged `latest` and `sha-<commit>`.
+Cada push a `main` construye el `Dockerfile` y publica la imagen en GitHub Container Registry (`.github/workflows/docker-publish.yml`), con las etiquetas `latest` y `sha-<commit>`.
 
 ```bash
 docker build -t m365-tools .
@@ -800,198 +827,203 @@ docker run --env-file .env -e NODE_ENV=production -p 3000:3000 \
   -v m365-data:/usr/src/app/data m365-tools
 ```
 
-Notes:
+Notas:
 
-- `.env` and `config/local.js` are not part of the image (`.env` is excluded and `local.js` is git-ignored), so pass the environment at run time and mount `config/local.js` if you use the blog allow-list.
-- The audit log is written to `audit/` and pending group requests to `data/`. Without volumes they are lost with the container.
-- Sessions are files in `sessions/`. Without a volume, everybody is signed out when the container is replaced. The same applies to platforms with an ephemeral filesystem, such as Heroku.
-- In production the session cookie is `Secure`, so the app must be reached over HTTPS.
-- Behind a reverse proxy, set `TRUST_PROXY=1`. Otherwise every visitor appears to come from the proxy's address and they all share one password reset rate limit.
-- Rate limit counters are kept in memory, so they restart with the container and are not shared between several instances.
+- `.env` y `config/local.js` no forman parte de la imagen (`.env` está excluido y git ignora `local.js`), así que pasa el entorno al ejecutar y monta `config/local.js` si usas la lista de permitidos del blog.
+- El registro de auditoría se escribe en `audit/` y las solicitudes de grupos pendientes en `data/`. Sin volúmenes se pierden con el contenedor.
+- Las sesiones son archivos en `sessions/`. Sin un volumen, todo el mundo pierde la sesión cuando se sustituye el contenedor. Lo mismo pasa en las plataformas con sistema de archivos efímero, como Heroku.
+- En producción la cookie de sesión es `Secure`, así que hay que llegar a la aplicación por HTTPS.
+- Detrás de un proxy inverso, pon `TRUST_PROXY=1`. Si no, todos los visitantes parecen venir de la dirección del proxy y comparten un único límite de restablecimiento de contraseña.
+- Los contadores de los límites se guardan en memoria, así que se reinician con el contenedor y no se comparten entre varias instancias.
 
 ### Render.com
 
-1. Create account at [render.com](https://render.com)
-2. Connect your GitHub repository
-3. Create new Web Service
-4. Set environment variables in dashboard
-5. Deploy
+1. Crea una cuenta en [render.com](https://render.com)
+2. Conecta tu repositorio de GitHub
+3. Crea un Web Service nuevo
+4. Configura las variables de entorno en el panel
+5. Despliega
 
 ### Railway.app
 
-1. Create account at [railway.app](https://railway.app)
-2. Create new project from GitHub
-3. Set environment variables
-4. Deploy automatically
+1. Crea una cuenta en [railway.app](https://railway.app)
+2. Crea un proyecto nuevo a partir de GitHub
+3. Configura las variables de entorno
+4. Se despliega automáticamente
 
 ### Azure App Service
 
-1. Create App Service in Azure Portal
-2. Choose Node.js runtime
-3. Deploy from GitHub or local git
-4. Set environment variables in Configuration
-5. Your redirect URI will be on same domain as Azure AD
+1. Crea un App Service en Azure Portal
+2. Elige el entorno de ejecución Node.js
+3. Despliega desde GitHub o desde un git local
+4. Configura las variables de entorno en Configuración
+5. La URI de redirección estará en el mismo dominio que Azure AD
 
 ### DigitalOcean App Platform
 
-1. Create account at [digitalocean.com](https://digitalocean.com)
-2. Create new app from GitHub
-3. Configure environment variables
-4. Deploy
+1. Crea una cuenta en [digitalocean.com](https://digitalocean.com)
+2. Crea una aplicación nueva a partir de GitHub
+3. Configura las variables de entorno
+4. Despliega
 
 ---
 
-## Part 11: Security Considerations
+## Parte 11: Seguridad
 
 ### Tokens
 
-- ✅ Access tokens stored server-side only (in session)
-- ✅ Never exposed to client-side JavaScript
-- ✅ Tokens not stored in cookies
-- ✅ Session cookies are HTTP-only
-- ✅ Sessions persist across server restarts (file-based storage)
+- ✅ Los tokens de acceso se guardan solo en el servidor (en la sesión)
+- ✅ Nunca llegan al JavaScript del navegador
+- ✅ Los tokens no se guardan en cookies
+- ✅ Las cookies de sesión son HTTP-only
+- ✅ Las sesiones se conservan aunque se reinicie el servidor (se guardan en archivos)
 
-### Secrets
+### Secretos
 
-- ✅ Client secret never committed to git
-- ✅ Environment variables for all sensitive data
-- ✅ `.env` file in `.gitignore`
-- ✅ Different secrets for dev and production
+- ✅ El secreto de cliente nunca se sube a git
+- ✅ Variables de entorno para todos los datos sensibles
+- ✅ El archivo `.env` está en `.gitignore`
+- ✅ Secretos distintos para desarrollo y producción
 
-### Sessions
+### Sesiones
 
-- ✅ Secure random session secret
-- ✅ HTTP-only cookies (XSS protection)
-- ✅ Secure flag in production (HTTPS only)
+- ✅ Secreto de sesión aleatorio y seguro
+- ✅ Cookies HTTP-only (protección frente a XSS)
+- ✅ Marca Secure en producción (solo HTTPS)
 - ✅ SameSite=lax
-- ✅ CSRF token required on every request that changes something
-- ✅ 24-hour session lifetime
+- ✅ Token CSRF obligatorio en cada petición que cambia algo
+- ✅ Sesión de 24 horas
 
 ### HTTPS
 
-- ✅ Required in production
-- ✅ Automatically provided by Heroku
-- ✅ Secure cookies only work over HTTPS
+- ✅ Obligatorio en producción
+- ✅ Heroku lo proporciona automáticamente
+- ✅ Las cookies seguras solo funcionan por HTTPS
 
-### Best Practices
+### Recursos externos
 
-1. **Rotate secrets regularly** - Create new client secrets in Azure every 6-12 months
-2. **Use HTTPS** - Always use HTTPS in production
-3. **Validate redirect URIs** - Only whitelist your actual URIs in Azure
-4. **Monitor logs** - Watch for unusual authentication patterns
-5. **Keep dependencies updated** - Run `npm audit` regularly
+- ✅ Las páginas no cargan estilos, scripts, tipografías ni imágenes de otros servidores: Bootstrap, la tipografía Outfit y las librerías del organigrama están en `public/vendor/` (versiones, origen y licencias en su `README.md`)
+- ✅ Las iniciales de las tarjetas del organigrama son texto: los nombres del personal no se envían a ningún servicio de avatares
+
+### Buenas prácticas
+
+1. **Cambia los secretos con regularidad** - Crea secretos de cliente nuevos en Azure cada 6-12 meses
+2. **Usa HTTPS** - Siempre HTTPS en producción
+3. **Valida las URI de redirección** - Autoriza en Azure solo tus URI reales
+4. **Vigila los registros** - Busca patrones de autenticación fuera de lo normal
+5. **Mantén las dependencias al día** - Ejecuta `npm audit` con regularidad
 
 ---
 
-## Part 12: Troubleshooting
+## Parte 12: Solución de problemas
 
-### Issue: "Missing required environment variables" warning
+### Problema: aviso «Missing required environment variables»
 
-**Solution:** Make sure you've created a `.env` file with all required variables:
+**Solución:** Comprueba que has creado un archivo `.env` con todas las variables obligatorias:
 
 ```bash
 cp .env.example .env
-# Then edit .env with your actual values
+# Luego edita .env con tus valores reales
 ```
 
-### Issue: Authentication fails with "invalid_client" error
+### Problema: la autenticación falla con el error «invalid_client»
 
-**Possible causes:**
-1. Wrong `CLIENT_ID` or `CLIENT_SECRET`
-2. Client secret has expired
-3. Wrong `TENANT_ID`
+**Causas posibles:**
+1. `CLIENT_ID` o `CLIENT_SECRET` incorrectos
+2. El secreto de cliente ha caducado
+3. `TENANT_ID` incorrecto
 
-**Solution:** Double-check your `.env` values against Azure Portal
+**Solución:** Compara los valores de tu `.env` con los de Azure Portal
 
-### Issue: "Redirect URI mismatch" error
+### Problema: error «Redirect URI mismatch»
 
-**Solution:** Ensure the `REDIRECT_URI` in your `.env` file exactly matches the redirect URI configured in Azure:
+**Solución:** Comprueba que `REDIRECT_URI` en tu `.env` coincide exactamente con la URI de redirección configurada en Azure:
 
-- Local: `http://localhost:3000/auth/callback`
+- En local: `http://localhost:3000/auth/callback`
 - Heroku: `https://your-app-name.herokuapp.com/auth/callback`
 
-### Issue: "Insufficient permissions" error
+### Problema: error «Insufficient permissions»
 
-**Solution:** 
-1. Go to Azure Portal → Your app → API permissions
-2. Ensure all required permissions are added
-3. Click "Grant admin consent"
+**Solución:** 
+1. Ve a Azure Portal → tu aplicación → Permisos de API
+2. Comprueba que están añadidos todos los permisos necesarios
+3. Pulsa «Conceder consentimiento de administrador»
 
-### Issue: Cannot see profile photo
+### Problema: no se ve la foto de perfil
 
-**Possible causes:**
-1. User has no profile photo in Microsoft 365
-2. Permission `User.Read` not granted
+**Causas posibles:**
+1. El usuario no tiene foto de perfil en Microsoft 365
+2. No se ha concedido el permiso `User.Read`
 
-**Solution:** This is normal. The app will show a default avatar if no photo exists.
+**Solución:** Es normal. La aplicación muestra un avatar por defecto si no hay foto.
 
-### Issue: Password reset email not received
+### Problema: no llega el correo de restablecimiento de contraseña
 
-The page always answers that a link was sent if the address belongs to an account, whether or not it does, so the answer does not tell you what happened. The server log does.
+La página responde siempre que se ha enviado un enlace si la dirección pertenece a una cuenta, pertenezca o no, así que la respuesta no dice qué ha pasado. El registro del servidor sí.
 
-**Possible causes:**
-1. Email is in spam folder
-2. The address does not belong to any account
-3. AWS SES not configured correctly (look for `Error sending reset link` in the log)
-4. The app registration lacks the application permissions the reset needs
+**Causas posibles:**
+1. El correo está en la carpeta de correo no deseado
+2. La dirección no pertenece a ninguna cuenta
+3. AWS SES no está bien configurado (busca `Error sending reset link` en el registro)
+4. Al registro de la aplicación le faltan los permisos de aplicación que necesita el restablecimiento
 
-**Solution:**
-1. Check spam/junk folder for emails from the `FROM_EMAIL` address
-2. Verify the address and the AWS SES credentials in `.env`
-3. Outside production, the link is also printed in the server log
+**Solución:**
+1. Mira en la carpeta de correo no deseado si hay correos de la dirección `FROM_EMAIL`
+2. Comprueba la dirección y las credenciales de AWS SES en `.env`
+3. Fuera de producción, el enlace se escribe también en el registro del servidor
 
-### Issue: A reset link says "El enlace ya ha sido utilizado"
+### Problema: un enlace de restablecimiento dice «El enlace ya ha sido utilizado»
 
-A link works once: it stops working as soon as the account's password changes, by this app or anywhere else. Request a new link. Links also expire after 15 minutes.
+Un enlace funciona una sola vez: deja de funcionar en cuanto cambia la contraseña de la cuenta, la cambie esta aplicación o cualquier otra. Pide un enlace nuevo. Los enlaces caducan además a los 15 minutos.
 
-### Issue: "Demasiados intentos" on the password reset pages
+### Problema: «Demasiados intentos» en las páginas de restablecimiento de contraseña
 
-One IP address may request 5 links and make 20 link attempts every 15 minutes (`RESET_RATE_LIMIT` changes both). If everybody hits the limit at once, the app is behind a proxy and `TRUST_PROXY` is not set.
+Una dirección IP puede pedir 5 enlaces y hacer 20 intentos con enlaces cada 15 minutos (`RESET_RATE_LIMIT` cambia las dos cosas). Si todo el mundo llega al límite a la vez, la aplicación está detrás de un proxy y `TRUST_PROXY` no está configurado.
 
-### Issue: Port 3000 already in use
+### Problema: el puerto 3000 ya está en uso
 
-**Solution:** Change the port in `.env`:
+**Solución:** Cambia el puerto en `.env`:
 
 ```env
 PORT=3001
 ```
 
-### Issue: Tests failing
+### Problema: los tests fallan
 
-**Solution:** The tests set their own environment and do not need a `.env` file. Check that dependencies are installed (`npm ci`) and that you are on Node.js 25 or newer (`node --version`).
+**Solución:** Los tests ponen su propio entorno y no necesitan un archivo `.env`. Comprueba que las dependencias están instaladas (`npm ci`) y que usas Node.js 25 o posterior (`node --version`).
 
-### Issue: A form answers "El formulario ha caducado"
+### Problema: un formulario responde «El formulario ha caducado»
 
-The form's CSRF token no longer matches the session, usually because the session expired or the page was left open across a sign-out. Reload the page and submit again.
+El token CSRF del formulario ya no coincide con la sesión, normalmente porque la sesión ha caducado o porque la página se quedó abierta mientras se cerraba la sesión. Recarga la página y envíalo otra vez.
 
-### Issue: Password reset fails and the log says "TOKEN_SECRET is not configured"
+### Problema: el restablecimiento de contraseña falla y el registro dice «TOKEN_SECRET is not configured»
 
-**Solution:** `TOKEN_SECRET` is missing from `.env`. Generate one with `openssl rand -base64 32`. The server warns about it at startup.
+**Solución:** Falta `TOKEN_SECRET` en `.env`. Genera uno con `openssl rand -base64 32`. El servidor avisa de ello al arrancar.
 
-### Issue: `/blog` answers "Access Denied"
+### Problema: `/blog` responde «Access Denied»
 
-**Solution:** Your username is not on the allow-list. Add it to `'/blog'` in `config/local.js` (see Part 2, Step 4) and restart the server. Only accounts of the configured domain are accepted.
+**Solución:** Tu nombre de usuario no está en la lista de permitidos. Añádelo a `'/blog'` en `config/local.js` (ver Parte 2, Paso 4) y reinicia el servidor. Solo se aceptan cuentas del dominio configurado.
 
 ---
 
-## Part 13: Development Tips
+## Parte 13: Consejos para desarrollar
 
-### Hot Reloading
+### Recarga automática
 
-The dev server uses nodemon for auto-restart:
+El servidor de desarrollo usa nodemon para reiniciarse solo:
 
 ```bash
 npm run dev
 ```
 
-Changes to these files trigger restart:
-- `*.js` files in root, routes, middleware, services, config
-- `*.ejs` files in views
-- `*.css` files
+Los cambios en estos archivos provocan un reinicio:
+- Archivos `*.js` de la raíz, routes, middleware, services y config
+- Archivos `*.ejs` de views
+- Archivos `*.css`
 
-### Viewing Logs
+### Ver los registros
 
-Development mode logs all requests:
+En modo desarrollo se registran todas las peticiones:
 
 ```
 GET /
@@ -999,39 +1031,39 @@ GET /css/custom.css
 GET /auth/signin
 ```
 
-### Testing Authentication Locally
+### Probar la autenticación en local
 
-1. Make sure your Azure redirect URI includes `http://localhost:3000/auth/callback`
-2. Start dev server: `npm run dev`
-3. Open `http://localhost:3000`
-4. Sign in with your M365 account
-5. Check browser network tab to debug auth flow
+1. Comprueba que entre las URI de redirección de Azure está `http://localhost:3000/auth/callback`
+2. Arranca el servidor de desarrollo: `npm run dev`
+3. Abre `http://localhost:3000`
+4. Inicia sesión con tu cuenta de M365
+5. Mira la pestaña de red del navegador para depurar el flujo de autenticación
 
-### Debugging
+### Depurar
 
-Add breakpoints or console.log statements:
+Añade puntos de interrupción o sentencias console.log:
 
 ```javascript
-// In routes/index.js
+// En routes/index.js
 console.log('User data:', userData);
 ```
 
 ---
 
-## Part 14: UI & Styling Design
+## Parte 14: Interfaz y estilos
 
-This application uses **Bootstrap 5** alongside custom CSS and variables to achieve a modern, responsive layout consistent with corporate web applications.
+La aplicación usa **Bootstrap 5** junto con CSS propio y variables para conseguir una interfaz moderna y adaptable, en la línea de las aplicaciones web corporativas.
 
-### Design Elements Used
+### Elementos de diseño
 
-- **Typography**: Google Fonts integration (`Manrope` and `Sora`) for a clean, professional aesthetic.
-- **Card Panels**: `.app-panel` classes with subtle shadows and border-top accents based on the current page section.
-- **Responsive Layout**: Bootstrap's responsive grid system ensures the interface functions well on both desktop and mobile screens.
-- **Dynamic Backgrounds**: CSS radial gradients matching page accents.
+- **Tipografía**: `Outfit`, servida por la propia aplicación desde `public/vendor/fonts/` (no se carga de Google Fonts).
+- **Paneles**: clases `.app-panel` con sombras suaves y un borde superior de color según la sección en la que se está.
+- **Diseño adaptable**: la rejilla de Bootstrap hace que la interfaz funcione bien tanto en ordenador como en móvil.
+- **Fondos dinámicos**: degradados radiales en CSS a juego con el color de cada página.
 
-### Customization
+### Personalización
 
-Edit `public/css/custom.css` to customize the primary/secondary palette and accent colors:
+Edita `public/css/custom.css` para cambiar la paleta primaria/secundaria y los colores de acento:
 
 ```css
 :root {
@@ -1043,27 +1075,29 @@ Edit `public/css/custom.css` to customize the primary/secondary palette and acce
 }
 ```
 
-### Documentation
+### Documentación
 
-- [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
-
----
-
-## Part 15: Contributing
-
-If you'd like to contribute:
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Make your changes
-4. Run tests: `npm test`
-5. Commit: `git commit -m "Add my feature"`
-6. Push: `git push origin feature/my-feature`
-7. Create a Pull Request
+- [Documentación de Bootstrap 5](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
 
 ---
 
-## Part 16: License
+## Parte 15: Contribuir
+
+Si quieres contribuir:
+
+1. Haz un fork del repositorio
+2. Crea una rama para tu cambio: `git checkout -b feature/my-feature`
+3. Haz tus cambios
+4. Ejecuta los tests: `npm test`
+5. Haz commit: `git commit -m "Add my feature"`
+6. Sube la rama: `git push origin feature/my-feature`
+7. Abre una Pull Request
+
+---
+
+## Parte 16: Licencia
+
+Licencia MIT. El texto con valor legal es el original en inglés:
 
 MIT License
 
@@ -1089,36 +1123,36 @@ SOFTWARE.
 
 ---
 
-## Part 17: Additional Resources
+## Parte 17: Más recursos
 
-### Microsoft Documentation
+### Documentación de Microsoft
 
-- [Microsoft Graph API](https://learn.microsoft.com/en-us/graph/)
+- [API de Microsoft Graph](https://learn.microsoft.com/es-es/graph/)
 - [MSAL Node.js](https://learn.microsoft.com/en-us/azure/active-directory/develop/msal-node-migration)
 - [Entra ID (Azure AD)](https://learn.microsoft.com/en-us/azure/active-directory/)
 
-### Bootstrap & CSS
+### Bootstrap y CSS
 
 - [Bootstrap 5](https://getbootstrap.com)
-- [Bootstrap 5 Docs](https://getbootstrap.com/docs/5.3/)
+- [Documentación de Bootstrap 5](https://getbootstrap.com/docs/5.3/)
 
-### Node.js & Express
+### Node.js y Express
 
-- [Node.js Documentation](https://nodejs.org/docs)
-- [Express.js Guide](https://expressjs.com/en/guide/routing.html)
-- [EJS Documentation](https://ejs.co)
-
----
-
-## Questions or Issues?
-
-If you encounter any problems or have questions:
-
-1. Check the [Troubleshooting](#part-12-troubleshooting) section
-2. Review your environment variables
-3. Check Azure Portal configuration
-4. Review server logs: `heroku logs --tail` (for Heroku)
+- [Documentación de Node.js](https://nodejs.org/docs)
+- [Guía de Express.js](https://expressjs.com/en/guide/routing.html)
+- [Documentación de EJS](https://ejs.co)
 
 ---
 
-**Happy coding!** 🚀
+## ¿Dudas o problemas?
+
+Si te encuentras con algún problema o tienes preguntas:
+
+1. Mira la sección [Solución de problemas](#parte-12-solución-de-problemas)
+2. Revisa tus variables de entorno
+3. Revisa la configuración en Azure Portal
+4. Mira los registros del servidor: `heroku logs --tail` (en Heroku)
+
+---
+
+**¡Feliz programación!** 🚀
