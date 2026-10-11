@@ -461,6 +461,8 @@ router.get('/reset-password', (req, res) => {
   res.render('reset-password', {
     title: 'Recuperar contraseña',
     domain: permissions.DOMAIN,
+    // The domain as a regular expression, for the form's pattern attribute
+    domainPattern: permissions.DOMAIN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
     fromEmail: process.env.FROM_EMAIL,
   });
 });

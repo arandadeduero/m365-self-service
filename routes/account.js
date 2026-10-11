@@ -134,10 +134,20 @@ function textToHtml(text) {
  * Outlook carry formatting, which is dropped.
  */
 function htmlToText(html) {
-  return (html || '')
-    .replace(/<(style|head)[\s\S]*?<\/\1>/gi, '')
-    .replace(/<br\s*\/?>|<\/(p|div)>/gi, '\n')
-    .replace(/<[^>]+>/g, '')
+  // Each strip repeats until nothing changes, so a tag hidden inside another
+  // (<st<style>yle>) does not come out whole after one pass
+  const stripAll = (text, pattern) => {
+    let previous;
+    do {
+      previous = text;
+      text = text.replace(pattern, '');
+    } while (text !== previous);
+    return text;
+  };
+
+  let text = stripAll(html || '', /<(style|head)[\s\S]*?<\/\1>/gi);
+  text = text.replace(/<br\s*\/?>|<\/(p|div)>/gi, '\n');
+  return stripAll(text, /<[^>]+>/g)
     .replace(/&nbsp;/g, ' ')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')

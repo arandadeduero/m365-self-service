@@ -34,8 +34,9 @@ test.serial('GET /auth/signin redirects to Microsoft login with a state kept in 
 
   const res = await agent.get('/auth/signin').expect(302);
 
-  t.true(res.header.location.includes('login.microsoftonline.com'));
-  t.true(res.header.location.includes('oauth2'));
+  const login = new URL(res.header.location);
+  t.is(login.hostname, 'login.microsoftonline.com');
+  t.regex(login.pathname, /\/oauth2\//);
   t.regex(stateOf(res), /^[0-9a-f]{32}$/);
   t.truthy(sessionId(res));
 });

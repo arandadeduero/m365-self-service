@@ -102,7 +102,7 @@ test.serial('GET /account shows licenses, recovery address and a warning near ex
   t.true(res.text.includes('ana@personal.example'));
   // 90 day policy (PASSWORD_MAX_AGE_DAYS) and changed 80 days ago
   t.regex(res.text, /alert-warning">Tu contraseña caduca en <strong>10<\/strong> días/);
-  t.true(res.text.includes('https://mysignins.microsoft.com/security-info/password/change'));
+  t.true(res.text.includes('href="https://mysignins.microsoft.com/security-info/password/change"'));
 });
 
 test.serial('GET /account shows the days left without a warning when expiry is far', async t => {
@@ -422,6 +422,22 @@ test.serial('GET /account/sign-ins says when there are none, or when the log is 
 });
 
 // -------------------------------------------------------- automatic replies
+
+test.serial('GET /profile/me/auto-reply drops tags hidden inside other tags', async t => {
+  http.on('get', `${SETTINGS}/automaticRepliesSetting`, {
+    status: 'alwaysEnabled',
+    externalAudience: 'none',
+    internalReplyMessage: 'Fuera hasta el lunes<st<style>yle>p{}</style><scr<script>ipt>x</script>',
+  });
+
+  const res = await agent.get('/profile/me/auto-reply').expect(200);
+
+  // What is left is text (a stray "ipt>x" included, shown escaped), never a tag
+  const shown = res.text.split('<textarea')[1].split('</textarea>')[0];
+  t.true(shown.includes('Fuera hasta el lunes'));
+  t.false(/<\/?(style|script)/i.test(shown));
+  t.false(shown.includes('<'));
+});
 
 test.serial('GET /profile/me/auto-reply shows the current setting in the mailbox time zone', async t => {
   http.on('get', `${SETTINGS}/automaticRepliesSetting`, {
