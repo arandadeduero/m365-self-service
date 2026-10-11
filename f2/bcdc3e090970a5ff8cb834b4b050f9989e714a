@@ -1,0 +1,25 @@
+routes/index.js
+  s_011367d8e8fa7a::t_942abc29d7104a 406-411,417
+CLAUDE.md
+  s_011367d8e8fa7a::t_b845af454004e9 109
+README.md
+  s_011367d8e8fa7a::t_07f17b8cd70702 976
+test/reset-password-flow.test.js
+  s_011367d8e8fa7a::t_9684ef489020d8 150-162
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f2bcdc3e090970a5ff8cb834b4b050f9989e714a",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "unknown"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
