@@ -107,16 +107,6 @@
     </div>
   <% } %>
 
-  <!-- Data Entra ID -->
-  <div class="card shadow-sm border-0 app-panel mb-4">
-    <div class="card-body p-4">
-      <h3 class="h5 mb-3">Datos adicionales de Entra ID</h3>
-      <div class="json-container">
-        <pre><code><%= JSON.stringify(extendedInfo, null, 2) %></code></pre>
-      </div>
-    </div>
-  </div>
-
   <% if (groups && groups.length > 0) { %>
     <div class="card shadow-sm border-0 app-panel mb-4">
       <div class="card-body p-4">

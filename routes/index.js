@@ -31,7 +31,6 @@ const {
   getUserForReset,
   sendEmail,
   updateUserProfile,
-  getUserExtendedInfo,
   getJoinedTeamsAndChannels,
   resetUserPassword
 } = require('../services/graphService');
@@ -67,7 +66,6 @@ router.get('/', isAuthenticated, async (req, res, next) => {
 
     // Fetch all user data from Microsoft Graph
     const userData = await getAllUserData(accessToken);
-    const extendedInfo = await getUserExtendedInfo(accessToken);
 
     // Convert photo buffer to base64 for display in HTML
     let photoBase64 = null;
@@ -83,7 +81,6 @@ router.get('/', isAuthenticated, async (req, res, next) => {
       photo: photoBase64,
       groups: userData.groups,
       manager: userData.manager,
-      extendedInfo: extendedInfo,
     });
   } catch (error) {
     console.error('Error fetching user data:', error);

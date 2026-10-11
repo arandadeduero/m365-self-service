@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-profile">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Datos técnicos</h1>
+    <a href="/" class="btn btn-outline-secondary">Volver al perfil</a>
+  </div>
+
+  <p class="text-muted">
+    Lo que Microsoft Graph devuelve sobre tu cuenta, tal cual, y lo que el portal sabe de tu sesión. Sirve para comprobar un atributo o explicar por qué una página dice lo que dice. Pulsa sobre un bloque para copiarlo.
+  </p>
+
+  <% blocks.forEach(function([heading, data]) { %>
+    <div class="card shadow-sm border-0 app-panel mb-4">
+      <div class="card-body p-4">
+        <h3 class="h5 mb-3"><%= heading %></h3>
+        <div class="json-container" title="Pulsa para copiar">
+          <pre><code><%= JSON.stringify(data, null, 2) %></code></pre>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+</main>
+
+<script src="/js/debug.js"></script>
+
+<%- include('partials/footer') %>

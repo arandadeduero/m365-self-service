@@ -50,7 +50,6 @@ Después de iniciar sesión verás:
 - Datos de contacto
 - Grupos a los que perteneces
 - Datos de tu responsable
-- Los datos JSON en bruto, plegables
 
 ### Página de grupos
 Consulta y gestiona el acceso a los grupos:
@@ -298,7 +297,6 @@ URL: http://localhost:3000
    - Datos de contacto
    - Grupos a los que perteneces
    - Datos de tu responsable
-   - Los datos JSON en bruto (plegables)
 
 ---
 
@@ -575,6 +573,7 @@ Quién puede usar `/blog` no es una variable de entorno: se configura en `config
 | GET | `/account/apps` | Con sesión | Aplicaciones con permisos sobre la cuenta |
 | GET | `/account/sharing` | Con sesión | Archivos de OneDrive que llegan fuera del Ayuntamiento |
 | POST | `/account/sharing/:item/permissions/:permission/remove` | Con sesión | Dejar de compartir uno |
+| GET | `/debug` | Con sesión | Los datos de la cuenta tal como los devuelve Graph, y la sesión (sin tokens) |
 | GET | `/account/activity` | Con sesión | La actividad de la persona en el portal |
 | GET | `/groups` | Con sesión | Grupos del inquilino y listas de distribución (nombres que empiezan por `DIST`) |
 | POST | `/groups/generate-report` | Con sesión | Informe en texto de los grupos seleccionados (JSON) |

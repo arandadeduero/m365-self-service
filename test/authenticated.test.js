@@ -112,6 +112,21 @@ test.serial('the menu shows Blog only to users on its list', async t => {
   t.false(res.text.split('<nav ')[1].split('</nav>')[0].includes('href="/blog"'));
 });
 
+test.serial('GET / no longer dumps the raw Graph data; /debug does, from the user menu', async t => {
+  http.on('get', '/v1.0/me', { displayName: 'Alice Example', employeeId: 'E-123' });
+
+  const home = await agent.get('/').expect(200);
+  t.false(home.text.includes('Datos adicionales de Entra ID'));
+  t.false(home.text.includes('json-container'));
+  t.true(home.text.split('id="userMenu"')[1].includes('href="/debug">Datos técnicos</a>'));
+
+  const debug = await agent.get('/debug').expect(200);
+  t.true(debug.text.includes('&#34;employeeId&#34;: &#34;E-123&#34;'));
+  t.true(debug.text.includes('&#34;username&#34;: &#34;alice@arandadeduero.es&#34;'));
+  t.false(debug.text.includes('user-token'));
+  t.true(debug.text.includes('src="/js/debug.js"'));
+});
+
 test.serial('GET / embeds the profile photo when the user has one', async t => {
   http.on('get', '/v1.0/me', { displayName: 'Alice Example' });
   http.on('get', '/me/photo/$value', Buffer.from('img'));
