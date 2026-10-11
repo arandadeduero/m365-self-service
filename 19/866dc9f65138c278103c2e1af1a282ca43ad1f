@@ -1,0 +1,28 @@
+routes/index.js
+  s_011367d8e8fa7a::t_d2ba887016b555 464-465
+views/reset-password.ejs
+  s_011367d8e8fa7a::t_8b84cef28665e3 17
+test/auth.test.js
+  s_011367d8e8fa7a::t_ec995ea4062eb0 37-39
+routes/account.js
+  s_011367d8e8fa7a::t_708265ff5afeda 137-150
+test/account.test.js
+  s_011367d8e8fa7a::t_ec995ea4062eb0 105,426-434,441
+  s_011367d8e8fa7a::t_2f04153df45cbe 435-440
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "19866dc9f65138c278103c2e1af1a282ca43ad1f",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
