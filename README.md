@@ -23,7 +23,7 @@ Internal self-service portal for Microsoft 365 users of the Ayuntamiento de Aran
 - ✅ **Automatic Replies** - Turn out-of-office replies on, off or on between two dates
 - ✅ **Groups** - All tenant groups with membership status; requests to join go to the group's owners, who approve or reject in the app
 - ✅ **Teams** - Joined teams and their channels
-- ✅ **Organigrama** - Org chart built from each user's manager
+- ✅ **Organigrama** - Org chart built from each user's manager, with a search box and a list of the accounts outside the tree
 - ✅ **Publicar en Blog** - Publicar posts en WordPress vía email con adjuntos PDF y programación (delay)
 - ✅ **Password Reset** - Self-service reset link sent by email (AWS SES) to the user's alternate address: valid for 15 minutes, single use and rate limited
 - ✅ **Audit Log** - Who signed in, changed what and requested what, one JSON line per event
@@ -349,7 +349,7 @@ mi-microsoft-365/
 │   ├── emailService.js               # Password reset emails (AWS SES)
 │   └── wpService.js                  # WordPress REST API (categories)
 │
-├── public/                           # custom.css, profile.js, default avatar
+├── public/                           # custom.css, profile.js, organigrama.js, default avatar, vendor/ (d3 for the org chart)
 │
 ├── views/
 │   ├── partials/                     # header.ejs, footer.ejs
@@ -475,6 +475,7 @@ No test talks to Microsoft, AWS or WordPress:
 | `PASSWORD_MAX_AGE_DAYS` | Days a password lasts in your tenant; makes the account page show the days left | `90` | No (no expiry shown) |
 | `PROFILE_EDITABLE_FIELDS` | Profile fields users may change themselves, out of `mobilePhone`, `businessPhones`, `jobTitle`, `officeLocation`; the rest are shown read-only | `mobilePhone,businessPhones` | No (default: all four) |
 | `INTRANET_URL` | Address of the organization's intranet, linked from the home page, the help page and the footer | `https://example.sharepoint.com` | No (default: the Ayuntamiento's) |
+| `ORG_CHART_ROOT` | Address of the person at the top of the org chart; accounts that do not hang from them are listed below the chart | `top-person@example.com` | No (default: the Ayuntamiento's; without a match, whoever has people below and no manager) |
 | `ADMIN_EMAIL` | Mailbox that receives manager correction and group access requests, reported sign-ins and messages from the help page | `informatica@example.es` | Recommended (a built-in address is used otherwise) |
 | `TRUST_PROXY` | Number of reverse proxies in front of the app, so it sees the real client address and protocol | `1` | When behind a proxy |
 | `RESET_RATE_LIMIT` | Reset links one IP address may request every 15 minutes | `5` | No (default: 5) |

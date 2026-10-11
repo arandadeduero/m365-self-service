@@ -168,17 +168,42 @@ test.serial('GET /teams lists "Todo Ayuntamiento" first and sorts the rest', asy
   t.true(position('Canal A') < position('Canal B'));
 });
 
-test.serial('GET /organigrama embeds every user with their manager id', async t => {
+test.serial('GET /organigrama embeds the tree of people and lists who is outside it', async t => {
   http.on('get', '/v1.0/users', {
-    value: [{ id: 'u1', displayName: 'Alice', manager: { id: 'u2' } }, { id: 'u2', displayName: 'Boss' }],
+    value: [
+      { id: 'u1', displayName: 'Alice', jobTitle: 'Tecnica', manager: { id: 'u2' } },
+      { id: 'u2', displayName: 'Boss' },
+      { id: 'u3', displayName: 'Buzon </script><b>Registro</b>' },
+    ],
   });
 
   const res = await agent.get('/organigrama').expect(200);
+  const data = JSON.parse(res.text.match(/<script type="application\/json" id="orgChartData">(.*?)<\/script>/s)[1]);
 
-  t.true(res.text.includes('{"id":"u1","displayName":"Alice","managerId":"u2"}'));
-  t.true(res.text.includes('{"id":"u2","displayName":"Boss","managerId":null}'));
+  // Nobody has the configured address, so the top is the one with people below
+  t.deepEqual(data.nodes.map(node => [node.id, node.name, node.parentId]), [['u2', 'Boss', null], ['u1', 'Alice', 'u2']]);
+  t.is(data.nodes[1].jobTitle, 'Tecnica');
+  t.deepEqual(data.unplaced.map(person => person.id), ['u3']);
+  t.is(data.currentUserId, 'alice-id');
+  // A name cannot close the data block or add markup to the page
+  t.is(data.unplaced[0].name, 'Buzon </script><b>Registro</b>');
+  t.false(res.text.includes('<b>Registro</b>'));
+  t.true(res.text.includes('Fuera del organigrama (1)'));
+  // Names stay in the page: no avatar service, and the chart library is served by the app
+  t.false(res.text.includes('ui-avatars'));
+  t.true(res.text.includes('src="/vendor/d3-org-chart-3.1.1.min.js"'));
+  t.false(/src="https?:[^"]*d3/.test(res.text));
   // One request for the whole directory, not one per user
   t.is(http.callsTo('get', '/v1.0/users').length, 1);
+});
+
+test.serial('GET /organigrama says so when nobody has a manager', async t => {
+  http.on('get', '/v1.0/users', { value: [{ id: 'u1', displayName: 'Alice' }, { id: 'u2', displayName: 'Boss' }] });
+
+  const res = await agent.get('/organigrama').expect(200);
+
+  t.true(res.text.includes('ninguna cuenta tiene un responsable asignado'));
+  t.false(res.text.includes('d3-org-chart'));
 });
 
 test.serial('GET /profile/me/edit prefills the form with the current profile', async t => {

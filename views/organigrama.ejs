@@ -1,150 +1,89 @@
 <%- include('partials/header') %>
 
-<main class="container py-4">
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">Organigrama</h1>
-    <div style="position: relative; width: 300px;">
-      <input type="text" id="search-input" placeholder="Buscar usuario..." class="form-control">
-      <div id="search-results" class="list-group" style="position: absolute; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto;"></div>
+<% const top = chart.nodes[0]; %>
+<main class="container-xxl py-4 page-shell page-organigrama">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+    <h1 class="h2 mb-0 page-title">Organigrama</h1>
+    <div class="org-search">
+      <input type="search" class="form-control" id="orgSearch" placeholder="Buscar por nombre, puesto o departamento"
+        autocomplete="off" role="combobox" aria-expanded="false" aria-controls="orgSearchResults" aria-autocomplete="list">
+      <div class="list-group shadow org-search-results d-none" id="orgSearchResults" role="listbox"></div>
     </div>
   </div>
-  <div class="chart-container" style="height: 1200px; background-color: #f6f6f6; width: 100%; overflow: auto;"></div>
+
+  <p class="text-muted">
+    Quién depende de quién en el Ayuntamiento, según el responsable que figura en el perfil de cada persona.
+    Pulsa el botón <strong>+</strong> que hay bajo una tarjeta para ver a quién tiene a su cargo, o busca a alguien por su nombre.
+    Si tu responsable no es el correcto, avísalo desde <a href="/">tu perfil</a>.
+  </p>
+
+  <% if (top) { %>
+    <div class="card shadow-sm border-0 app-panel mb-4">
+      <div class="card-body p-2 p-md-3">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2" id="orgToolbar">
+          <button type="button" class="btn btn-sm btn-primary d-none" data-org-action="me">Dónde estoy</button>
+          <button type="button" class="btn btn-sm btn-outline-primary" data-org-action="expand">Desplegar todo</button>
+          <button type="button" class="btn btn-sm btn-outline-primary" data-org-action="collapse">Plegar</button>
+          <button type="button" class="btn btn-sm btn-outline-primary" data-org-action="fit">Ver entero</button>
+          <div class="btn-group btn-group-sm ms-md-auto" role="group" aria-label="Tamaño">
+            <button type="button" class="btn btn-outline-primary" data-org-action="zoom-out" aria-label="Alejar">−</button>
+            <button type="button" class="btn btn-outline-primary" data-org-action="zoom-in" aria-label="Acercar">+</button>
+          </div>
+        </div>
+        <div class="org-chart" id="orgChart"></div>
+        <p class="text-muted mb-0 d-none" id="orgChartFailed">No se ha podido dibujar el organigrama. Vuelve a cargar la página; si sigue sin verse, puedes encontrar a cualquier persona en el <a href="/directorio">Directorio</a>.</p>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="alert alert-warning">No se puede dibujar el organigrama: ninguna cuenta tiene un responsable asignado.</div>
+  <% } %>
+
+  <% if (chart.unplaced.length > 0) { %>
+    <details class="card shadow-sm border-0 app-panel" id="orgUnplaced">
+      <summary class="card-body p-3 p-md-4 h5 mb-0">Fuera del organigrama (<%= chart.unplaced.length %>)</summary>
+      <div class="card-body p-3 p-md-4 pt-0 pt-md-0">
+        <p class="text-muted">
+          <% if (top) { %>
+            Cuentas que no dependen de <%= top.name %>, ni directamente ni a través de sus responsables.
+          <% } %>
+          La mayoría son buzones y cuentas de servicio, que no tienen responsable; también aparece aquí quien no lo tiene puesto en su perfil.
+        </p>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Puesto</th>
+                <th>Departamento</th>
+                <th>Responsable</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% chart.unplaced.forEach(function(person) { %>
+                <tr data-person-id="<%= person.id %>">
+                  <td><strong><%= person.name %></strong></td>
+                  <td><%= person.jobTitle %></td>
+                  <td><%= person.department %></td>
+                  <td><%= person.managerName || 'Sin responsable' %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </details>
+  <% } %>
 </main>
 
-<!-- Load D3 and the Org Chart library from a CDN -->
-<script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-org-chart@3"></script>
-<script src="https://cdn.jsdelivr.net/npm/d3-flextree@2.1.2/build/d3-flextree.js"></script>
+<%# "<" is escaped so that a name containing "</script>" cannot end the block %>
+<script type="application/json" id="orgChartData"><%- JSON.stringify({ nodes: chart.nodes, unplaced: chart.unplaced, currentUserId }).replace(/</g, '\\u003c') %></script>
 
-<script>
-  // Datos traídos del servidor
-  const rawData = <%- users %>;
-  
-  // Transformación de datos para la librería d3-org-chart
-  const data = rawData.map(user => ({
-    id: user.id,
-    name: user.displayName,
-    positionName: user.jobTitle || 'Empleado',
-    email: user.mail,
-    parentId: user.managerId,
-    imageUrl: 'https://raw.githubusercontent.com/bumbeishvili/sample-data/main/org.csv' // Placeholder
-  }));
-
-  // Buscar el usuario "alinaje@arandadeduero.es" para que sea la raíz
-  const rootUserEmail = 'alinaje@arandadeduero.es';
-  const rootUser = data.find(u => u.email && u.email.toLowerCase() === rootUserEmail);
-
-  let chartData = data;
-  
-  if (rootUser) {
-    // Construir mapa de hijos
-    const childrenMap = new Map();
-    data.forEach(u => {
-      if(u.parentId) {
-        if(!childrenMap.has(u.parentId)) childrenMap.set(u.parentId, []);
-        childrenMap.get(u.parentId).push(u);
-      }
-    });
-
-    // Recolectar raíz y todos sus descendientes
-    const subset = [rootUser];
-    const queue = [rootUser.id];
-    
-    while(queue.length > 0) {
-      const currentId = queue.shift();
-      const children = childrenMap.get(currentId) || [];
-      children.forEach(child => {
-        subset.push(child);
-        queue.push(child.id);
-      });
-    }
-    chartData = subset;
-  }
-
-  // Inicializar el organigrama
-  const chart = new d3.OrgChart()
-    .container('.chart-container')
-    .data(chartData)
-    .nodeId(d => d.id)
-    .parentNodeId(d => d.parentId)
-    .nodeWidth((d) => 250)
-    .initialZoom(0.7)
-    .nodeHeight((d) => 175)
-    .childrenMargin((d) => 40)
-    .compactMarginBetween((d) => 15)
-    .compactMarginPair((d) => 80)
-    .nodeContent(function (d, i, arr, state) {
-      return `
-        <div style="padding-top:30px;background-color:none;margin-left:1px;height:${d.height}px;border-radius:2px;overflow:visible">
-          <div style="height:${d.height - 32}px;padding-top:0px;background-color:white;border:1px solid lightgray;">
-            <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(d.data.name)}&background=random" style="margin-top:-30px;margin-left:${d.width / 2 - 30}px;border-radius:100px;width:60px;height:60px;" />
-            <div style="margin-right:10px;margin-top:10px;float:right">
-              <a href="https://teams.microsoft.com/l/chat/0/0?users=${d.data.email}" target="_blank" style="text-decoration:none; color: #6264A7; font-size: 12px; font-weight: bold; display: flex; align-items: center;">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="margin-right: 4px;">
-                  <path d="M20.5,12.5C21.33,12.5 22,13.17 22,14V18C22,18.83 21.33,19.5 20.5,19.5H16.5C15.67,19.5 15,18.83 15,18V14C15,13.17 15.67,12.5 16.5,12.5H20.5M20.5,13.5H16.5C16.22,13.5 16,13.72 16,14V18C16,18.28 16.22,18.5 16.5,18.5H20.5C20.78,18.5 21,18.28 21,18V14C21,13.72 20.78,13.5 20.5,13.5M13.5,12.5H9.5C8.67,12.5 8,13.17 8,14V18C8,18.83 8.67,19.5 9.5,19.5H13.5C14.33,19.5 15,18.83 15,18V14C15,13.17 14.33,12.5 13.5,12.5M13.5,13.5C13.78,13.5 14,13.72 14,14V18C14,18.28 13.78,18.5 13.5,18.5H9.5C9.22,18.5 9,18.28 9,18V14C9,13.72 9.22,13.5 9.5,13.5H13.5M6.5,12.5H2.5C1.67,12.5 1,13.17 1,14V18C1,18.83 1.67,19.5 2.5,19.5H6.5C7.33,19.5 8,18.83 8,18V14C8,13.17 7.33,12.5 6.5,12.5M6.5,13.5C6.78,13.5 7,13.72 7,14V18C7,18.28 6.78,18.5 6.5,18.5H2.5C2.22,18.5 2,18.28 2,18V14C2,13.72 2.22,13.5 2.5,13.5H6.5M16.5,6.5H12.5C11.67,6.5 11,7.17 11,8V12C11,12.83 11.67,13.5 12.5,13.5H16.5C17.33,13.5 18,12.83 18,12V8C18,7.17 17.33,6.5 16.5,6.5M16.5,7.5C16.78,7.5 17,7.72 17,8V12C17,12.28 16.78,12.5 16.5,12.5H12.5C12.22,12.5 12,12.28 12,12V8C12,7.72 12.22,7.5 12.5,7.5H16.5M9.5,6.5H5.5C4.67,6.5 4,7.17 4,8V12C4,12.83 4.67,13.5 5.5,13.5H9.5C10.33,13.5 11,12.83 11,12V8C11,7.17 10.33,6.5 9.5,6.5M9.5,7.5C9.78,7.5 10,7.72 10,8V12C10,12.28 9.78,12.5 9.5,12.5H5.5C5.22,12.5 5,12.28 5,12V8C5,7.72 5.22,7.5 5.5,7.5H9.5M15.5,4.5H11.5C10.67,4.5 10,5.17 10,6V10C10,10.83 10.67,11.5 11.5,11.5H15.5C16.33,11.5 17,10.83 17,10V6C17,5.17 16.33,4.5 15.5,4.5M15.5,5.5C15.78,5.5 16,5.72 16,6V10C16,10.28 15.78,10.5 15.5,10.5H11.5C11.22,10.5 11,10.28 11,10V6C11,5.72 11.22,5.5 11.5,5.5H15.5Z" />
-                </svg>
-                Chatear
-              </a>
-            </div>
-            <div style="margin-top:-30px;background-color:#3AB6E3;height:10px;width:${d.width - 2}px;border-radius:1px"></div>
-            <div style="padding:20px; padding-top:35px;text-align:center">
-              <a href="https://teams.microsoft.com/l/chat/0/0?users=${d.data.email}" target="_blank" style="color:#111672;text-decoration:none;font-size:16px;font-weight:bold"> ${d.data.name} </a>
-              <div style="color:#404040;font-size:16px;margin-top:4px"> ${d.data.positionName} </div>
-            </div> 
-            <div style="display:flex;justify-content:space-between;padding-left:15px;padding-right:15px;">
-              <div> Subordinados: ${d.data._directSubordinates} 👤</div>  
-              <div> Total: ${d.data._totalSubordinates} 👤</div>    
-            </div>
-          </div>     
-        </div>
-      `;
-    })
-    .render();
-    
-  if (rootUser) {
-    chart.setCentered(rootUser.id);
-  }
-
-  // Search logic
-  const searchInput = document.getElementById('search-input');
-  const searchResults = document.getElementById('search-results');
-  
-  searchInput.addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase();
-    searchResults.innerHTML = '';
-    if (term.length < 2) return;
-    
-    const matches = chartData.filter(d => d.name.toLowerCase().includes(term));
-    matches.forEach(match => {
-        const item = document.createElement('a');
-        item.href = '#';
-        item.className = 'list-group-item list-group-item-action';
-        item.textContent = match.name;
-        item.onclick = (e) => {
-            e.preventDefault();
-            
-            // Expand all parents
-            const expandParents = (id) => {
-                const node = chartData.find(d => d.id === id);
-                if (node && node.parentId) {
-                    chart.expand(node.parentId);
-                    expandParents(node.parentId);
-                }
-            };
-            expandParents(match.id);
-            chart.expand(match.id);
-
-            // Delay centering to ensure expansion layout has processed
-            setTimeout(() => {
-                chart.setCentered(match.id);
-            }, 150);
-
-            searchResults.innerHTML = '';
-            searchInput.value = match.name;
-        };
-        searchResults.appendChild(item);
-    });
-  });
-</script>
+<% if (top) { %>
+<%# Copies kept in public/vendor so the page asks nothing of other servers %>
+<script src="/vendor/d3-7.9.0.min.js"></script>
+<script src="/vendor/d3-flextree-2.1.2.min.js"></script>
+<script src="/vendor/d3-org-chart-3.1.1.min.js"></script>
+<% } %>
+<script src="/js/organigrama.js"></script>
 
 <%- include('partials/footer') %>

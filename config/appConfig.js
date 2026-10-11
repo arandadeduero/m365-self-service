@@ -27,6 +27,10 @@ module.exports = {
   // The organization's intranet, linked from the home page and the help page
   INTRANET_URL: process.env.INTRANET_URL || 'https://aytoarandaduero.sharepoint.com',
 
+  // Address of the person at the top of the org chart. Without them in the
+  // directory, the top is whoever has people below and no manager.
+  ORG_CHART_ROOT: process.env.ORG_CHART_ROOT || 'alinaje@arandadeduero.es',
+
   // Recipient of the requests that have nobody else to go to
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'glopez@arandadeduero.es',
 

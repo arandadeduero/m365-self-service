@@ -228,6 +228,167 @@ h6,
   margin-bottom: 0;
 }
 
+.page-organigrama {
+  --page-accent: #1d4ed8;
+  --page-accent-soft: rgba(29, 78, 216, 0.16);
+}
+
+.org-search {
+  position: relative;
+  width: min(100%, 26rem);
+}
+
+.org-search-results {
+  position: absolute;
+  z-index: 1000;
+  top: calc(100% + 0.25rem);
+  width: 100%;
+  max-height: 22rem;
+  overflow-y: auto;
+}
+
+.org-result-detail {
+  color: var(--app-muted);
+}
+
+.org-search-results .active .org-result-detail {
+  color: inherit;
+}
+
+.org-chart {
+  height: clamp(480px, calc(100vh - 230px), 1100px);
+  border-radius: 0.75rem;
+  background: #f4f7fb;
+  overflow: hidden;
+}
+
+.org-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0.7rem 0.8rem 0.5rem;
+  background: var(--app-surface);
+  border: 1px solid var(--app-line);
+  border-left: 5px solid var(--app-muted);
+  border-radius: 0.6rem;
+  font-family: Outfit, 'Segoe UI', sans-serif;
+  color: var(--app-ink);
+}
+
+.org-card.is-me {
+  background: #eef4ff;
+}
+
+.org-card.is-found {
+  outline: 4px solid var(--app-secondary);
+  outline-offset: -1px;
+}
+
+.org-card.is-org {
+  justify-content: center;
+  text-align: center;
+}
+
+.org-card-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  min-height: 0;
+}
+
+.org-avatar {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.org-card-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.org-name,
+.org-job {
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.org-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.org-job {
+  font-size: 0.875rem;
+  margin-top: 0.15rem;
+}
+
+.org-department {
+  font-size: 0.8rem;
+  color: var(--app-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.org-me {
+  display: inline-block;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  background: var(--page-accent, var(--app-primary));
+  color: #fff;
+  font-size: 0.72rem;
+  vertical-align: middle;
+}
+
+.org-card-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--app-muted);
+}
+
+.org-toggle {
+  width: max-content;
+  margin: 14px auto 0;
+  padding: 0.1rem 0.55rem;
+  border: 1px solid #9fb0c5;
+  border-radius: 999px;
+  background: var(--app-surface);
+  color: var(--app-ink);
+  font: 600 0.85rem Outfit, 'Segoe UI', sans-serif;
+}
+
+.org-chat {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+#orgUnplaced > summary {
+  cursor: pointer;
+}
+
+.org-row-found > * {
+  animation: org-row-found 2.5s ease-out;
+}
+
+@keyframes org-row-found {
+  from {
+    background-color: rgba(245, 159, 0, 0.45);
+  }
+}
+
 @media (max-width: 768px) {
   .app-nav .nav-link {
     border-radius: 0.6rem;

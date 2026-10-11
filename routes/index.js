@@ -12,6 +12,7 @@ const express = require('express');
 const router = express.Router();
 const appConfig = require('../config/appConfig');
 const { ADMIN_EMAIL, APP_ORIGIN } = appConfig;
+const { buildOrgChart } = require('../services/orgChart');
 const permissions = require('../config/permissions');
 const { isAuthenticated, redirectIfAuthenticated } = require('../middleware/auth');
 const { userError } = require('../middleware/errorHandler');
@@ -47,7 +48,8 @@ router.get('/organigrama', isAuthenticated, async (req, res, next) => {
     res.render('organigrama', {
       title: 'Organigrama',
       currentPage: 'organigrama',
-      users: JSON.stringify(usersWithManager)
+      chart: buildOrgChart(usersWithManager, { rootEmail: appConfig.ORG_CHART_ROOT, orgName: appConfig.ORG_NAME }),
+      currentUserId: req.session.account?.localAccountId || null
     });
   } catch (error) {
     next(error);
