@@ -1,0 +1,66 @@
+services/vcard.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-54
+public/js/signature.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-36
+views/directory.ejs
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 6-9,29,46
+views/partials/header.ejs
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 59-61
+config/auditEvents.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-25
+test/activity.test.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-47
+package.json
+  s_011367d8e8fa7a::t_0cf6b719e590fb 39
+views/contact-card.ejs
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-34
+test/signature.test.js
+  s_011367d8e8fa7a::t_1a49ff641fb5ee 41
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-40,42-55
+services/signature.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-52
+CLAUDE.md
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 41
+routes/activity.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-40
+views/my-activity.ejs
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-49
+README.md
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 10-12,347-349,506-507,567-570
+services/graphService.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 64-86,1110
+test/directory.test.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-77
+routes/directory.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-108
+test/account.test.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 426-437
+.env.example
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 47-50
+routes/signature.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-36
+config/appConfig.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 34-37
+views/signature.ejs
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 1-44
+server.js
+  s_011367d8e8fa7a::t_95e32e4e8dad8f 31-33,150-152
+package-lock.json
+  s_011367d8e8fa7a::t_146b804f4c6840 21,1167-1175,1330-1347,1529-1537,1577-1582,3334-3342,3457-3465,3515-3714,3811-3825,4043-4048,4619-4624
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d0474d36395fdcbc60472a265524cd02e4a3a4b8",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
