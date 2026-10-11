@@ -1,0 +1,23 @@
+.dockerignore
+  s_011367d8e8fa7a::t_9ca846a7ae243f 8-11
+Dockerfile
+  s_011367d8e8fa7a::t_baae7c5cbb4d4c 21,24-31
+README.md
+  s_011367d8e8fa7a::t_f71c3fb1481052 836
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "31aa518415a4fe73f3383e682e7a7277616bf888",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "unknown"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
