@@ -1,0 +1,32 @@
+routes/blog.js
+  s_011367d8e8fa7a::t_e34a2e3c4fea39 26
+  s_011367d8e8fa7a::t_76c7a4caf547ec 13
+middleware/csrf.js
+  s_011367d8e8fa7a::t_d6fe4bc9eb0d7f 65
+  s_011367d8e8fa7a::t_457edf611b7aa2 19-22
+CLAUDE.md
+  s_011367d8e8fa7a::t_f8702cdd71e92b 56
+middleware/auth.js
+  s_011367d8e8fa7a::t_c640831e25951f 14-19,21-25,27-31,33,35,37-39,43-45
+test/middleware.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 67,75,83,91,94-95,99-110
+test/csrf.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 10,31,103-113
+  s_011367d8e8fa7a::t_5eefd5ea2a00ca 114-121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c79cc28bffe38baf1c613cb64adcbf8184655f70",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
