@@ -84,10 +84,9 @@ h6,
 }
 
 .app-nav {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
-  /* backdrop-filter makes the bar a stacking context of its own, so its
-     dropdowns need the bar itself above the page */
+  /* Opaque on purpose: with backdrop-filter, WebKit drops the background of
+     whatever sticks out of the bar, which left the dropdowns see-through */
+  background: #fff;
   position: relative;
   z-index: 1030;
 }
@@ -115,6 +114,7 @@ h6,
 }
 
 .app-nav .dropdown-menu {
+  background-color: var(--app-surface);
   border: 1px solid var(--app-line);
   border-radius: 0.75rem;
   box-shadow: 0 12px 30px rgba(24, 36, 51, 0.12);
