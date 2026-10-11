@@ -40,10 +40,12 @@ function sessionTokens(client, response) {
 
 /**
  * Get the Microsoft login URL that starts the OAuth flow
+ * @param {string} state - Random value kept in the session; Microsoft sends it
+ *   back to the callback, which ties the callback to the browser that started
  * @returns {Promise<string>}
  */
-function getSignInUrl() {
-  return getAppClient().getAuthCodeUrl({ scopes, redirectUri });
+function getSignInUrl(state) {
+  return getAppClient().getAuthCodeUrl({ scopes, redirectUri, state });
 }
 
 /**

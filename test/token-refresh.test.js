@@ -8,7 +8,7 @@ require('./helpers/env');
 
 const test = require('ava').default;
 const request = require('supertest');
-const { stubAxios, stubMsal } = require('./helpers/stubs');
+const { stubAxios, stubMsal, signInAgent } = require('./helpers/stubs');
 
 const http = stubAxios();
 const msal = stubMsal();
@@ -28,7 +28,7 @@ test.beforeEach(() => {
 async function signIn(t, expiresInMs) {
   msal.expiresInMs = expiresInMs;
   const agent = request.agent(app);
-  await agent.get('/auth/callback?code=test-code').expect(302);
+  await signInAgent(agent);
   // Signing in talks to Graph too; these tests look at what comes after
   http.calls.length = 0;
   // Logging out removes the session file

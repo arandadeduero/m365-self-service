@@ -8,7 +8,7 @@ require('./helpers/env');
 
 const test = require('ava').default;
 const request = require('supertest');
-const { stubAxios, stubMsal, httpError, getCsrfToken, auditEvents } = require('./helpers/stubs');
+const { stubAxios, stubMsal, httpError, getCsrfToken, auditEvents, signInAgent } = require('./helpers/stubs');
 
 const http = stubAxios();
 stubMsal();
@@ -39,10 +39,7 @@ function sentMessage() {
 }
 
 test.before(async () => {
-  await agent
-    .get('/auth/callback?code=test-code')
-    .expect(302)
-    .expect('Location', '/');
+  await signInAgent(agent);
   csrf = await getCsrfToken(agent);
 });
 
@@ -263,7 +260,7 @@ test.serial('POST /profile/me/edit clears the fields left empty', async t => {
 // the rest of the session
 async function freshSession(t) {
   const other = request.agent(app);
-  await other.get('/auth/callback?code=test-code').expect(302);
+  await signInAgent(other);
   const token = await getCsrfToken(other);
   t.teardown(() => other.get('/auth/logout'));
   return { get: (path) => other.get(path), post: (path) => other.post(path).set('X-CSRF-Token', token) };

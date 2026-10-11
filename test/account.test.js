@@ -8,7 +8,7 @@ require('./helpers/env');
 
 const test = require('ava').default;
 const request = require('supertest');
-const { stubAxios, stubMsal, getCsrfToken, auditEvents } = require('./helpers/stubs');
+const { stubAxios, stubMsal, getCsrfToken, auditEvents, signInAgent } = require('./helpers/stubs');
 
 const http = stubAxios();
 stubMsal();
@@ -26,7 +26,7 @@ const TIME_ZONE = 'Romance Standard Time';
 const SETTINGS = '/me/mailboxSettings';
 
 test.before(async () => {
-  await agent.get('/auth/callback?code=test-code').expect(302);
+  await signInAgent(agent);
   csrf = await getCsrfToken(agent);
 });
 

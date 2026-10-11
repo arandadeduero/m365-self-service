@@ -7,7 +7,7 @@ require('./helpers/env');
 
 const test = require('ava').default;
 const request = require('supertest');
-const { stubAxios, stubMsal, httpError, getCsrfToken, auditEvents } = require('./helpers/stubs');
+const { stubAxios, stubMsal, httpError, getCsrfToken, auditEvents, signInAgent } = require('./helpers/stubs');
 
 const http = stubAxios();
 const msal = stubMsal();
@@ -23,7 +23,7 @@ const ALICE = { username: 'alice@arandadeduero.es', name: 'Alice Example', local
 async function signIn(t, account = ALICE) {
   msal.account = account;
   const agent = request.agent(app);
-  await agent.get('/auth/callback?code=test-code').expect(302);
+  await signInAgent(agent);
   const csrf = await getCsrfToken(agent);
   t.teardown(() => agent.get('/auth/logout'));
 

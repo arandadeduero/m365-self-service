@@ -9,7 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const test = require('ava').default;
 const request = require('supertest');
-const { stubAxios, stubMsal, auditEvents } = require('./helpers/stubs');
+const { stubAxios, stubMsal, auditEvents, signInAgent } = require('./helpers/stubs');
 
 const http = stubAxios();
 const msal = stubMsal();
@@ -26,7 +26,7 @@ const writeDay = (day, entries) => fs.writeFileSync(path.join(process.env.AUDIT_
 async function signInAs(t, account, { admin }) {
   msal.account = account;
   const agent = request.agent(app);
-  await agent.get('/auth/callback?code=test-code').expect(302);
+  await signInAgent(agent);
   t.teardown(() => agent.get('/auth/logout'));
   // Asked on every request: holding a directory role is what makes an admin
   http.on('get', ROLES, { value: admin ? [{ displayName: 'Global Administrator' }] : [] });

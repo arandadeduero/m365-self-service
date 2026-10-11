@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const test = require('ava').default;
 const request = require('supertest');
-const { stubAxios, stubMsal, getCsrfToken, auditEvents, httpError } = require('./helpers/stubs');
+const { stubAxios, stubMsal, getCsrfToken, auditEvents, httpError, signInAgent } = require('./helpers/stubs');
 
 const http = stubAxios();
 const msal = stubMsal();
@@ -57,7 +57,7 @@ test.beforeEach(() => {
 async function signInAs(t, account) {
   msal.account = account;
   const agent = request.agent(app);
-  await agent.get('/auth/callback?code=test-code').expect(302);
+  await signInAgent(agent);
   const csrf = await getCsrfToken(agent);
   t.teardown(() => agent.get('/auth/logout'));
 

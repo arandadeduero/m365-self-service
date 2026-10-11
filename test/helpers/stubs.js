@@ -136,6 +136,21 @@ async function waitFor(condition, timeoutMs = 2000) {
  * Get the CSRF token of an agent's session, the way a browser does: from a
  * form. The reset request page is public, so this works signed in or not.
  */
+/**
+ * Sign the agent in the way a browser does: start at /auth/signin, which keeps
+ * the OAuth state in the session, then come back through the callback with
+ * that state. Returns the callback response, a redirect to the home page.
+ */
+async function signInAgent(agent) {
+  const start = await agent.get('/auth/signin');
+  const state = new URL(start.header.location).searchParams.get('state');
+  const res = await agent.get(`/auth/callback?code=test-code&state=${state}`);
+  if (res.status !== 302) {
+    throw new Error(`Sign-in failed with status ${res.status}: ${res.text.slice(0, 200)}`);
+  }
+  return res;
+}
+
 async function getCsrfToken(agent) {
   const res = await agent.get('/reset-password');
   return res.text.match(/name="_csrf" value="([^"]+)"/)[1];
@@ -153,4 +168,4 @@ function auditEvents(event) {
   return event ? entries.filter(entry => entry.event === event) : entries;
 }
 
-module.exports = { httpError, stubAxios, stubMsal, stubSes, waitFor, getCsrfToken, auditEvents };
+module.exports = { httpError, stubAxios, stubMsal, stubSes, waitFor, signInAgent, getCsrfToken, auditEvents };

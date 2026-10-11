@@ -8,7 +8,7 @@ require('./helpers/env');
 
 const test = require('ava').default;
 const request = require('supertest');
-const { stubAxios, stubMsal } = require('./helpers/stubs');
+const { stubAxios, stubMsal, signInAgent } = require('./helpers/stubs');
 
 const http = stubAxios();
 stubMsal();
@@ -36,7 +36,7 @@ const lookups = () => http.callsTo('get', ISSUES).length;
 test.before(async () => {
   http.on('get', '/v1.0/me', { displayName: 'Alice Example' });
   http.on('get', '/v1.0/users', { value: [] });
-  await agent.get('/auth/callback?code=test-code').expect(302);
+  await signInAgent(agent);
 });
 
 test.after.always(async () => {

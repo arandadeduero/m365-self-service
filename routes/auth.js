@@ -7,12 +7,27 @@
  * - /auth/logout - Logs out user and clears session
  */
 
+const crypto = require('crypto');
 const express = require('express');
 const router = express.Router();
 const { redirectUri } = require('../config/authConfig');
 const { getSignInUrl, signIn } = require('../services/tokenService');
 const { auditRequest } = require('../services/auditService');
 const { enforceRegionalSettings } = require('../services/regionalSettings');
+const { userError } = require('../middleware/errorHandler');
+
+/**
+ * Whether the state Microsoft sent back is the one this session started with.
+ * It is removed from the session either way, so a callback is good once.
+ */
+function takesExpectedState(session, state) {
+  const expected = session.oauthState;
+  delete session.oauthState;
+  if (typeof expected !== 'string' || typeof state !== 'string' || expected.length !== state.length) {
+    return false;
+  }
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(state));
+}
 
 /**
  * GET /auth/signin
@@ -20,11 +35,12 @@ const { enforceRegionalSettings } = require('../services/regionalSettings');
  */
 router.get('/signin', async (req, res, next) => {
   try {
-    // Get authorization URL
-    const authUrl = await getSignInUrl();
+    // Kept in the session and checked by the callback, so that a callback
+    // URL made for one browser (login CSRF) is refused in any other
+    const state = crypto.randomBytes(16).toString('hex');
+    req.session.oauthState = state;
 
-    // Redirect user to Microsoft login page
-    res.redirect(authUrl);
+    res.redirect(await getSignInUrl(state));
   } catch (error) {
     console.error('Error generating auth URL:', error);
     next(error);
@@ -37,6 +53,10 @@ router.get('/signin', async (req, res, next) => {
  * Exchanges authorization code for access token
  */
 router.get('/callback', async (req, res, next) => {
+  if (!takesExpectedState(req.session, req.query.state)) {
+    return next(userError(400, 'La solicitud de inicio de sesión no es válida o ha caducado. Vuelve a empezar desde la página de inicio.'));
+  }
+
   try {
     // Get authorization code from query parameters
     const authCode = req.query.code;
@@ -47,9 +67,15 @@ router.get('/callback', async (req, res, next) => {
       throw error;
     }
 
-    // Exchange authorization code for tokens and store them in session,
-    // together with the token cache used to renew the access token later
-    Object.assign(req.session, await signIn(authCode));
+    const tokens = await signIn(authCode);
+
+    // A new session id for the signed-in user, so whatever session the
+    // browser had before signing in (and anybody who knew its id) is left behind
+    await new Promise((resolve, reject) => req.session.regenerate(err => (err ? reject(err) : resolve())));
+
+    // Store the tokens in the session, together with the token cache used to
+    // renew the access token later
+    Object.assign(req.session, tokens);
 
     console.log('User authenticated successfully:', req.session.account.username);
     auditRequest(req, 'auth.sign_in');
