@@ -55,7 +55,7 @@ test.beforeEach(() => {
   });
 });
 
-test.serial('the page opens on a form for today without asking Microsoft anything', async t => {
+test.serial('the page opens on the list of rooms and a form for today, without asking the calendars', async t => {
   const user = await signIn(t);
   http.calls.length = 0;
 
@@ -63,9 +63,33 @@ test.serial('the page opens on a form for today without asking Microsoft anythin
 
   t.regex(res.text, /name="date" value="\d{4}-\d{2}-\d{2}"/);
   t.regex(res.text, /name="start" value="\d{2}:00"/);
-  t.is(http.callsTo('get', ROOMS).length, 0);
+  // Name, where and how many people, in alphabetical order; a room without a mailbox is left out
+  t.true(res.text.includes('>2 salas</h2>'));
+  t.true(res.text.indexOf('Sala B') < res.text.indexOf('Salón de Plenos'));
+  t.true(res.text.includes('Casa Consistorial · Planta 1'));
+  t.true(res.text.includes('<td>8 personas</td>'));
+  t.true(res.text.includes('<td>40 personas</td>'));
+  t.false(res.text.includes('Sala sin buzón'));
+  // Nothing about availability until a search
+  t.false(res.text.includes('Reservar en Outlook'));
+  t.false(res.text.includes('<th>Estado</th>'));
+  t.is(http.callsTo('get', ROOMS).length, 1);
   t.is(http.callsTo('post', SCHEDULE).length, 0);
   t.true(res.text.includes('href="/salas" class="nav-link active"'));
+});
+
+test.serial('the table can be sorted by name, place and capacity', async t => {
+  const user = await signIn(t);
+
+  const res = await user.get('/salas').expect(200);
+
+  for (const key of ['name', 'where', 'capacity']) {
+    t.true(res.text.includes(`class="table-sort" data-sort="${key}"`), key);
+  }
+  t.true(res.text.includes('data-sort="capacity" data-type="number"'));
+  t.true(res.text.includes('data-name="Salón de Plenos" data-where="" data-capacity="40"'));
+  t.true(res.text.includes('src="/js/rooms.js"'));
+  await user.get('/js/rooms.js').expect(200);
 });
 
 test.serial('a search shows free rooms first, with a link that books them in Outlook', async t => {
@@ -73,6 +97,7 @@ test.serial('a search shows free rooms first, with a link that books them in Out
 
   const res = await user.get(SEARCH).expect(200);
 
+  t.true(res.text.includes('Salas el 14/10/2026 de 10:00 a 11:00'));
   t.true(res.text.indexOf('Salón de Plenos') < res.text.indexOf('Sala B'));
   t.is(res.text.split('>Libre</span>').length - 1, 1);
   t.is(res.text.split('>Ocupada</span>').length - 1, 1);
@@ -137,16 +162,18 @@ test.serial('"cannot read the rooms" is told apart from "there are no rooms"', a
   t.true(none.text.includes('no tiene salas dadas de alta'));
 });
 
-test.serial('a period that makes no sense asks nothing and says why', async t => {
+test.serial('a period that makes no sense says why and asks no calendar', async t => {
   const user = await signIn(t);
   http.calls.length = 0;
 
   for (const query of ['date=2026-10-14&start=11:00&end=10:00', 'date=14/10/2026&start=10:00&end=11:00', 'date=2026-10-14&start=25:00&end=26:00', 'date=2026-10-14']) {
     const res = await user.get(`/salas?${query}`).expect(200);
     t.true(res.text.includes('Indica un día y una hora de inicio anterior a la de fin'), query);
+    // The list is still there to look at
+    t.true(res.text.includes('Casa Consistorial · Planta 1'), query);
   }
 
-  t.is(http.callsTo('get', ROOMS).length, 0);
+  t.is(http.callsTo('post', SCHEDULE).length, 0);
 });
 
 test.serial('more rooms than one request takes are asked for in several', async t => {

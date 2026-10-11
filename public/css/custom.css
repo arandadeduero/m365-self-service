@@ -256,6 +256,37 @@ h6,
   letter-spacing: 0.03em;
 }
 
+/* Column headings that sort the table when clicked */
+.table-sort {
+  all: unset;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-transform: inherit;
+  letter-spacing: inherit;
+}
+
+.table-sort:hover,
+.table-sort:focus-visible {
+  color: var(--app-primary);
+}
+
+.table-sort::after {
+  content: '↕';
+  margin-left: 0.3rem;
+  opacity: 0.4;
+}
+
+.table-sort[aria-sort='ascending']::after {
+  content: '↑';
+  opacity: 1;
+}
+
+.table-sort[aria-sort='descending']::after {
+  content: '↓';
+  opacity: 1;
+}
+
 .error-container {
   max-width: 1000px;
 }

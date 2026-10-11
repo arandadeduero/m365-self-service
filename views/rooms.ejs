@@ -6,7 +6,8 @@
   </div>
 
   <p class="text-muted">
-    Busca una sala de reuniones libre. La reserva se hace en Outlook: al pulsar <strong>Reservar</strong> se abre una convocatoria nueva con la sala y la hora ya puestas, y la sala queda reservada cuando la envías.
+    Estas son las salas de reuniones del Ayuntamiento, con dónde están y para cuántas personas son. Indica un día y una hora y pulsa <strong>Buscar</strong> para ver cuáles están libres.
+    La reserva se hace en Outlook: al pulsar <strong>Reservar</strong> se abre una convocatoria nueva con la sala y la hora ya puestas, y la sala queda reservada cuando la envías.
   </p>
 
   <div class="card shadow-sm border-0 app-panel mb-4">
@@ -33,32 +34,43 @@
 
   <% if (searched && !valid) { %>
     <div class="alert alert-warning">Indica un día y una hora de inicio anterior a la de fin.</div>
-  <% } else if (valid) { %>
-    <div class="card shadow-sm border-0 app-panel">
-      <div class="card-body p-4">
-        <% if (!roomsReadable) { %>
-          <p class="text-muted mb-0">Ahora mismo no se puede consultar la lista de salas.</p>
-        <% } else if (rooms.length === 0) { %>
-          <p class="text-muted mb-0">El Ayuntamiento no tiene salas dadas de alta en Microsoft 365.</p>
-        <% } else { %>
+  <% } %>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <% if (!roomsReadable) { %>
+        <p class="text-muted mb-0">Ahora mismo no se puede consultar la lista de salas.</p>
+      <% } else if (rooms.length === 0) { %>
+        <p class="text-muted mb-0">El Ayuntamiento no tiene salas dadas de alta en Microsoft 365.</p>
+      <% } else { %>
+        <% if (valid) { %>
+          <h2 class="h5 mb-3">Salas el <%= slot.date.split('-').reverse().join('/') %> de <%= slot.start %> a <%= slot.end %></h2>
           <% if (!availabilityKnown) { %>
             <div class="alert alert-warning">No se ha podido comprobar qué salas están libres. Outlook te lo dirá al reservar.</div>
           <% } %>
-          <div class="table-responsive">
-            <table class="table align-middle mb-0">
-              <thead>
-                <tr>
-                  <th>Sala</th>
-                  <th>Aforo</th>
+        <% } else { %>
+          <h2 class="h5 mb-3"><%= rooms.length %> <%= rooms.length === 1 ? 'sala' : 'salas' %></h2>
+        <% } %>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0" id="roomsTable">
+            <thead>
+              <tr>
+                <th><button type="button" class="table-sort" data-sort="name">Sala</button></th>
+                <th><button type="button" class="table-sort" data-sort="where">Ubicación</button></th>
+                <th><button type="button" class="table-sort" data-sort="capacity" data-type="number">Aforo</button></th>
+                <% if (valid) { %>
                   <th>Estado</th>
                   <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                <% rooms.forEach(function(room) { %>
-                  <tr>
-                    <td><strong><%= room.name %></strong><% if (room.where) { %><br><span class="text-muted small"><%= room.where %></span><% } %></td>
-                    <td><%= room.capacity || '' %></td>
+                <% } %>
+              </tr>
+            </thead>
+            <tbody>
+              <% rooms.forEach(function(room) { %>
+                <tr data-name="<%= room.name %>" data-where="<%= room.where || '' %>" data-capacity="<%= room.capacity || 0 %>">
+                  <td><strong><%= room.name %></strong></td>
+                  <td><%= room.where || '' %></td>
+                  <td><%= room.capacity ? `${room.capacity} personas` : '' %></td>
+                  <% if (valid) { %>
                     <td>
                       <% if (room.free === true) { %>
                         <span class="badge bg-success">Libre</span>
@@ -73,15 +85,17 @@
                         <a href="<%= room.bookingUrl %>" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm">Reservar en Outlook</a>
                       <% } %>
                     </td>
-                  </tr>
-                <% }); %>
-              </tbody>
-            </table>
-          </div>
-        <% } %>
-      </div>
+                  <% } %>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
     </div>
-  <% } %>
+  </div>
 </main>
+
+<script src="/js/rooms.js"></script>
 
 <%- include('partials/footer') %>

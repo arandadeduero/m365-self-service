@@ -14,7 +14,7 @@ Portal interno de autoservicio para los usuarios de Microsoft 365 del Ayuntamien
 - ✅ **Calendario compartido** - Quién puede ver el calendario del usuario y qué puede hacer cada uno, con un aviso para las personas de fuera de la organización
 - ✅ **Buzones compartidos** - Cuáles de los buzones compartidos de la organización puede abrir el usuario
 - ✅ **Herramientas para propietarios** - Los propietarios ven los miembros e invitados de sus grupos, añaden y quitan miembros, y reciben un aviso cuando un grupo tiene un único propietario
-- ✅ **Salas** - Qué salas de reuniones están libres a una hora dada, con un enlace que las reserva en Outlook
+- ✅ **Salas** - Las salas de reuniones con su ubicación y aforo, cuáles están libres a una hora dada, y un enlace que las reserva en Outlook
 - ✅ **Ayuda** - Qué es Microsoft 365 y qué herramientas tiene la organización, respuestas a las preguntas habituales y un formulario para escribir a Informática con el estado de la cuenta adjunto
 - ✅ **Enlace a la intranet** - La página de inicio, la de ayuda y el pie enlazan a la intranet de la organización
 - ✅ **Configuración regional** - Cada cuenta se vuelve a poner en hora de Madrid y en español en cada inicio de sesión
@@ -653,7 +653,7 @@ Cada inquilino deja a los usuarios editar unos campos distintos de su perfil, y 
 
 ### Salas
 
-`/salas` pide un día y una hora y muestra qué salas de reuniones están libres. Solo consulta: «Reservar en Outlook» abre una reunión nueva con la sala y la hora ya puestas, y la sala queda reservada cuando el usuario la envía. Hace falta que las salas existan como buzones de sala en Exchange.
+`/salas` lista las salas de reuniones con dónde están y su aforo (la tabla se ordena pulsando las cabeceras) y, al indicar un día y una hora, muestra cuáles están libres. Solo consulta: «Reservar en Outlook» abre una reunión nueva con la sala y la hora ya puestas, y la sala queda reservada cuando el usuario la envía. Hace falta que las salas existan como buzones de sala en Exchange.
 
 ### Visor de auditoría
 

@@ -57,8 +57,17 @@ function bookingUrl(room, slot) {
 }
 
 /**
+ * Where a room is, from what the directory says about it
+ */
+function whereIs(room) {
+  const floor = room.floorLabel || (room.floorNumber != null ? `Planta ${room.floorNumber}` : null);
+  return [room.building, floor, room.address?.street].filter(Boolean).join(' · ');
+}
+
+/**
  * GET /salas
- * Meeting rooms and whether they are free in the period asked for
+ * The meeting rooms, with where they are and how many people they take;
+ * after a search, also whether each one is free in the period asked for
  */
 router.get('/salas', isAuthenticated, async (req, res, next) => {
   try {
@@ -68,35 +77,35 @@ router.get('/salas', isAuthenticated, async (req, res, next) => {
     const valid = DATE.test(date) && TIME.test(start) && TIME.test(end) && start < end;
     const slot = valid ? { date, start, end } : defaultSlot();
 
-    let rooms = null;
+    const places = await getRooms(accessToken);
+    let rooms = places && places
+      .filter(place => place.emailAddress)
+      .map(room => ({
+        name: room.displayName || room.emailAddress,
+        email: room.emailAddress,
+        capacity: room.capacity || null,
+        where: whereIs(room),
+        free: null,
+        bookingUrl: valid ? bookingUrl(room, slot) : null,
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name, 'es'));
     let availabilityKnown = true;
 
-    if (valid) {
-      const places = await getRooms(accessToken);
-      rooms = places && places.filter(place => place.emailAddress);
-
-      if (rooms && rooms.length > 0) {
-        const byAddress = new Map();
-        try {
-          const schedules = await getSchedules(accessToken, rooms.map(room => room.emailAddress), `${date}T${start}:00`, `${date}T${end}:00`, REGION.timeZone);
-          schedules.forEach(schedule => byAddress.set((schedule.scheduleId || '').toLowerCase(), schedule));
-        } catch (error) {
-          if (error.graphStatus === 401) throw error;
-          availabilityKnown = false;
-        }
-
-        rooms = rooms
-          .map(room => ({
-            name: room.displayName || room.emailAddress,
-            email: room.emailAddress,
-            capacity: room.capacity || null,
-            where: [room.building, room.floorLabel].filter(Boolean).join(' · '),
-            free: isFree(byAddress.get(room.emailAddress.toLowerCase())),
-            bookingUrl: bookingUrl(room, slot),
-          }))
-          // Free first, then unknown, then busy
-          .sort((a, b) => [true, null, false].indexOf(a.free) - [true, null, false].indexOf(b.free) || a.name.localeCompare(b.name));
+    // Only a search asks the calendars; the list itself needs no date
+    if (valid && rooms && rooms.length > 0) {
+      const byAddress = new Map();
+      try {
+        const schedules = await getSchedules(accessToken, rooms.map(room => room.email), `${date}T${start}:00`, `${date}T${end}:00`, REGION.timeZone);
+        schedules.forEach(schedule => byAddress.set((schedule.scheduleId || '').toLowerCase(), schedule));
+      } catch (error) {
+        if (error.graphStatus === 401) throw error;
+        availabilityKnown = false;
       }
+
+      rooms = rooms
+        .map(room => ({ ...room, free: isFree(byAddress.get(room.email.toLowerCase())) }))
+        // Free first, then unknown, then busy
+        .sort((a, b) => [true, null, false].indexOf(a.free) - [true, null, false].indexOf(b.free) || a.name.localeCompare(b.name, 'es'));
     }
 
     res.render('rooms', {
@@ -105,7 +114,7 @@ router.get('/salas', isAuthenticated, async (req, res, next) => {
       slot,
       searched,
       valid,
-      roomsReadable: !valid || rooms !== null,
+      roomsReadable: rooms !== null,
       rooms: rooms || [],
       availabilityKnown,
     });
