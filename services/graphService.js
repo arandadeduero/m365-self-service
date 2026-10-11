@@ -123,19 +123,23 @@ const REVIEW_FIELDS = 'id,displayName,userPrincipalName,accountEnabled,userType,
 /**
  * Every account, for the administrators' review, read with the app's token
  * @param {string} appToken - App-only token
- * @returns {Promise<{users: Array, signInsKnown: boolean}|null>} The users, and whether their last sign-in could be read; null when nothing could
+ * @returns {Promise<{users: Array, signInsKnown: boolean, signInsError: string|null}|null>} The users, whether
+ *   their last sign-in could be read and, if not, Graph's error code; null when nothing could be read
  */
 async function getUsersForReview(appToken) {
   const headers = { Authorization: `Bearer ${appToken}` };
+  let signInsError = null;
   try {
-    const users = await getAllPages(`${GRAPH_API_BASE}/users`, { params: { $select: `${REVIEW_FIELDS},signInActivity`, $top: 999 }, headers });
-    return { users, signInsKnown: true };
+    // Graph serves at most 500 users per page when signInActivity is selected
+    const users = await getAllPages(`${GRAPH_API_BASE}/users`, { params: { $select: `${REVIEW_FIELDS},signInActivity`, $top: 500 }, headers });
+    return { users, signInsKnown: true, signInsError };
   } catch (error) {
+    signInsError = error.response?.data?.error?.code || error.message;
     console.error('Error fetching users with sign-in activity, trying without:', error.response?.data || error.message);
   }
   try {
     const users = await getAllPages(`${GRAPH_API_BASE}/users`, { params: { $select: REVIEW_FIELDS, $top: 999 }, headers });
-    return { users, signInsKnown: false };
+    return { users, signInsKnown: false, signInsError };
   } catch (error) {
     console.error('Error fetching users for review:', error.response?.data || error.message);
     return null;

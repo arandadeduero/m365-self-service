@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const test = require('ava').default;
 const request = require('supertest');
-const { stubAxios, stubMsal, signInAgent, getCsrfToken, auditEvents } = require('./helpers/stubs');
+const { stubAxios, stubMsal, signInAgent, getCsrfToken, auditEvents, httpError } = require('./helpers/stubs');
 const { reviewAccounts, describeLicenseStock } = require('../services/accountReview');
 const { resetMessageCache } = require('../services/messageCenterService');
 
@@ -108,6 +108,27 @@ test.serial('GET /admin/licencias and /admin/cuentas read Graph and show the lis
   t.true(accounts.text.includes('informe de métodos de autenticación necesita'));
   // Read with the app's token, not the administrator's
   t.is(http.callsTo('get', '/v1.0/users')[0].config.headers.Authorization, 'Bearer app-token');
+  t.is(http.callsTo('get', '/v1.0/users')[0].config.params.$top, 500);
+});
+
+test.serial('GET /admin/cuentas says why the last sign-in cannot be known, in Graph\'s own words', async t => {
+  const admin = await signInAs(t, ADMIN, { admin: true });
+  http.on('get', '/v1.0/users', ({ config }) => {
+    if (config.params.$select.includes('signInActivity')) {
+      const error = httpError(403);
+      error.response.data.error.code = 'Authentication_RequestFromNonPremiumTenantOrB2CTenant';
+      throw error;
+    }
+    return { value: [{ id: 'a', displayName: 'Ana', userPrincipalName: 'ana@arandadeduero.es', accountEnabled: true, assignedLicenses: [{}] }] };
+  });
+  http.fail('get', '/userRegistrationDetails', 403);
+
+  const res = await admin.get('/admin/cuentas').expect(200);
+
+  t.true(res.text.includes('sin licencias Entra ID P1 o P2'));
+  t.true(res.text.includes('Graph responde Authentication_RequestFromNonPremiumTenantOrB2CTenant'));
+  // The rest of the review still runs on the users read without the property
+  t.true(res.text.includes('1 cuentas de personas'));
 });
 
 test.serial('GET /admin/avisos lists the message center, or says the permission is missing', async t => {

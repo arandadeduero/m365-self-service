@@ -5,9 +5,11 @@
 const DAY_MS = 24 * 60 * 60 * 1000;
 const IDLE_DAYS = 90;
 
+// The last successful one when Graph gives it (since December 2023); the last
+// attempt, interactive or not, otherwise
 const lastSignIn = (user) => {
   const activity = user.signInActivity || {};
-  const dates = [activity.lastSignInDateTime, activity.lastNonInteractiveSignInDateTime].filter(Boolean).map(date => new Date(date).getTime());
+  const dates = [activity.lastSuccessfulSignInDateTime, activity.lastSignInDateTime, activity.lastNonInteractiveSignInDateTime].filter(Boolean).map(date => new Date(date).getTime());
   return dates.length ? new Date(Math.max(...dates)) : null;
 };
 

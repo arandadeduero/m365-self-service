@@ -12,8 +12,14 @@
   <% } else { %>
     <p class="text-muted small"><%= review.total %> cuentas de personas<% if (review.guests > 0) { %> y <%= review.guests %> invitados externos<% } %>.</p>
     <%
+      // What Graph's refusal means, so the fix is clear
+      const signInsHints = {
+        Authentication_RequestFromNonPremiumTenantOrB2CTenant: 'Microsoft no da el último inicio de sesión sin licencias Entra ID P1 o P2 en el tenant.',
+        Authorization_RequestDenied: 'A la aplicación le falta el permiso de aplicación AuditLog.Read.All, con consentimiento de administrador.',
+      };
+      const signInsUnavailable = 'No se puede saber: ' + (signInsHints[signInsError] || 'el registro de inicios de sesión necesita Entra ID P1 y el permiso de aplicación AuditLog.Read.All.') + (signInsError ? ` (Graph responde ${signInsError}.)` : '');
       const sections = [
-        ['Sin iniciar sesión en 90 días', review.idle, 'No se puede saber: el registro de inicios de sesión necesita Entra ID P1 y el permiso de aplicación AuditLog.Read.All.'],
+        ['Sin iniciar sesión en 90 días', review.idle, signInsUnavailable],
         ['Sin segundo factor', review.withoutMfa, 'No se puede saber: el informe de métodos de autenticación necesita Entra ID P1 y el permiso de aplicación UserAuthenticationMethod.Read.All.'],
         ['Contraseña caducada', review.expiredPassword, 'No se comprueba: no hay PASSWORD_MAX_AGE_DAYS configurado.'],
         ['Deshabilitadas con licencia', review.disabledWithLicense, null],

@@ -120,7 +120,7 @@ router.get('/admin/cuentas', isAuthenticated, requireAdmin, async (req, res, nex
       })
       : null;
 
-    res.render('admin-accounts', { title: 'Cuentas que necesitan atención', currentPage: 'audit', review });
+    res.render('admin-accounts', { title: 'Cuentas que necesitan atención', currentPage: 'audit', review, signInsError: listing ? listing.signInsError : null });
   } catch (error) {
     next(error);
   }
