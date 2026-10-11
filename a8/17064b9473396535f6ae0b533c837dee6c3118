@@ -1,0 +1,21 @@
+services/appGrants.js
+  s_011367d8e8fa7a::t_6a20478c97acbd 43-52,87
+test/apps.test.js
+  s_011367d8e8fa7a::t_6a7a6a668788d7 53-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a817064b9473396535f6ae0b533c837dee6c3118",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
