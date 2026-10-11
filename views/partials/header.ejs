@@ -26,6 +26,12 @@
       ADMIN
     </div>
   <% } %>
+  <% if (typeof serviceIssues !== 'undefined' && serviceIssues.length > 0) { %>
+    <div class="alert alert-warning rounded-0 border-0 mb-0 py-2 text-center" role="status">
+      <strong>Incidencia en Microsoft 365:</strong>
+      <%= serviceIssues.slice(0, 3).map(issue => `${issue.service}: ${issue.title}`).join(' · ') %>
+    </div>
+  <% } %>
   <% if (typeof currentPage !== 'undefined' && currentPage !== 'login') { %>
   <nav class="navbar navbar-expand-lg app-nav border-bottom shadow-sm">
     <div class="container">
@@ -46,6 +52,12 @@
           </li>
           <li class="nav-item">
             <a href="/organigrama" class="nav-link <%= currentPage === 'organigrama' ? 'active' : '' %>">Organigrama</a>
+          </li>
+          <li class="nav-item">
+            <a href="/directorio" class="nav-link <%= currentPage === 'directory' ? 'active' : '' %>">Directorio</a>
+          </li>
+          <li class="nav-item">
+            <a href="/account" class="nav-link <%= currentPage === 'account' ? 'active' : '' %>">Mi cuenta</a>
           </li>
           <li class="nav-item">
             <a href="/blog" class="nav-link <%= currentPage === 'blog' ? 'active' : '' %>">Blog</a>

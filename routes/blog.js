@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const { isAuthenticated, checkPermission } = require('../middleware/auth');
+const { verifyCsrfToken } = require('../middleware/csrf');
+const { auditRequest } = require('../services/auditService');
 const { getCategories } = require('../services/wpService');
 const { sendEmail } = require('../services/graphService');
 const { jetpackEmail } = require('../config/wpConfig');
@@ -21,7 +23,7 @@ router.get('/blog', isAuthenticated, checkPermission, async (req, res, next) => 
   }
 });
 
-router.post('/blog', isAuthenticated, checkPermission, upload.array('files', 5), async (req, res, next) => {
+router.post('/blog', isAuthenticated, checkPermission, upload.array('files', 5), verifyCsrfToken, async (req, res, next) => {
   try {
     const { title, content, categories, delay, status } = req.body;
     const files = req.files;
@@ -55,6 +57,7 @@ router.post('/blog', isAuthenticated, checkPermission, upload.array('files', 5),
 
 
     await sendEmail(req.session.accessToken, emailData);
+    await auditRequest(req, 'blog.post', { title, status, attachments: attachments.length });
 
     res.redirect('/blog');
   } catch (error) {

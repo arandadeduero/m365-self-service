@@ -8,23 +8,38 @@
 const axios = require('axios');
 const graphConfig = require('../config/graphConfig');
 
-/**
- * Helper function to process requests in batches to avoid overwhelming the API
- * @param {Array} items - Items to process
- * @param {Function} processFn - Async function to process each item
- * @param {number} batchSize - Number of items to process concurrently
- * @returns {Promise<Array>} Results from all batches
- */
-async function processBatches(items, processFn, batchSize = 10) {
-  const results = [];
+const GRAPH_API_BASE = 'https://graph.microsoft.com/v1.0';
 
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-    const batchResults = await Promise.all(batch.map(processFn));
-    results.push(...batchResults);
+/**
+ * Build the error thrown to callers, keeping the HTTP status Graph answered
+ * with so that an expired or revoked token (401) can be told apart
+ * @param {string} message - Message for the caller
+ * @param {Error} error - Original axios error
+ * @returns {Error}
+ */
+function graphError(message, error) {
+  const err = new Error(message);
+  err.graphStatus = error.response?.status;
+  return err;
+}
+
+/**
+ * Read a Graph collection to the end, following @odata.nextLink
+ * @param {string} url - Collection endpoint
+ * @param {Object} config - axios config for the first request
+ * @returns {Promise<Array>} Items of every page
+ */
+async function getAllPages(url, config) {
+  let response = await axios.get(url, config);
+  const items = [...(response.data.value || [])];
+
+  while (response.data['@odata.nextLink']) {
+    // The next link already carries the query, so only the headers are sent again
+    response = await axios.get(response.data['@odata.nextLink'], { headers: config.headers });
+    items.push(...(response.data.value || []));
   }
 
-  return results;
+  return items;
 }
 
 /**
@@ -42,7 +57,7 @@ async function getUserProfile(accessToken) {
     return response.data;
   } catch (error) {
     console.error('Error fetching user profile:', error.response?.data || error.message);
-    throw new Error('Failed to fetch user profile');
+    throw graphError('Failed to fetch user profile', error);
   }
 }
 
@@ -53,17 +68,16 @@ async function getUserProfile(accessToken) {
  */
 async function getAllUsers(accessToken) {
   try {
-    const response = await axios.get('https://graph.microsoft.com/v1.0/users', {
+    return await getAllPages(`${GRAPH_API_BASE}/users`, {
       params: {
-        $select: 'id,displayName,mail,jobTitle,department',
+        $select: 'id,displayName,mail,jobTitle,department,officeLocation,businessPhones,mobilePhone',
         $orderby: 'displayName',
-        $top: 999, // Get up to 999 users
+        $top: 999, // Largest page Graph allows
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return response.data.value || [];
   } catch (error) {
     console.error('Error fetching all users:', error.response?.data || error.message);
     return [];
@@ -73,12 +87,13 @@ async function getAllUsers(accessToken) {
 /**
  * Send an email via Microsoft Graph
  * @param {string} accessToken - Valid access token for Microsoft Graph
- * @param {Object} emailData - Email data (to, subject, body)
+ * @param {Object} emailData - Email data (to, subject, body); `to` is one address or a list
  * @returns {Promise<void>}
  */
 async function sendEmail(accessToken, emailData) {
   try {
     const { to, subject, body, attachments } = emailData;
+    const recipients = Array.isArray(to) ? to : [to];
     
     const message = {
       message: {
@@ -87,13 +102,11 @@ async function sendEmail(accessToken, emailData) {
           contentType: 'Text',
           content: body,
         },
-        toRecipients: [
-          {
-            emailAddress: {
-              address: to,
-            },
+        toRecipients: recipients.map(address => ({
+          emailAddress: {
+            address,
           },
-        ],
+        })),
       },
     };
 
@@ -118,10 +131,10 @@ async function sendEmail(accessToken, emailData) {
       }
     );
 
-    console.log(`Email sent successfully to ${to}`);
+    console.log(`Email sent successfully to ${recipients.join(', ')}`);
   } catch (error) {
     console.error('Error sending email:', error.response?.data || error.message);
-    throw new Error('Failed to send email');
+    throw graphError('Failed to send email', error);
   }
 }
 
@@ -157,12 +170,11 @@ async function getUserPhoto(accessToken) {
  */
 async function getUserGroups(accessToken) {
   try {
-    const response = await axios.get(graphConfig.groupMemberships.endpoint, {
+    return await getAllPages(graphConfig.groupMemberships.endpoint, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return response.data.value || [];
   } catch (error) {
     console.error('Error fetching user groups:', error.response?.data || error.message);
     // Return empty array instead of throwing - groups are optional
@@ -201,19 +213,18 @@ async function getUserManager(accessToken) {
  */
 async function getAllTenantGroups(accessToken) {
   try {
-    const response = await axios.get('https://graph.microsoft.com/v1.0/groups', {
+    return await getAllPages(`${GRAPH_API_BASE}/groups`, {
       params: {
-        $select: 'id,displayName,description,mail,mailEnabled,securityEnabled',
+        $select: 'id,displayName,description,mail,mailEnabled,securityEnabled,groupTypes',
         $orderby: 'displayName',
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return response.data.value || [];
   } catch (error) {
     console.error('Error fetching all tenant groups:', error.response?.data || error.message);
-    throw new Error('Failed to fetch tenant groups');
+    throw graphError('Failed to fetch tenant groups', error);
   }
 }
 
@@ -251,174 +262,298 @@ async function getGroupsWithMembership(accessToken) {
 }
 
 /**
- * Get all distribution lists (mail-enabled groups) in the tenant
- * @param {string} accessToken - Valid access token for Microsoft Graph
- * @returns {Promise<Array>} Array of all distribution lists in the tenant
+ * Get the owners of a group
+ * @param {string} accessToken - Valid access token
+ * @param {string} groupId - Group ID
+ * @returns {Promise<Array>} Owners, or [] if the group has none or they cannot be read
  */
-async function getAllDistributionLists(accessToken) {
+async function getGroupOwners(accessToken, groupId) {
   try {
-    const response = await axios.get('https://graph.microsoft.com/v1.0/groups', {
+    return await getAllPages(`${GRAPH_API_BASE}/groups/${encodeURIComponent(groupId)}/owners`, {
       params: {
-        $filter: 'mailEnabled eq true',
-        $select: 'id,displayName,description,mail,mailEnabled,securityEnabled,groupTypes',
-        $orderby: 'displayName',
+        $select: 'id,displayName,mail,userPrincipalName',
       },
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
-    return response.data.value || [];
   } catch (error) {
-    console.error('Error fetching distribution lists:', error.response?.data || error.message);
-    throw new Error('Failed to fetch distribution lists');
-  }
-}
-
-/**
- * Get all distribution lists with user membership status
- * @param {string} accessToken - Valid access token for Microsoft Graph
- * @returns {Promise<Object>} Object with all distribution lists and user's membership
- */
-async function getDistributionListsWithMembership(accessToken) {
-  try {
-    const [allDistLists, userGroups] = await Promise.all([
-      getAllDistributionLists(accessToken),
-      getUserGroups(accessToken),
-    ]);
-
-    // Create a Set of user's group IDs for fast lookup
-    const userGroupIds = new Set(userGroups.map(g => g.id));
-
-    // Add membership status to each distribution list
-    const distListsWithStatus = allDistLists.map(list => ({
-      ...list,
-      isMember: userGroupIds.has(list.id),
-    }));
-
-    // Count how many distribution lists user is member of
-    const memberCount = distListsWithStatus.filter(dl => dl.isMember).length;
-
-    return {
-      allDistLists: distListsWithStatus,
-      memberCount,
-      totalCount: allDistLists.length,
-    };
-  } catch (error) {
-    console.error('Error fetching distribution lists with membership:', error.message);
-    throw error;
-  }
-}
-
-/**
- * Get all shared mailboxes in the tenant
- * Checks mailboxSettings.userPurpose to identify shared mailboxes
- * @param {string} accessToken - Valid access token for Microsoft Graph
- * @returns {Promise<Array>} Array of all shared mailboxes in the tenant
- */
-async function getAllSharedMailboxes(accessToken) {
-  try {
-    // Step 1: Get all users in the tenant
-    const response = await axios.get('https://graph.microsoft.com/v1.0/users', {
-      params: {
-        $select: 'id,displayName,mail,userPrincipalName,accountEnabled',
-        $orderby: 'displayName',
-      },
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-
-    const users = response.data.value || [];
-
-    // Filter out users without mail addresses first
-    const usersWithMail = users.filter(user => user.mail);
-
-    console.log(`Checking ${usersWithMail.length} users with mail addresses for shared mailboxes...`);
-
-    // Step 2: Check each user's mailboxSettings to determine if it's a shared mailbox
-    // Process in batches of 10 to avoid overwhelming the API
-    const checkMailbox = async (user) => {
-      try {
-        // Get mailbox settings for this user
-        const mailboxResponse = await axios.get(
-          `https://graph.microsoft.com/v1.0/users/${user.id}/mailboxSettings`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-
-        const mailboxSettings = mailboxResponse.data;
-
-        // Check if userPurpose is 'shared'
-        if (mailboxSettings.userPurpose === 'shared') {
-          console.log(`Found shared mailbox: ${user.displayName} (${user.mail})`);
-          return {
-            id: user.id,
-            displayName: user.displayName,
-            mail: user.mail,
-            userPrincipalName: user.userPrincipalName,
-            accountEnabled: user.accountEnabled,
-            userPurpose: mailboxSettings.userPurpose,
-          };
-        }
-      } catch (error) {
-        // Silently skip users where we can't access mailbox settings
-        // This is normal for some system accounts or users without mailboxes
-      }
-
-      return null;
-    };
-
-    // Process in batches for better performance and API rate limit management
-    const results = await processBatches(usersWithMail, checkMailbox, 10);
-
-    // Filter out null results and return only shared mailboxes
-    const sharedMailboxes = results.filter(mailbox => mailbox !== null);
-
-    console.log(`Found ${sharedMailboxes.length} shared mailboxes out of ${usersWithMail.length} users with mail`);
-
-    return sharedMailboxes;
-  } catch (error) {
-    console.error('Error fetching shared mailboxes:', error.response?.data || error.message);
-    // If the query fails, return empty array instead of throwing
-    // This prevents the entire page from failing
+    console.error(`Error fetching owners of group ${groupId}:`, error.response?.data || error.message);
+    // Return empty array instead of throwing - a group without owners is handled by its caller
     return [];
   }
 }
 
 /**
- * Get all shared mailboxes with user access status
- * Note: Detecting access to shared mailboxes requires checking delegated permissions
- * This is a simplified version that lists all shared mailboxes
- * @param {string} accessToken - Valid access token for Microsoft Graph
- * @returns {Promise<Object>} Object with all shared mailboxes
+ * Get the groups the signed-in user owns
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array>} Groups (id and name)
  */
-async function getSharedMailboxesWithAccess(accessToken) {
+async function getOwnedGroups(accessToken) {
   try {
-    const allMailboxes = await getAllSharedMailboxes(accessToken);
-
-    // Mark all as "not accessible" by default since we can't easily check access
-    // In a real implementation, you'd need to check mailbox permissions via EWS or Exchange Online PowerShell
-    const mailboxesWithStatus = allMailboxes.map(mailbox => ({
-      ...mailbox,
-      hasAccess: false, // Default to false, would need additional API calls to verify
-    }));
-
-    return {
-      allMailboxes: mailboxesWithStatus,
-      accessCount: 0, // Would need to be calculated from actual permissions
-      totalCount: allMailboxes.length,
-    };
+    return await getAllPages(`${GRAPH_API_BASE}/me/ownedObjects/microsoft.graph.group`, {
+      params: {
+        $select: 'id,displayName,description,mail,mailEnabled,securityEnabled,groupTypes',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
   } catch (error) {
-    console.error('Error fetching shared mailboxes with access:', error.message);
-    // Return empty structure instead of throwing to prevent page crashes
-    return {
-      allMailboxes: [],
-      accessCount: 0,
-      totalCount: 0,
+    console.error('Error fetching owned groups:', error.response?.data || error.message);
+    throw graphError('Failed to fetch owned groups', error);
+  }
+}
+
+/**
+ * Add a user to a group, with the rights of whoever the token belongs to
+ * @param {string} accessToken - Valid access token of an owner of the group
+ * @param {string} groupId - Group ID
+ * @param {string} userId - Directory ID of the new member
+ * @returns {Promise<void>} Also resolves when the user was already a member
+ */
+async function addGroupMember(accessToken, groupId, userId) {
+  try {
+    await axios.post(
+      `${GRAPH_API_BASE}/groups/${encodeURIComponent(groupId)}/members/$ref`,
+      { '@odata.id': `${GRAPH_API_BASE}/directoryObjects/${userId}` },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+  } catch (error) {
+    const message = error.response?.data?.error?.message || '';
+    if (error.response?.status === 400 && message.includes('already exist')) {
+      return;
+    }
+    console.error(`Error adding member to group ${groupId}:`, error.response?.data || error.message);
+    throw graphError('Failed to add group member', error);
+  }
+}
+
+/**
+ * Get the people in a group (members that are groups or devices are left out)
+ * @param {string} accessToken - Valid access token
+ * @param {string} groupId - Group ID
+ * @returns {Promise<Array>} Users, with userType telling guests apart
+ */
+async function getGroupMembers(accessToken, groupId) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/groups/${encodeURIComponent(groupId)}/members/microsoft.graph.user`, {
+      params: {
+        $select: 'id,displayName,mail,userPrincipalName,userType',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    console.error(`Error fetching members of group ${groupId}:`, error.response?.data || error.message);
+    throw graphError('Failed to fetch group members', error);
+  }
+}
+
+/**
+ * Remove a user from a group, with the rights of whoever the token belongs to
+ * @param {string} accessToken - Valid access token of an owner of the group
+ * @param {string} groupId - Group ID
+ * @param {string} userId - Directory ID of the member
+ * @returns {Promise<void>} Also resolves when the user was not a member
+ */
+async function removeGroupMember(accessToken, groupId, userId) {
+  try {
+    await axios.delete(
+      `${GRAPH_API_BASE}/groups/${encodeURIComponent(groupId)}/members/${encodeURIComponent(userId)}/$ref`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return;
+    }
+    console.error(`Error removing member from group ${groupId}:`, error.response?.data || error.message);
+    throw graphError('Failed to remove group member', error);
+  }
+}
+
+/**
+ * Close every session of the signed-in user, on every device and app. They
+ * have to sign in again everywhere, this app included.
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<void>}
+ */
+async function revokeSignInSessions(accessToken) {
+  try {
+    await axios.post(`${GRAPH_API_BASE}/me/revokeSignInSessions`, {}, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    console.error('Error revoking sign-in sessions:', error.response?.data || error.message);
+    throw graphError('Failed to revoke sign-in sessions', error);
+  }
+}
+
+/**
+ * Get who the signed-in user shares their calendar with
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array|null>} calendarPermissions, or null if they cannot be read
+ */
+async function getCalendarPermissions(accessToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/me/calendar/calendarPermissions`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching calendar permissions:', error.response?.data || error.message);
+    // null and not []: "could not check" must not look like "shared with nobody"
+    return null;
+  }
+}
+
+/**
+ * Whether the signed-in user can open somebody else's mailbox (a shared one)
+ * @param {string} accessToken - Valid access token
+ * @param {string} address - Address of the mailbox
+ * @returns {Promise<boolean|null>} null when Graph answered neither yes nor no
+ */
+async function canOpenMailbox(accessToken, address) {
+  try {
+    await axios.get(`${GRAPH_API_BASE}/users/${encodeURIComponent(address)}/mailFolders/inbox`, {
+      params: {
+        $select: 'id',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return true;
+  } catch (error) {
+    const status = error.response?.status;
+    if (status === 403 || status === 404) {
+      return false;
+    }
+    console.error(`Error checking access to mailbox ${address}:`, error.response?.data || error.message);
+    return null;
+  }
+}
+
+/**
+ * Get the meeting rooms of the organization
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array|null>} Rooms, or null if they cannot be read
+ */
+async function getRooms(accessToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/places/microsoft.graph.room`, {
+      params: {
+        $top: 100,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching rooms:', error.response?.data || error.message);
+    return null;
+  }
+}
+
+// Mailboxes Graph accepts in one getSchedule request
+const SCHEDULES_PER_REQUEST = 20;
+
+/**
+ * Get the free/busy information of several mailboxes for a period
+ * @param {string} accessToken - Valid access token
+ * @param {Array<string>} addresses - Mailboxes (people or rooms)
+ * @param {string} start - Local date and time, e.g. 2026-10-12T10:00:00
+ * @param {string} end - Local date and time
+ * @param {string} timeZone - Time zone of start and end, as Exchange names it
+ * @returns {Promise<Array>} One scheduleInformation per mailbox
+ */
+async function getSchedules(accessToken, addresses, start, end, timeZone) {
+  try {
+    const schedules = [];
+    for (let index = 0; index < addresses.length; index += SCHEDULES_PER_REQUEST) {
+      const response = await axios.post(
+        `${GRAPH_API_BASE}/me/calendar/getSchedule`,
+        {
+          schedules: addresses.slice(index, index + SCHEDULES_PER_REQUEST),
+          startTime: { dateTime: start, timeZone },
+          endTime: { dateTime: end, timeZone },
+          availabilityViewInterval: 15,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      schedules.push(...(response.data.value || []));
+    }
+    return schedules;
+  } catch (error) {
+    console.error('Error fetching schedules:', error.response?.data || error.message);
+    throw graphError('Failed to fetch schedules', error);
+  }
+}
+
+/**
+ * Get the sign-in methods the signed-in user has registered
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array|null>} Methods, or null if they cannot be read
+ */
+async function getAuthenticationMethods(accessToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/me/authentication/methods`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching authentication methods:', error.response?.data || error.message);
+    // null and not []: "could not check" must not look like "has none"
+    return null;
+  }
+}
+
+/**
+ * Get the devices registered to or owned by the signed-in user
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array>} Devices, or [] if they cannot be read
+ */
+async function getUserDevices(accessToken) {
+  try {
+    const config = {
+      params: {
+        $select: 'id,displayName,operatingSystem,operatingSystemVersion,approximateLastSignInDateTime',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
     };
+    const [registered, owned] = await Promise.all([
+      getAllPages(`${GRAPH_API_BASE}/me/registeredDevices/microsoft.graph.device`, config),
+      getAllPages(`${GRAPH_API_BASE}/me/ownedDevices/microsoft.graph.device`, config),
+    ]);
+
+    // Most devices appear in both lists
+    const byId = new Map([...registered, ...owned].map(device => [device.id, device]));
+    return [...byId.values()];
+  } catch (error) {
+    console.error('Error fetching user devices:', error.response?.data || error.message);
+    return [];
   }
 }
 
@@ -465,7 +600,280 @@ async function updateUserProfile(accessToken, profileData) {
     });
   } catch (error) {
     console.error('Error updating user profile:', error.response?.data || error.message);
-    throw new Error('Failed to update user profile');
+    throw graphError('Failed to update user profile', error);
+  }
+}
+
+/**
+ * Replace the profile photo of the signed-in user
+ * @param {string} accessToken - Valid access token
+ * @param {Buffer} photo - Image data
+ * @param {string} contentType - image/jpeg or image/png
+ * @returns {Promise<void>}
+ */
+async function updateUserPhoto(accessToken, photo, contentType) {
+  try {
+    await axios.put(graphConfig.userPhoto.endpoint, photo, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': contentType,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating user photo:', error.response?.data || error.message);
+    throw graphError('Failed to update user photo', error);
+  }
+}
+
+/**
+ * Get the account details shown on the account page
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Object>} Password change date, alternate addresses, phones and creation date
+ */
+async function getAccountStatus(accessToken) {
+  try {
+    const response = await axios.get(graphConfig.userProfile.endpoint, {
+      params: {
+        $select: 'lastPasswordChangeDateTime,otherMails,createdDateTime,mobilePhone,businessPhones',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching account status:', error.response?.data || error.message);
+    throw graphError('Failed to fetch account status', error);
+  }
+}
+
+/**
+ * Get the licenses assigned to the signed-in user
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array>} License details, or [] if they cannot be read
+ */
+async function getUserLicenses(accessToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/me/licenseDetails`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching user licenses:', error.response?.data || error.message);
+    // Return empty array instead of throwing - licenses are optional
+    return [];
+  }
+}
+
+/**
+ * Get the groups the signed-in user belongs to, with what is needed to tell
+ * what kind of group each one is
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array>} Groups (directory roles are not included)
+ */
+async function getMyGroups(accessToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/me/memberOf/microsoft.graph.group`, {
+      params: {
+        $select: 'id,displayName,description,mail,mailEnabled,securityEnabled,groupTypes,resourceProvisioningOptions',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching my groups:', error.response?.data || error.message);
+    throw graphError('Failed to fetch groups', error);
+  }
+}
+
+/**
+ * Get the inbox rules of the signed-in user
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array|null>} Rules, or null if they cannot be read
+ */
+async function getInboxRules(accessToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/me/mailFolders/inbox/messageRules`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching inbox rules:', error.response?.data || error.message);
+    // null and not []: "could not check" must not look like "has none"
+    return null;
+  }
+}
+
+/**
+ * Get how much OneDrive space the signed-in user has and uses
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Object|null>} Quota (total, used, remaining in bytes), or null if unknown
+ */
+async function getDriveQuota(accessToken) {
+  try {
+    const response = await axios.get(`${GRAPH_API_BASE}/me/drive`, {
+      params: {
+        $select: 'quota',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data.quota || null;
+  } catch (error) {
+    console.error('Error fetching drive quota:', error.response?.data || error.message);
+    return null;
+  }
+}
+
+/**
+ * Get the most recent sign-ins of a user from the directory's sign-in log.
+ * Users cannot read their own, so this needs an app-only token.
+ * @param {string} appToken - App-only access token
+ * @param {string} userId - Directory ID of the user
+ * @returns {Promise<Array>} Sign-ins, newest first
+ */
+async function getRecentSignIns(appToken, userId) {
+  try {
+    const response = await axios.get(`${GRAPH_API_BASE}/auditLogs/signIns`, {
+      params: {
+        $filter: `userId eq '${userId.replace(/'/g, "''")}'`,
+        $orderby: 'createdDateTime desc',
+        $top: 25,
+      },
+      headers: {
+        Authorization: `Bearer ${appToken}`,
+      },
+    });
+    return response.data.value || [];
+  } catch (error) {
+    console.error('Error fetching sign-ins:', error.response?.data || error.message);
+    throw graphError('Failed to fetch sign-ins', error);
+  }
+}
+
+/**
+ * Get the mailbox settings of the signed-in user
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Object>} mailboxSettings (time zone, language, working hours...)
+ */
+async function getMailboxSettings(accessToken) {
+  try {
+    const response = await axios.get(`${GRAPH_API_BASE}/me/mailboxSettings`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching mailbox settings:', error.response?.data || error.message);
+    throw graphError('Failed to fetch mailbox settings', error);
+  }
+}
+
+/**
+ * Change mailbox settings of the signed-in user
+ * @param {string} accessToken - Valid access token
+ * @param {Object} settings - The settings to change; others are left as they are
+ * @returns {Promise<void>}
+ */
+async function updateMailboxSettings(accessToken, settings) {
+  try {
+    await axios.patch(`${GRAPH_API_BASE}/me/mailboxSettings`, settings, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    console.error('Error updating mailbox settings:', error.response?.data || error.message);
+    throw graphError('Failed to update mailbox settings', error);
+  }
+}
+
+/**
+ * Get the preferred language of the signed-in user's account
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<string|null>} Locale such as es-ES, or null if none is set
+ */
+async function getPreferredLanguage(accessToken) {
+  try {
+    const response = await axios.get(graphConfig.userProfile.endpoint, {
+      params: {
+        $select: 'preferredLanguage',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data.preferredLanguage || null;
+  } catch (error) {
+    console.error('Error fetching preferred language:', error.response?.data || error.message);
+    throw graphError('Failed to fetch preferred language', error);
+  }
+}
+
+/**
+ * Get the time zone of the signed-in user's mailbox
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<string>} Time zone name as Exchange knows it, or UTC if none is set
+ */
+async function getMailboxTimeZone(accessToken) {
+  try {
+    const response = await axios.get(`${GRAPH_API_BASE}/me/mailboxSettings/timeZone`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return response.data.value || 'UTC';
+  } catch (error) {
+    console.error('Error fetching mailbox time zone:', error.response?.data || error.message);
+    throw graphError('Failed to fetch mailbox settings', error);
+  }
+}
+
+/**
+ * Get the automatic replies (out of office) setting of the signed-in user,
+ * with its dates expressed in the given time zone
+ * @param {string} accessToken - Valid access token
+ * @param {string} timeZone - Time zone from getMailboxTimeZone
+ * @returns {Promise<Object>} automaticRepliesSetting
+ */
+async function getAutomaticReplies(accessToken, timeZone) {
+  try {
+    const response = await axios.get(`${GRAPH_API_BASE}/me/mailboxSettings/automaticRepliesSetting`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        Prefer: `outlook.timezone="${timeZone}"`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching automatic replies:', error.response?.data || error.message);
+    throw graphError('Failed to fetch automatic replies', error);
+  }
+}
+
+/**
+ * Change the automatic replies (out of office) setting of the signed-in user
+ * @param {string} accessToken - Valid access token
+ * @param {Object} setting - automaticRepliesSetting
+ * @returns {Promise<void>}
+ */
+async function updateAutomaticReplies(accessToken, setting) {
+  try {
+    await axios.patch(`${GRAPH_API_BASE}/me/mailboxSettings`, { automaticRepliesSetting: setting }, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+    });
+  } catch (error) {
+    console.error('Error updating automatic replies:', error.response?.data || error.message);
+    throw graphError('Failed to update automatic replies', error);
   }
 }
 
@@ -484,7 +892,7 @@ async function getUserExtendedInfo(accessToken) {
     return response.data;
   } catch (error) {
     console.error('Error fetching extended user info:', error.response?.data || error.message);
-    throw new Error('Failed to fetch extended user info');
+    throw graphError('Failed to fetch extended user info', error);
   }
 }
 
@@ -496,27 +904,22 @@ async function getUserExtendedInfo(accessToken) {
 async function getJoinedTeamsAndChannels(accessToken) {
   try {
     // 1. Get joined teams
-    const teamsResponse = await axios.get('https://graph.microsoft.com/v1.0/me/joinedTeams', {
+    const teams = await getAllPages(`${GRAPH_API_BASE}/me/joinedTeams`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
 
-    const teams = teamsResponse.data.value || [];
-
     // 2. Get channels for each team
     const teamsWithChannels = await Promise.all(
       teams.map(async (team) => {
         try {
-          const channelsResponse = await axios.get(`https://graph.microsoft.com/v1.0/teams/${team.id}/channels`, {
+          const channels = await getAllPages(`${GRAPH_API_BASE}/teams/${team.id}/channels`, {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           });
-          return {
-            ...team,
-            channels: channelsResponse.data.value || []
-          };
+          return { ...team, channels };
         } catch (error) {
           console.error(`Error fetching channels for team ${team.id}:`, error.message);
           return { ...team, channels: [] };
@@ -527,7 +930,7 @@ async function getJoinedTeamsAndChannels(accessToken) {
     return teamsWithChannels;
   } catch (error) {
     console.error('Error fetching joined teams:', error.response?.data || error.message);
-    throw new Error('Failed to fetch teams');
+    throw graphError('Failed to fetch teams', error);
   }
 }
 
@@ -539,16 +942,13 @@ async function getJoinedTeamsAndChannels(accessToken) {
 async function getUserAdminRoles(accessToken) {
   try {
     const url = 'https://graph.microsoft.com/v1.0/me/memberOf/microsoft.graph.directoryRole';
-    const response = await axios.get(url, {
+    const roles = await getAllPages(url, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
 
-    const roles = response.data.value || [];
-
-    return roles
-      .map(role => role.displayName);
+    return roles.map(role => role.displayName);
   } catch (error) {
     console.error('Error fetching admin roles:', error.response?.data || error.message);
     return [];
@@ -556,24 +956,73 @@ async function getUserAdminRoles(accessToken) {
 }
 
 /**
- * Check if the user has administrative directory roles
+ * Get every user in the organization together with the id of their manager
  * @param {string} accessToken - Valid access token
- * @returns {Promise<boolean>} True if user is an admin
+ * @returns {Promise<Array>} Users sorted by name, each with a managerId (or null)
  */
-async function isUserAdmin(accessToken) {
-  const roles = await getUserAdminRoles(accessToken);
-  return roles.length > 0;
+async function getUsersWithManager(accessToken) {
+  try {
+    const users = await getAllPages(`${GRAPH_API_BASE}/users`, {
+      params: {
+        $select: 'id,displayName,mail,jobTitle,department',
+        // One request per page instead of one manager request per user
+        $expand: 'manager($select=id)',
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+
+    return users
+      .map(({ manager, ...user }) => ({ ...user, managerId: manager ? manager.id : null }))
+      .sort((a, b) => (a.displayName || '').localeCompare(b.displayName || ''));
+  } catch (error) {
+    console.error('Error fetching users with manager:', error.response?.data || error.message);
+    throw graphError('Failed to fetch users', error);
+  }
+}
+
+// Fields needed to issue and check a password reset link
+const RESET_USER_FIELDS = 'id,mail,userPrincipalName,otherMails,lastPasswordChangeDateTime';
+
+/**
+ * Find a user by mail address or user principal name
+ * @param {string} accessToken - Valid access token
+ * @param {string} email - Address to look for
+ * @returns {Promise<Object|null>} The user, or null if nobody has that address
+ */
+async function findUserByEmail(accessToken, email) {
+  try {
+    // Single quotes are doubled inside an OData string literal
+    const literal = email.replace(/'/g, "''");
+    const response = await axios.get(`${GRAPH_API_BASE}/users`, {
+      params: {
+        $filter: `mail eq '${literal}' or userPrincipalName eq '${literal}'`,
+        $select: RESET_USER_FIELDS,
+      },
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+    return (response.data.value || [])[0] || null;
+  } catch (error) {
+    console.error('Error looking up user by email:', error.response?.data || error.message);
+    throw graphError('Failed to look up user', error);
+  }
 }
 
 /**
- * Get manager for a specific user by ID
+ * Get the fields of a user that a password reset link depends on
  * @param {string} accessToken - Valid access token
  * @param {string} userId - User ID
- * @returns {Promise<Object|null>} Manager data
+ * @returns {Promise<Object|null>} The user, or null if it no longer exists
  */
-async function getUserManagerById(accessToken, userId) {
+async function getUserForReset(accessToken, userId) {
   try {
-    const response = await axios.get(`https://graph.microsoft.com/v1.0/users/${userId}/manager`, {
+    const response = await axios.get(`${GRAPH_API_BASE}/users/${encodeURIComponent(userId)}`, {
+      params: {
+        $select: RESET_USER_FIELDS,
+      },
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
@@ -581,8 +1030,8 @@ async function getUserManagerById(accessToken, userId) {
     return response.data;
   } catch (error) {
     if (error.response?.status === 404) return null;
-    console.error(`Error fetching manager for ${userId}:`, error.message);
-    return null;
+    console.error(`Error fetching user ${userId}:`, error.response?.data || error.message);
+    throw graphError('Failed to fetch user', error);
   }
 }
 
@@ -610,7 +1059,7 @@ async function resetUserPassword(accessToken, userId, newPassword) {
     console.log(`Password reset successfully for user ${userId}`);
   } catch (error) {
     console.error('Error resetting password:', error.response?.data || error.message);
-    throw new Error('Failed to reset password');
+    throw graphError('Failed to reset password', error);
   }
 }
 
@@ -619,16 +1068,42 @@ module.exports = {
   getUserPhoto,
   getUserGroups,
   getUserManager,
-  getUserManagerById, // Exportada
   getAllUserData,
   getAllTenantGroups,
   getGroupsWithMembership,
+  getGroupOwners,
+  getOwnedGroups,
+  addGroupMember,
+  getGroupMembers,
+  removeGroupMember,
+  revokeSignInSessions,
+  getCalendarPermissions,
+  canOpenMailbox,
+  getRooms,
+  getSchedules,
+  getAuthenticationMethods,
+  getUserDevices,
   getAllUsers,
+  getUsersWithManager,
+  findUserByEmail,
+  getUserForReset,
   sendEmail,
   updateUserProfile,
+  updateUserPhoto,
+  getAccountStatus,
+  getUserLicenses,
+  getMyGroups,
+  getInboxRules,
+  getDriveQuota,
+  getRecentSignIns,
+  getMailboxSettings,
+  updateMailboxSettings,
+  getPreferredLanguage,
+  getMailboxTimeZone,
+  getAutomaticReplies,
+  updateAutomaticReplies,
   getUserExtendedInfo,
   getJoinedTeamsAndChannels,
-  isUserAdmin,
   getUserAdminRoles,
-  resetUserPassword, // Exportada
+  resetUserPassword,
 };

@@ -4,7 +4,33 @@
  * This middleware handles all errors in the application.
  * It provides detailed error information in development mode,
  * and simple, user-friendly messages in production mode.
+ * Errors marked with `expose` carry a message written for the user,
+ * which is shown in both modes.
  */
+
+/**
+ * Build an error whose message is written for the user, so it is shown in
+ * production too
+ */
+function userError(status, message) {
+  const err = new Error(message);
+  err.status = status;
+  err.expose = true;
+  return err;
+}
+
+/**
+ * Sends the user back to login when Microsoft Graph rejected their token
+ * (revoked, or expired without the possibility of renewing it)
+ */
+function expiredSessionHandler(err, req, res, next) {
+  if (err.graphStatus !== 401 || !req.session || !req.session.accessToken) {
+    return next(err);
+  }
+
+  console.warn('Microsoft Graph rejected the access token, signing the user out');
+  req.session.regenerate(() => res.redirect('/login'));
+}
 
 /**
  * Error handler middleware
@@ -31,7 +57,7 @@ function errorHandler(err, req, res, next) {
   res.status(statusCode).render('error', {
     title: `Error ${statusCode}`,
     statusCode: statusCode,
-    message: isDevelopment ? message : 'Lo sentimos, ha ocurrido un error. Por favor, intenta de nuevo más tarde.',
+    message: isDevelopment || err.expose ? message : 'Lo sentimos, ha ocurrido un error. Por favor, intenta de nuevo más tarde.',
   });
 }
 
@@ -46,6 +72,8 @@ function notFoundHandler(req, res, next) {
 }
 
 module.exports = {
+  userError,
+  expiredSessionHandler,
   errorHandler,
   notFoundHandler,
 };

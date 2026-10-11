@@ -3,15 +3,19 @@
  * Tests for authentication middleware and route access
  */
 
-// Setup: Ensure environment variables are set for testing before requiring server
-process.env.CLIENT_ID = process.env.CLIENT_ID || 'test-client-id';
-process.env.CLIENT_SECRET = process.env.CLIENT_SECRET || 'test-client-secret';
-process.env.TENANT_ID = process.env.TENANT_ID || 'test-tenant-id';
-process.env.SESSION_SECRET = process.env.SESSION_SECRET || 'test-session-secret';
-process.env.TOKEN_SECRET = process.env.TOKEN_SECRET || 'test-token-secret';
+require('./helpers/env');
 
 const test = require('ava').default;
 const request = require('supertest');
+
+// Counts attempts to load a .env file while the app starts
+const dotenv = require('dotenv');
+let dotenvLoads = 0;
+dotenv.config = () => {
+  dotenvLoads += 1;
+  return {};
+};
+
 const app = require('../server');
 
 test('GET / redirects unauthenticated users to login', async t => {
@@ -93,4 +97,8 @@ test('Server starts without errors', t => {
   // This test just checks that the app was created successfully
   t.truthy(app);
   t.is(typeof app, 'function');
+});
+
+test('the app does not load the .env file during tests', t => {
+  t.is(dotenvLoads, 0);
 });

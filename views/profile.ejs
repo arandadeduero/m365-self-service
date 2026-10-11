@@ -113,6 +113,7 @@
     <div class="card shadow-sm border-0 app-panel mb-4">
       <div class="card-body p-4">
         <h3 class="h5 mb-3">Pertenencia a grupos</h3>
+        <p class="text-muted small"><a href="/account/groups">Ver qué me da cada grupo</a></p>
         <hr>
         <ul class="list-group list-group-flush">
           <% groups.forEach(function(group) { %>
@@ -228,7 +229,8 @@
       const response = await fetch('/api/manager-correction', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= csrfToken() %>'
         },
         body: JSON.stringify({
           selectedManagerId,

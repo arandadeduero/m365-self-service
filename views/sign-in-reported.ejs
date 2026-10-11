@@ -1,0 +1,34 @@
+<%- include('partials/header') %>
+
+<main class="container py-5 page-shell">
+  <div class="card shadow-sm border-0 app-panel mx-auto" style="max-width: 640px;">
+    <div class="card-body p-4">
+      <h1 class="h3 mb-3 page-title">Inicio de sesión no reconocido</h1>
+
+      <% if (revoked) { %>
+        <div class="alert alert-success">Se han cerrado todas las sesiones de tu cuenta. Quien estuviera usándola tendrá que volver a identificarse, y tú también.</div>
+      <% } else { %>
+        <div class="alert alert-danger">No se han podido cerrar las sesiones de tu cuenta. Cambia la contraseña ahora mismo.</div>
+      <% } %>
+
+      <% if (notified) { %>
+        <p>Informática ha recibido los datos del inicio de sesión y revisará tu cuenta.</p>
+      <% } else { %>
+        <div class="alert alert-warning">No se ha podido avisar a Informática. Escribe o llama tú: <strong><%= adminEmail %></strong>.</div>
+      <% } %>
+
+      <h2 class="h5 mt-4">Qué hacer ahora</h2>
+      <ol>
+        <li><strong>Cambia la contraseña.</strong> Cerrar las sesiones no sirve de mucho si alguien la conoce.</li>
+        <li>Comprueba en «Mi cuenta» que no hay métodos de inicio de sesión, dispositivos o reglas de correo que no sean tuyos.</li>
+      </ol>
+
+      <div class="d-flex flex-wrap gap-2">
+        <a href="<%= changePasswordUrl %>" class="btn btn-primary">Cambiar la contraseña</a>
+        <a href="/login" class="btn btn-outline-secondary">Volver a entrar en el portal</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

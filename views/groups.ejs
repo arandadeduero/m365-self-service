@@ -4,8 +4,16 @@
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
     <div>
       <h1 class="h2 mb-1 page-title">Grupos</h1>
+      <p class="text-muted mb-0">
+        Un <strong>grupo</strong> reúne a personas para darles acceso a lo mismo: un equipo de Teams, unos archivos, un buzón compartido.
+        Una <strong>lista de distribución</strong> es solo una dirección de correo que reparte los mensajes entre sus miembros.
+        Marca los que necesites y envía la petición: la reciben los propietarios de cada grupo.
+      </p>
     </div>
-    <a href="/auth/logout" class="btn btn-outline-secondary">Cerrar sesion</a>
+    <div>
+      <a href="/groups/requests" class="btn btn-outline-primary me-2">Solicitudes</a>
+      <a href="/auth/logout" class="btn btn-outline-secondary">Cerrar sesion</a>
+    </div>
   </div>
 
   <div class="card shadow-sm border-0 app-panel mb-3">
@@ -177,7 +185,8 @@
       const response = await fetch('/api/group-access-request', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': '<%= csrfToken() %>'
         },
         body: JSON.stringify({
           selectedGroups: selectedGroups.map(g => g.id)

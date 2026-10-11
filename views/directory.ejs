@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Directorio</h1>
+    <input type="search" class="form-control w-auto" id="directorySearch" placeholder="Buscar por nombre, puesto, departamento o teléfono" size="45" autofocus>
+  </div>
+
+  <p class="text-muted">
+    Todas las personas del Ayuntamiento con cuenta de Microsoft 365. Los datos salen del perfil de cada una: si los tuyos no están bien, cámbialos en <a href="/profile/me/edit">Editar perfil</a>.
+  </p>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <% if (users && users.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle" id="directoryTable">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Puesto</th>
+                <th>Departamento</th>
+                <th>Oficina</th>
+                <th>Teléfono</th>
+                <th>Correo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% users.forEach(function(user) { %>
+                <% const phones = [...(user.businessPhones || []), user.mobilePhone].filter(Boolean); %>
+                <tr>
+                  <td><strong><%= user.displayName %></strong></td>
+                  <td><%= user.jobTitle %></td>
+                  <td><%= user.department %></td>
+                  <td><%= user.officeLocation %></td>
+                  <td>
+                    <% phones.forEach(function(phone, index) { %><% if (index > 0) { %>, <% } %><a href="tel:<%= phone %>" class="text-decoration-none"><%= phone %></a><% }); %>
+                  </td>
+                  <td>
+                    <% if (user.mail) { %><a href="mailto:<%= user.mail %>" class="text-decoration-none"><%= user.mail %></a><% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-muted mb-0 d-none" id="directoryEmpty">No hay nadie que coincida con la búsqueda.</p>
+      <% } else { %>
+        <p class="text-muted mb-0">No se ha podido cargar el directorio.</p>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<script>
+  (function () {
+    const search = document.getElementById('directorySearch');
+    const rows = Array.from(document.querySelectorAll('#directoryTable tbody tr'));
+    const empty = document.getElementById('directoryEmpty');
+    if (!rows.length) return;
+
+    // Ignore case and accents, so "garcia" finds "García"
+    const normalize = (text) => text.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const texts = rows.map((row) => normalize(row.textContent));
+
+    search.addEventListener('input', function () {
+      const words = normalize(search.value).split(/\s+/).filter(Boolean);
+      let visible = 0;
+      rows.forEach(function (row, index) {
+        const matches = words.every((word) => texts[index].includes(word));
+        row.classList.toggle('d-none', !matches);
+        if (matches) visible += 1;
+      });
+      empty.classList.toggle('d-none', visible > 0);
+    });
+  })();
+</script>
+
+<%- include('partials/footer') %>

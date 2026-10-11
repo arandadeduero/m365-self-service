@@ -5,7 +5,11 @@
  * using the Authorization Code Flow with Confidential Client Application.
  */
 
-require('dotenv').config();
+// Tests bring their own environment (test/helpers/env.js) and must never
+// read the developer's .env
+if (process.env.NODE_ENV !== 'test') {
+  require('dotenv').config();
+}
 
 const msalConfig = {
   auth: {
@@ -42,10 +46,17 @@ const scopes = [
   'User.ReadWrite',         // Update user profile
   'User.ReadBasic.All',     // Extended user information
   'GroupMember.Read.All',   // User's group memberships
+  'GroupMember.ReadWrite.All', // Owners adding a member to a group they own
+  'UserAuthenticationMethod.Read', // The user's own sign-in methods
   'Group.Read.All',         // Read all groups in the tenant
   'Directory.Read.All',     // Comprehensive directory data (includes manager)
-  'MailboxSettings.Read',   // Read mailbox settings (needed for shared mailbox detection)
+  'MailboxSettings.ReadWrite', // Read and change automatic replies
   'Mail.Send',              // Send emails as the signed-in user
+  'Files.Read',             // OneDrive space used (the app reads nothing else from it)
+  'User.RevokeSessions.All', // "No fui yo": closing the user's own sessions
+  'Calendars.Read',         // Who the calendar is shared with, and whether rooms are free
+  'Mail.Read.Shared',       // Checking which shared mailboxes the user can open (no mail is read)
+  'Place.Read.All',         // The list of meeting rooms
   'offline_access',         // Refresh tokens for long-lived sessions
   'Team.ReadBasic.All',     // Read teams the user is in
   'Channel.ReadBasic.All',  // Read channels in those teams

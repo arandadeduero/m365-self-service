@@ -1,0 +1,66 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Mis inicios de sesión</h1>
+    <a href="/account" class="btn btn-outline-secondary">Volver a mi cuenta</a>
+  </div>
+
+  <div class="alert alert-info">
+    Cada vez que tu cuenta entra en un servicio de Microsoft 365 queda registrado aquí. Si ves un inicio de sesión <strong>correcto</strong> desde un lugar o un dispositivo que no reconoces, pulsa <strong>No fui yo</strong>: se avisa a Informática y se cierran todas las sesiones de tu cuenta en todos los dispositivos (tendrás que volver a entrar). Después cambia la contraseña. Los intentos fallidos aislados son normales: suelen ser una contraseña mal escrita.
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <% if (!signIns) { %>
+        <p class="text-muted mb-0">Ahora mismo no se puede consultar el registro de inicios de sesión.</p>
+      <% } else if (signIns.length === 0) { %>
+        <p class="text-muted mb-0">No hay inicios de sesión recientes.</p>
+      <% } else { %>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Aplicación</th>
+                <th>Lugar</th>
+                <th>Dispositivo</th>
+                <th>Resultado</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% signIns.forEach(function(entry) { %>
+                <tr>
+                  <td><%= new Date(entry.when).toLocaleString('es-ES', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' }) %></td>
+                  <td><%= entry.app %></td>
+                  <td><%= entry.place %><% if (entry.ip) { %><br><span class="text-muted small"><%= entry.ip %></span><% } %></td>
+                  <td><%= entry.device %></td>
+                  <td>
+                    <% if (entry.succeeded) { %>
+                      <span class="badge bg-success">Correcto</span>
+                    <% } else { %>
+                      <span class="badge bg-danger">Fallido</span>
+                      <% if (entry.failureReason) { %><br><span class="text-muted small"><%= entry.failureReason %></span><% } %>
+                    <% } %>
+                  </td>
+                  <td class="text-end">
+                    <% if (entry.id) { %>
+                      <form action="/account/sign-ins/report" method="POST" class="d-inline" onsubmit="return confirm('Se avisará a Informática y se cerrarán todas tus sesiones en todos los dispositivos. ¿Continuar?');">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <input type="hidden" name="signInId" value="<%= entry.id %>">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">No fui yo</button>
+                      </form>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Respuestas automáticas</h1>
+  </div>
+
+  <% if (saved) { %>
+    <div class="alert alert-success">Cambios guardados.</div>
+  <% } %>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <p class="text-muted">Mientras estén activadas, Outlook contesta por ti con este mensaje a cada persona que te escriba (una sola vez por persona), para que sepa que estás fuera y cuándo vuelves.</p>
+      <form action="/profile/me/auto-reply" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+
+        <div class="mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="status" id="statusDisabled" value="disabled" <%= reply.status === 'disabled' ? 'checked' : '' %>>
+            <label class="form-check-label" for="statusDisabled">Desactivadas</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="status" id="statusAlways" value="alwaysEnabled" <%= reply.status === 'alwaysEnabled' ? 'checked' : '' %>>
+            <label class="form-check-label" for="statusAlways">Activadas hasta que las desactive</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="status" id="statusScheduled" value="scheduled" <%= reply.status === 'scheduled' ? 'checked' : '' %>>
+            <label class="form-check-label" for="statusScheduled">Activadas entre dos fechas</label>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3" id="scheduleFields">
+          <div class="col-md-6">
+            <label for="start" class="form-label">Desde</label>
+            <input type="datetime-local" class="form-control" id="start" name="start" value="<%= reply.start %>">
+          </div>
+          <div class="col-md-6">
+            <label for="end" class="form-label">Hasta</label>
+            <input type="datetime-local" class="form-control" id="end" name="end" value="<%= reply.end %>">
+          </div>
+          <div class="col-12">
+            <p class="text-muted small mb-0">Horas en la zona horaria de tu buzón (<%= timeZone %>).</p>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label for="message" class="form-label">Mensaje</label>
+          <textarea class="form-control" id="message" name="message" rows="6"><%= reply.message %></textarea>
+        </div>
+
+        <div class="form-check mb-4">
+          <input class="form-check-input" type="checkbox" id="external" name="external" <%= reply.external ? 'checked' : '' %>>
+          <label class="form-check-label" for="external">Responder también a quien escriba desde fuera del Ayuntamiento</label>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Guardar</button>
+          <a href="/account" class="btn btn-outline-secondary">Volver</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<script>
+  (function () {
+    const schedule = document.getElementById('scheduleFields');
+    const radios = document.querySelectorAll('input[name="status"]');
+    function update() {
+      const scheduled = document.getElementById('statusScheduled').checked;
+      schedule.classList.toggle('d-none', !scheduled);
+    }
+    radios.forEach((radio) => radio.addEventListener('change', update));
+    update();
+  })();
+</script>
+
+<%- include('partials/footer') %>

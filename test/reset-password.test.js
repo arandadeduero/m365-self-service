@@ -3,19 +3,18 @@
  * Tests for the password reset functionality
  */
 
-// Setup: Ensure environment variables are set for testing before requiring server
-process.env.CLIENT_ID = process.env.CLIENT_ID || 'test-client-id';
-process.env.CLIENT_SECRET = process.env.CLIENT_SECRET || 'test-client-secret';
-process.env.TENANT_ID = process.env.TENANT_ID || 'test-tenant-id';
-process.env.SESSION_SECRET = process.env.SESSION_SECRET || 'test-session-secret';
-process.env.TOKEN_SECRET = process.env.TOKEN_SECRET || 'test-token-secret';
+require('./helpers/env');
 
 const test = require('ava').default;
 const request = require('supertest');
+const { getCsrfToken } = require('./helpers/stubs');
 const app = require('../server');
 
 test('GET /reset-password returns form', async t => {
-  const res = await request(app)
+  const agent = request.agent(app);
+  t.teardown(() => agent.get('/auth/logout'));
+
+  const res = await agent
     .get('/reset-password')
     .expect(200);
 
@@ -23,9 +22,13 @@ test('GET /reset-password returns form', async t => {
 });
 
 test('POST /reset-password rejects invalid domain', async t => {
-  const res = await request(app)
+  const agent = request.agent(app);
+  const csrf = await getCsrfToken(agent);
+  t.teardown(() => agent.get('/auth/logout'));
+
+  const res = await agent
     .post('/reset-password')
-    .send({ email: 'user@example.com' })
+    .send({ email: 'user@example.com', _csrf: csrf })
     .expect(400);
 
   t.true(res.text.includes('El correo electrónico debe ser válido y pertenecer al dominio @arandadeduero.es'));

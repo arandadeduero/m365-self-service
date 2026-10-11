@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-groups">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Mis grupos</h1>
+    <a href="/account" class="btn btn-outline-secondary">Volver a mi cuenta</a>
+  </div>
+
+  <div class="alert alert-info">
+    Estos son los grupos a los que perteneces y lo que te da cada uno. Si recibes un correo que no esperabas, o no encuentras los archivos de un equipo, aquí puedes ver por qué y dónde están.
+  </div>
+
+  <% if (groups.length > 0) { %>
+    <% groups.forEach(function(group) { %>
+      <div class="card shadow-sm border-0 app-panel mb-3">
+        <div class="card-body p-4">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-2">
+            <div>
+              <h3 class="h5 mb-1"><%= group.displayName %></h3>
+              <span class="badge bg-secondary mb-2"><%= group.about.label %></span>
+              <% if (group.description) { %>
+                <p class="text-muted mb-2"><%= group.description %></p>
+              <% } %>
+            </div>
+            <div>
+              <% group.about.links.forEach(function(link) { %>
+                <a href="<%= link.url %>" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm"><%= link.label %></a>
+              <% }); %>
+            </div>
+          </div>
+          <ul class="mb-0">
+            <% group.about.gives.forEach(function(text) { %>
+              <li><%= text %></li>
+            <% }); %>
+          </ul>
+        </div>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <div class="card shadow-sm border-0 app-panel">
+      <div class="card-body p-4">
+        <p class="text-muted mb-0">No perteneces a ningún grupo.</p>
+      </div>
+    </div>
+  <% } %>
+
+  <p class="text-muted small mt-3 mb-0">
+    ¿Quieres unirte a otro grupo? Puedes pedirlo en <a href="/groups">Grupos</a>.
+  </p>
+</main>
+
+<%- include('partials/footer') %>

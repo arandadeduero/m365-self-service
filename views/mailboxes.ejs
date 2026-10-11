@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Buzones compartidos</h1>
+    <a href="/account" class="btn btn-outline-secondary">Volver a mi cuenta</a>
+  </div>
+
+  <div class="alert alert-info">
+    Un <strong>buzón compartido</strong> es una dirección de correo que atienden varias personas (por ejemplo, la de un servicio). No tiene contraseña propia: lo abres con tu cuenta si te han dado acceso, y lo que respondes sale con la dirección del buzón.
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <% if (!configured) { %>
+        <p class="text-muted mb-0">Informática todavía no ha indicado en este portal cuáles son los buzones compartidos del Ayuntamiento.</p>
+      <% } else { %>
+        <% if (mailboxes.length > 0) { %>
+          <p class="text-muted">Puedes abrir estos buzones:</p>
+          <ul class="list-group list-group-flush mb-3">
+            <% mailboxes.forEach(function(address) { %>
+              <li class="list-group-item px-0 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                <strong><%= address %></strong>
+                <a href="https://outlook.office.com/mail/<%= encodeURIComponent(address) %>/" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm">Abrir en Outlook</a>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else if (unknown.length === 0) { %>
+          <p>No se ha encontrado ningún buzón compartido que puedas abrir.</p>
+        <% } %>
+        <% if (unknown.length > 0) { %>
+          <p class="text-muted">No se ha podido comprobar el acceso a: <%= unknown.join(', ') %>.</p>
+        <% } %>
+        <p class="text-muted small mb-0">Solo se comprueban los buzones que Informática ha dado de alta en este portal. Si te falta alguno, o necesitas acceso a otro, pídelo a Informática.</p>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

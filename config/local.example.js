@@ -15,5 +15,9 @@ module.exports = {
 
     // Allowed usernames (prefix of email) for specific routes (applies to all HTTP methods)
     '/blog': ['username1', 'username2', 'username3']
-  }
+  },
+
+  // Shared mailboxes of the organization. Each user sees, in "Mi cuenta", the
+  // ones of this list they can open.
+  sharedMailboxes: ['registro@your-domain.es', 'obras@your-domain.es']
 };

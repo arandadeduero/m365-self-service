@@ -9,11 +9,10 @@
 
 const express = require('express');
 const router = express.Router();
-const msal = require('@azure/msal-node');
-const { msalConfig, redirectUri, scopes } = require('../config/authConfig');
-
-// Create MSAL confidential client application
-const confidentialClientApplication = new msal.ConfidentialClientApplication(msalConfig);
+const { redirectUri } = require('../config/authConfig');
+const { getSignInUrl, signIn } = require('../services/tokenService');
+const { auditRequest } = require('../services/auditService');
+const { enforceRegionalSettings } = require('../services/regionalSettings');
 
 /**
  * GET /auth/signin
@@ -21,14 +20,8 @@ const confidentialClientApplication = new msal.ConfidentialClientApplication(msa
  */
 router.get('/signin', async (req, res, next) => {
   try {
-    // Create authorization URL request
-    const authCodeUrlParameters = {
-      scopes: scopes,
-      redirectUri: redirectUri,
-    };
-
     // Get authorization URL
-    const authUrl = await confidentialClientApplication.getAuthCodeUrl(authCodeUrlParameters);
+    const authUrl = await getSignInUrl();
 
     // Redirect user to Microsoft login page
     res.redirect(authUrl);
@@ -54,24 +47,18 @@ router.get('/callback', async (req, res, next) => {
       throw error;
     }
 
-    // Exchange authorization code for access token
-    const tokenRequest = {
-      code: authCode,
-      scopes: scopes,
-      redirectUri: redirectUri,
-    };
+    // Exchange authorization code for tokens and store them in session,
+    // together with the token cache used to renew the access token later
+    Object.assign(req.session, await signIn(authCode));
 
-    const response = await confidentialClientApplication.acquireTokenByCode(tokenRequest);
+    console.log('User authenticated successfully:', req.session.account.username);
+    auditRequest(req, 'auth.sign_in');
 
-    // Store access token and account info in session
-    req.session.accessToken = response.accessToken;
-    req.session.account = response.account;
-    req.session.idToken = response.idToken;
-
-    // Optional: Store token expiration time
-    req.session.expiresOn = response.expiresOn;
-
-    console.log('User authenticated successfully:', response.account.username);
+    // Every account is kept on the organization's time zone and language
+    const corrected = await enforceRegionalSettings(req.session.accessToken);
+    if (corrected.length > 0) {
+      auditRequest(req, 'account.regional_settings_corrected', { settings: corrected });
+    }
 
     // Redirect to home page
     res.redirect('/');
@@ -89,6 +76,9 @@ router.get('/callback', async (req, res, next) => {
 router.get('/logout', (req, res) => {
   // Get account info before destroying session
   const account = req.session.account;
+  if (account) {
+    auditRequest(req, 'auth.sign_out');
+  }
 
   // Clear session
   req.session.destroy((err) => {
@@ -102,7 +92,7 @@ router.get('/logout', (req, res) => {
     // Construct Microsoft logout URL
     // This logs the user out of their Microsoft account
     const logoutUri = `https://login.microsoftonline.com/${process.env.TENANT_ID}/oauth2/v2.0/logout`;
-    const postLogoutRedirectUri = process.env.REDIRECT_URI.replace('/auth/callback', '/login');
+    const postLogoutRedirectUri = redirectUri.replace('/auth/callback', '/login');
 
     // Redirect to Microsoft logout, then back to our login page
     res.redirect(`${logoutUri}?post_logout_redirect_uri=${encodeURIComponent(postLogoutRedirectUri)}`);

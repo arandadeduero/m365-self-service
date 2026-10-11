@@ -5,7 +5,9 @@
  * If not authenticated, it redirects to the login page.
  */
 
-const { isUserAdmin, getUserAdminRoles } = require('../services/graphService');
+const { getUserAdminRoles } = require('../services/graphService');
+const { needsRenewal, renewSession } = require('../services/tokenService');
+const { auditRequest } = require('../services/auditService');
 const permissions = require('../config/permissions');
 
 /**
@@ -21,6 +23,7 @@ function checkPermission(req, res, next) {
   
   if (domain !== permissions.DOMAIN) {
       console.warn(`Access denied: User domain ${domain} does not match required domain ${permissions.DOMAIN}`);
+      auditRequest(req, 'permission.denied', { path: req.path, method: req.method });
       return res.status(403).send('Access Denied');
   }
   
@@ -33,11 +36,31 @@ function checkPermission(req, res, next) {
   if (Array.isArray(routePermissions)) {
     if (!routePermissions.includes(username)) {
       console.warn(`Access denied for user ${username} on ${method} ${path}`);
+      auditRequest(req, 'permission.denied', { path, method });
       return res.status(403).send('Access Denied');
     }
   }
   
   next();
+}
+
+/**
+ * Middleware to keep the access token of signed-in users valid.
+ * Renews it shortly before it expires; if that is not possible the session
+ * is emptied, so the user is asked to sign in again.
+ */
+async function refreshAccessToken(req, res, next) {
+  if (!req.session || !req.session.accessToken || !needsRenewal(req.session)) {
+    return next();
+  }
+
+  try {
+    await renewSession(req.session);
+    next();
+  } catch (error) {
+    console.warn('Could not renew the access token, signing the user out:', error.message);
+    req.session.regenerate(() => next());
+  }
 }
 
 /**
@@ -92,6 +115,7 @@ function redirectIfAuthenticated(req, res, next) {
 module.exports = {
   isAuthenticated,
   redirectIfAuthenticated,
+  refreshAccessToken,
   checkAdminStatus,
   checkPermission,
 };

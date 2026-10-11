@@ -50,6 +50,12 @@ Thumbs.db
 
 # Session store (if using file-based sessions)
 sessions/
+
+# Audit log
+audit/
+
+# Pending group requests
+data/
 *.session
 
 # Build outputs (if any)

@@ -6,6 +6,8 @@ npm-debug.log
 .env
 .env.example
 sessions
+audit
+data
 test
 *.md
 Dockerfile
