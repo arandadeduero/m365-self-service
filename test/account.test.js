@@ -428,7 +428,7 @@ test.serial("GET /firma shows the organization's generator with the person's det
 
   const res = await agent.get('/firma').expect(200);
 
-  t.true(res.text.includes('<iframe src="https://arandadeduero.github.io/firmas-correo/"'));
+  t.true(res.text.includes('<iframe src="https://arandadeduero.github.io/firmas-correo/?name=Alice+Example&amp;position=T%C3%A9cnica&amp;email=alice%40arandadeduero.es&amp;phone=947500100"'));
   t.true(res.text.includes('<dd class="text-break">Alice Example</dd>'));
   t.true(res.text.includes('<dd class="text-break">947500100</dd>'));
   t.true(res.text.includes('falta el departamento'));

@@ -34,6 +34,7 @@ const activityRoutes = require('./routes/activity');
 const appsRoutes = require('./routes/apps');
 const sharingRoutes = require('./routes/sharing');
 const debugRoutes = require('./routes/debug');
+const teamRoutes = require('./routes/team');
 
 // Import middleware
 const { expiredSessionHandler, errorHandler, notFoundHandler } = require('./middleware/errorHandler');
@@ -156,6 +157,7 @@ app.use('/', activityRoutes);
 app.use('/', appsRoutes);
 app.use('/', sharingRoutes);
 app.use('/', debugRoutes);
+app.use('/', teamRoutes);
 
 // 404 handler (must be after all routes)
 app.use(notFoundHandler);

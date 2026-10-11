@@ -11,6 +11,7 @@ Portal interno de autoservicio para los usuarios de Microsoft 365 del Ayuntamien
 - ✅ **Mi firma de correo** - El generador de firmas del Ayuntamiento ([firmas-correo](https://github.com/arandadeduero/firmas-correo)) dentro del portal, con los datos del perfil al lado
 - ✅ **Aplicaciones con acceso** - Qué aplicaciones tienen permisos sobre la cuenta del usuario y qué pueden hacer, en lenguaje llano
 - ✅ **Qué comparto fuera** - Archivos de OneDrive con enlaces para cualquiera o compartidos con direcciones externas, y un botón para dejar de compartirlos
+- ✅ **Mi equipo y solicitudes** - Las personas que dependen del usuario, y formularios a Informática para altas, bajas, equipos de Teams e invitados externos, con los datos que Informática necesita
 - ✅ **Mi actividad** - Lo que se ha hecho con la cuenta en el portal en los últimos 30 días, en lenguaje llano
 - ✅ **Mi cuenta** - Qué incluye la licencia en lenguaje llano con un enlace a cada aplicación, espacio de OneDrive, una lista de comprobación de la cuenta, antigüedad y caducidad de la contraseña, métodos de inicio de sesión con un aviso cuando no hay segundo factor, dispositivos, reglas de la bandeja de entrada con un aviso cuando el correo se reenvía fuera, y la dirección de recuperación
 - ✅ **Mis grupos** - Qué es cada grupo al que pertenece el usuario (un Team, una lista de correo, un grupo de seguridad) y qué le da
@@ -573,6 +574,8 @@ Quién puede usar `/blog` no es una variable de entorno: se configura en `config
 | GET | `/account/apps` | Con sesión | Aplicaciones con permisos sobre la cuenta |
 | GET | `/account/sharing` | Con sesión | Archivos de OneDrive que llegan fuera del Ayuntamiento |
 | POST | `/account/sharing/:item/permissions/:permission/remove` | Con sesión | Dejar de compartir uno |
+| GET | `/equipo` | Con sesión | Las personas a cargo del usuario y las solicitudes a Informática |
+| POST | `/equipo/solicitud/:kind` | Con sesión | Enviar una solicitud (`alta`, `baja`, `teams`, `invitado`) |
 | GET | `/debug` | Con sesión | Los datos de la cuenta tal como los devuelve Graph, y la sesión (sin tokens) |
 | GET | `/account/activity` | Con sesión | La actividad de la persona en el portal |
 | GET | `/groups` | Con sesión | Grupos del inquilino y listas de distribución (nombres que empiezan por `DIST`) |
@@ -705,6 +708,7 @@ Cada acción que cambia algo, y cada inicio de sesión, se añade a un archivo p
 | `permission.denied` | A un usuario se le niega una página: la lista de permitidos del blog, el visor de auditoría, o decidir sobre una solicitud de un grupo del que no es propietario |
 | `profile.update`, `profile.photo_update` | Cambian los datos o la foto del perfil |
 | `mail.auto_reply_update` | Cambian las respuestas automáticas (solo el estado, nunca el mensaje) |
+| `request.onboarding`, `request.offboarding`, `request.team`, `request.guest` | Una solicitud de alta, baja, equipo de Teams o invitado externo se envió a Informática (solo el tipo, nunca los datos de la persona) |
 | `files.unshared` | El usuario dejó de compartir un archivo (el id del archivo y con quién estaba compartido, nunca su contenido) |
 | `calendar.shared`, `calendar.unshared` | El usuario compartió su calendario con alguien, o le retiró el acceso (con quién y qué podía ver) |
 | `account.sign_in_reported` | Un usuario ha denunciado un inicio de sesión como ajeno (su id y su dirección, si se avisó a Informática y si se cerraron las sesiones) |

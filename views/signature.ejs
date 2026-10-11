@@ -10,7 +10,7 @@
   </div>
 
   <p class="text-muted">
-    El generador del Ayuntamiento hace la firma con el formato oficial y el logo de tu concejalía. Rellena los campos con los datos de tu perfil, que tienes aquí al lado, y pulsa <strong>Copiar vista previa</strong> para pegarla en Outlook.
+    El generador del Ayuntamiento hace la firma con el formato oficial y el logo de tu concejalía. Se abre con los datos de tu perfil ya puestos (los tienes aquí al lado por si quieres cambiar algo); elige tu concejalía si no la ha acertado y pulsa <strong>Copiar vista previa</strong> para pegarla en Outlook.
     <% if (missing.length > 0) { %>
       En tu perfil falta <%= missing.map(field => field === 'jobTitle' ? 'el puesto' : 'el departamento').join(' y ') %>; puedes ponerlo en <a href="/profile/me/edit">Editar mi perfil</a>.
     <% } %>

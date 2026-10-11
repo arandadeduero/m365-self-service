@@ -16,10 +16,17 @@ router.get('/firma', isAuthenticated, async (req, res, next) => {
   try {
     const profile = await getUserProfile(req.session.accessToken);
 
+    // The generator fills its fields from the URL (see its README)
+    const phone = [...(profile.businessPhones || []), profile.mobilePhone].filter(Boolean)[0] || '';
+    const params = new URLSearchParams();
+    Object.entries({ name: profile.displayName, position: profile.jobTitle, concejalia: profile.department, email: profile.mail || profile.userPrincipalName, phone })
+      .forEach(([key, value]) => { if (value) params.set(key, value); });
+    const generatorUrl = appConfig.SIGNATURE_GENERATOR_URL ? `${appConfig.SIGNATURE_GENERATOR_URL}?${params}` : '';
+
     res.render('signature', {
       title: 'Mi firma de correo',
       currentPage: 'account',
-      generatorUrl: appConfig.SIGNATURE_GENERATOR_URL,
+      generatorUrl,
       details: [
         ['Nombre completo', profile.displayName],
         ['Puesto', profile.jobTitle],

@@ -85,6 +85,23 @@ async function getUserById(accessToken, userId) {
 }
 
 /**
+ * The people whose manager is the signed-in user
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array|null>} Users, or null when they could not be read
+ */
+async function getDirectReports(accessToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/me/directReports/microsoft.graph.user`, {
+      params: { $select: DIRECTORY_USER_FIELDS },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch (error) {
+    console.error('Error fetching direct reports:', error.response?.data || error.message);
+    return null;
+  }
+}
+
+/**
  * Get all users in the organization for selection dropdowns
  * @param {string} accessToken - Valid access token for Microsoft Graph
  * @returns {Promise<Array>} Array of users with basic info
@@ -1277,6 +1294,7 @@ module.exports = {
   getUserDevices,
   getAllUsers,
   getUserById,
+  getDirectReports,
   getPresences,
   getMyAppGrants,
   getServicePrincipal,
