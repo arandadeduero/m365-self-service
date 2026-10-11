@@ -832,7 +832,7 @@ Notas:
 - `.env` y `config/local.js` no forman parte de la imagen (`.env` está excluido y git ignora `local.js`), así que pasa el entorno al ejecutar y monta `config/local.js` si usas la lista de permitidos del blog.
 - El registro de auditoría se escribe en `audit/` y las solicitudes de grupos pendientes en `data/`. Sin volúmenes se pierden con el contenedor.
 - Las sesiones son archivos en `sessions/`. Sin un volumen, todo el mundo pierde la sesión cuando se sustituye el contenedor. Lo mismo pasa en las plataformas con sistema de archivos efímero, como Heroku.
-- En producción la cookie de sesión es `Secure`, así que hay que llegar a la aplicación por HTTPS.
+- En producción la cookie de sesión es `Secure`, así que hay que llegar a la aplicación por HTTPS, y la aplicación envía HSTS.
 - Detrás de un proxy inverso, pon `TRUST_PROXY=1`. Si no, todos los visitantes parecen venir de la dirección del proxy y comparten un único límite de restablecimiento de contraseña.
 - Los contadores de los límites se guardan en memoria, así que se reinician con el contenedor y no se comparten entre varias instancias.
 
@@ -899,6 +899,10 @@ Notas:
 - ✅ Obligatorio en producción
 - ✅ Heroku lo proporciona automáticamente
 - ✅ Las cookies seguras solo funcionan por HTTPS
+
+### Cabeceras
+
+- ✅ `Content-Security-Policy` que solo permite recursos del propio servidor y prohíbe mostrar las páginas dentro de otras (`frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin` y HSTS en producción (`middleware/securityHeaders.js`)
 
 ### Recursos externos
 

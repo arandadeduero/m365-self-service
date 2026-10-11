@@ -31,6 +31,7 @@ const roomRoutes = require('./routes/rooms');
 const { expiredSessionHandler, errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const { refreshAccessToken, checkAdminStatus } = require('./middleware/auth');
 const { csrfProtection } = require('./middleware/csrf');
+const { securityHeaders } = require('./middleware/securityHeaders');
 const { getServiceIssues } = require('./services/serviceHealthService');
 
 // Create Express app
@@ -56,6 +57,8 @@ app.locals.orgName = appConfig.ORG_NAME;
 app.locals.intranetUrl = appConfig.INTRANET_URL;
 
 // Middleware setup
+app.use(securityHeaders);
+
 // Parse JSON and URL-encoded bodies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

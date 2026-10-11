@@ -48,6 +48,21 @@ test('pages load their styles, scripts and typeface from the app, not from other
   await request(app).get('/vendor/fonts/outfit-latin.woff2').expect(200).expect('Content-Type', 'font/woff2');
 });
 
+test('every response carries the security headers, and pages can only be shown by themselves', async t => {
+  const page = await request(app).get('/login').expect(200);
+  const asset = await request(app).get('/css/custom.css').expect(200);
+
+  for (const res of [page, asset]) {
+    t.is(res.headers['x-frame-options'], 'DENY');
+    t.is(res.headers['x-content-type-options'], 'nosniff');
+    t.is(res.headers['referrer-policy'], 'same-origin');
+    t.true(res.headers['content-security-policy'].includes("frame-ancestors 'none'"));
+    t.true(res.headers['content-security-policy'].includes("default-src 'self'"));
+  }
+  // Only sent over HTTPS, which is production
+  t.is(page.headers['strict-transport-security'], undefined);
+});
+
 test('GET /login renders correct content', async t => {
   const res = await request(app)
     .get('/login')
