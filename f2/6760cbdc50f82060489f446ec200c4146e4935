@@ -1,0 +1,47 @@
+config/authConfig.js
+  s_011367d8e8fa7a::t_1b44324acc5367 55
+views/apps.ejs
+  s_011367d8e8fa7a::t_1b44324acc5367 1-47
+views/partials/header.ejs
+  s_011367d8e8fa7a::t_1b44324acc5367 53-54
+README.md
+  s_011367d8e8fa7a::t_1b44324acc5367 12-13,137,353-354,575-577,709
+views/sharing.ejs
+  s_011367d8e8fa7a::t_1b44324acc5367 1-60
+routes/sharing.js
+  s_011367d8e8fa7a::t_1b44324acc5367 1-78
+CLAUDE.md
+  s_011367d8e8fa7a::t_1b44324acc5367 42,120-121
+services/appGrants.js
+  s_011367d8e8fa7a::t_1b44324acc5367 1-88
+server.js
+  s_011367d8e8fa7a::t_1b44324acc5367 34-35,155-156
+test/apps.test.js
+  s_011367d8e8fa7a::t_1b44324acc5367 1-49,51-83
+  s_011367d8e8fa7a::t_f3cc61ea14b0b7 50
+services/graphService.js
+  s_011367d8e8fa7a::t_1b44324acc5367 514-615,1281-1285
+test/sharing.test.js
+  s_011367d8e8fa7a::t_1b44324acc5367 1-65,69-111
+  s_011367d8e8fa7a::t_f3cc61ea14b0b7 66-68
+routes/apps.js
+  s_011367d8e8fa7a::t_1b44324acc5367 1-45
+services/sharing.js
+  s_011367d8e8fa7a::t_1b44324acc5367 1-89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f26760cbdc50f82060489f446ec200c4146e4935",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
