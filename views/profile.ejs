@@ -1,4 +1,5 @@
 <%- include('partials/header') %>
+<meta name="csrf-token" content="<%= csrfToken() %>">
 
 <main class="container py-4 profile-container page-shell page-profile">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
@@ -171,104 +172,7 @@
   </div>
 </main>
 
-<script>
-  let allUsers = [];
-  let managerModal;
-
-  function getManagerModal() {
-    if (!managerModal) {
-      const modalElement = document.getElementById('managerDialog');
-      managerModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-    }
-    return managerModal;
-  }
-
-  async function openManagerDialog() {
-    const modal = getManagerModal();
-    modal.show();
-
-    if (allUsers.length === 0) {
-      try {
-        const response = await fetch('/api/users');
-        const data = await response.json();
-
-        if (data.success) {
-          allUsers = data.users;
-          populateManagerSelect();
-        } else {
-          alert('No se pudieron cargar los usuarios. Intentalo de nuevo.');
-        }
-      } catch (error) {
-        console.error('Error loading users:', error);
-        alert('No se pudieron cargar los usuarios. Intentalo de nuevo.');
-      }
-    }
-  }
-
-  function populateManagerSelect() {
-    const select = document.getElementById('managerSelect');
-    select.innerHTML = '<option value="">-- Selecciona un responsable --</option>';
-
-    allUsers.forEach(user => {
-      const option = document.createElement('option');
-      option.value = user.id;
-      option.textContent = `${user.displayName}${user.jobTitle ? ' - ' + user.jobTitle : ''}${user.department ? ' (' + user.department + ')' : ''}`;
-      option.dataset.name = user.displayName;
-      option.dataset.email = user.mail || user.userPrincipalName || '';
-      select.appendChild(option);
-    });
-  }
-
-  async function submitManagerCorrection() {
-    const select = document.getElementById('managerSelect');
-    const selectedOption = select.options[select.selectedIndex];
-
-    if (!select.value) {
-      alert('Selecciona un responsable');
-      return;
-    }
-
-    const selectedManagerId = select.value;
-    const selectedManagerName = selectedOption.dataset.name;
-    const selectedManagerEmail = selectedOption.dataset.email;
-
-    try {
-      const response = await fetch('/api/manager-correction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= csrfToken() %>'
-        },
-        body: JSON.stringify({
-          selectedManagerId,
-          selectedManagerName,
-          selectedManagerEmail
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert('Solicitud de correccion de responsable enviada correctamente');
-        closeManagerDialog();
-      } else {
-        alert('Error: ' + (data.error || 'No se pudo enviar la solicitud de correccion'));
-      }
-    } catch (error) {
-      console.error('Error submitting manager correction:', error);
-      alert('No se pudo enviar la solicitud de correccion. Intentalo de nuevo.');
-    }
-  }
-
-  function closeManagerDialog() {
-    getManagerModal().hide();
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('openManagerDialogBtn')?.addEventListener('click', openManagerDialog);
-    document.getElementById('submitManagerCorrectionBtn')?.addEventListener('click', submitManagerCorrection);
-    document.getElementById('closeManagerDialogBtn')?.addEventListener('click', closeManagerDialog);
-  });
-</script>
+<script src="/js/csrf.js"></script>
+<script src="/js/profile.js"></script>
 
 <%- include('partials/footer') %>

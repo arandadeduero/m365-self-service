@@ -36,20 +36,7 @@
         <button type="submit" class="btn btn-primary">Enviar email para publicar</button>
       </form>
 
-      <script>
-        const delayInput = document.getElementById('delayInput');
-        const publishTimeInfo = document.getElementById('publishTimeInfo');
-
-        function updatePublishTime() {
-          const hours = parseInt(delayInput.value) || 0;
-          const date = new Date();
-          date.setHours(date.getHours() + hours);
-          publishTimeInfo.innerText = 'Se publicará aproximadamente el: ' + date.toLocaleString();
-        }
-
-        delayInput.addEventListener('input', updatePublishTime);
-        updatePublishTime();
-      </script>
+<script src="/js/blog.js"></script>
     </div>
   </div>
 </main>

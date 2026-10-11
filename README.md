@@ -359,7 +359,7 @@ mi-microsoft-365/
 │
 ├── public/
 │   ├── css/custom.css                # Estilos propios y declaración de la tipografía
-│   ├── js/                           # profile.js, organigrama.js
+│   ├── js/                           # Un script por página (nada va inline: la CSP lo prohíbe)
 │   ├── images/                       # Avatar por defecto
 │   └── vendor/                       # Bootstrap, Outfit y d3, servidos por la aplicación (ver su README.md)
 │
@@ -913,7 +913,7 @@ Notas:
 
 ### Cabeceras
 
-- ✅ `Content-Security-Policy` que solo permite recursos del propio servidor y prohíbe mostrar las páginas dentro de otras (`frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin` y HSTS en producción (`middleware/securityHeaders.js`)
+- ✅ `Content-Security-Policy` que solo permite recursos del propio servidor, ejecuta JavaScript únicamente desde los archivos de `public/js/` (nada inline) y prohíbe mostrar las páginas dentro de otras (`frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin` y HSTS en producción (`middleware/securityHeaders.js`)
 
 ### Recursos externos
 

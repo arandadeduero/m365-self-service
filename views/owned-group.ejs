@@ -45,7 +45,7 @@
                   </td>
                   <td class="text-end">
                     <% if (manageable) { %>
-                      <form action="/groups/owned/<%= encodeURIComponent(group.id) %>/members/<%= encodeURIComponent(member.id) %>/remove" method="POST" class="d-inline" onsubmit="return confirm('¿Quitar a esta persona del grupo? Dejará de tener acceso de inmediato.');">
+                      <form action="/groups/owned/<%= encodeURIComponent(group.id) %>/members/<%= encodeURIComponent(member.id) %>/remove" method="POST" class="d-inline" data-confirm="¿Quitar a esta persona del grupo? Dejará de tener acceso de inmediato.">
                         <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
                         <button type="submit" class="btn btn-outline-danger btn-sm">Quitar</button>
                       </form>
@@ -104,5 +104,7 @@
     </div>
   </div>
 </main>
+
+<script src="/js/confirm.js"></script>
 
 <%- include('partials/footer') %>

@@ -1,4 +1,5 @@
 <%- include('partials/header') %>
+<meta name="csrf-token" content="<%= csrfToken() %>">
 
 <main class="container py-4 groups-container page-shell page-groups">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-start gap-3 mb-4">
@@ -18,7 +19,7 @@
       <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
         <h3 class="h5 mb-0">Selecciona los grupos a los que quieres unirte</h3>
         <div class="d-flex flex-wrap gap-2">
-          <button id="generateBtn" class="btn btn-primary btn-sm" onclick="sendGroupAccessRequest()" disabled>Enviar petición</button>
+          <button id="generateBtn" type="button" class="btn btn-primary btn-sm" disabled>Enviar petición</button>
         </div>
       </div>
       <p class="mt-3 mb-0 fw-semibold">Seleccionados: <span id="selectedCount">0</span> grupos</p>
@@ -45,7 +46,7 @@
                 <tr class="<%= group.isMember ? 'table-secondary' : '' %>">
                   <td>
                     <% if (!group.isMember) { %>
-                      <input class="form-check-input group-checkbox" type="checkbox" data-group-id="<%= group.id %>" data-group-name="<%= group.displayName %>" onchange="updateSelection()">
+                      <input class="form-check-input group-checkbox" type="checkbox" data-group-id="<%= group.id %>" data-group-name="<%= group.displayName %>">
                     <% } %>
                   </td>
                   <td><%= group.isMember ? 'Miembro' : 'No miembro' %></td>
@@ -81,7 +82,7 @@
                 <tr class="<%= group.isMember ? 'table-secondary' : '' %>">
                   <td>
                     <% if (!group.isMember) { %>
-                      <input class="form-check-input group-checkbox" type="checkbox" data-group-id="<%= group.id %>" data-group-name="<%= group.displayName %>" onchange="updateSelection()">
+                      <input class="form-check-input group-checkbox" type="checkbox" data-group-id="<%= group.id %>" data-group-name="<%= group.displayName %>">
                     <% } %>
                   </td>
                   <td><%= group.isMember ? 'Miembro' : 'No miembro' %></td>
@@ -110,103 +111,15 @@
           <ul id="selectedGroupsList"></ul>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" onclick="submitGroupRequest()">Enviar email</button>
-          <button type="button" class="btn btn-outline-secondary" onclick="closeDialog()">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="submitGroupRequestBtn">Enviar email</button>
+          <button type="button" class="btn btn-outline-secondary" id="closeDialogBtn">Cancelar</button>
         </div>
       </div>
     </div>
   </div>
 </main>
 
-<script>
-  let selectedGroups = [];
-  let reportModal;
-
-  function getReportModal() {
-    if (!reportModal) {
-      const modalElement = document.getElementById('reportDialog');
-      reportModal = bootstrap.Modal.getOrCreateInstance(modalElement);
-    }
-    return reportModal;
-  }
-
-  function updateSelection() {
-    const checkboxes = document.querySelectorAll('.group-checkbox');
-    selectedGroups = [];
-
-    checkboxes.forEach(cb => {
-      if (cb.checked) {
-        selectedGroups.push({
-          id: cb.dataset.groupId,
-          name: cb.dataset.groupName
-        });
-      }
-    });
-
-    document.getElementById('selectedCount').textContent = selectedGroups.length;
-    document.getElementById('generateBtn').disabled = selectedGroups.length === 0;
-  }
-
-  function selectAllNonMember() {
-    document.querySelectorAll('.group-checkbox').forEach(cb => {
-      cb.checked = true;
-    });
-    updateSelection();
-  }
-
-  function clearSelection() {
-    document.querySelectorAll('.group-checkbox').forEach(cb => {
-      cb.checked = false;
-    });
-    updateSelection();
-  }
-
-  function sendGroupAccessRequest() {
-    if (selectedGroups.length === 0) return;
-    
-    const list = document.getElementById('selectedGroupsList');
-    list.innerHTML = '';
-    selectedGroups.forEach(g => {
-      const li = document.createElement('li');
-      li.textContent = g.name;
-      list.appendChild(li);
-    });
-    
-    getReportModal().show();
-  }
-
-  async function submitGroupRequest() {
-    if (selectedGroups.length === 0) return;
-
-    try {
-      const response = await fetch('/api/group-access-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': '<%= csrfToken() %>'
-        },
-        body: JSON.stringify({
-          selectedGroups: selectedGroups.map(g => g.id)
-        })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert('Solicitud de acceso enviada correctamente');
-        getReportModal().hide();
-      } else {
-        alert('Error al enviar la solicitud: ' + (data.error || 'Error desconocido'));
-      }
-    } catch (error) {
-      console.error('Error sending request:', error);
-      alert('No se pudo enviar la solicitud. Intentalo de nuevo.');
-    }
-  }
-
-  function closeDialog() {
-    getReportModal().hide();
-  }
-</script>
+<script src="/js/csrf.js"></script>
+<script src="/js/groups.js"></script>
 
 <%- include('partials/footer')%>

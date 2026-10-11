@@ -61,6 +61,25 @@ test('every response carries the security headers, and pages can only be shown b
   }
   // Only sent over HTTPS, which is production
   t.is(page.headers['strict-transport-security'], undefined);
+  // Scripts run only from the app's own files
+  t.true(page.headers['content-security-policy'].includes("script-src 'self';"));
+  t.false(page.headers['content-security-policy'].includes("script-src 'self' 'unsafe-inline'"));
+});
+
+test('no view carries inline JavaScript, which the policy would refuse', t => {
+  const fs = require('fs');
+  const path = require('path');
+  const dir = path.join(__dirname, '..', 'views');
+  const views = fs.readdirSync(dir).filter(name => name.endsWith('.ejs')).map(name => path.join(dir, name));
+  views.push(...fs.readdirSync(path.join(dir, 'partials')).map(name => path.join(dir, 'partials', name)));
+
+  for (const view of views) {
+    const source = fs.readFileSync(view, 'utf8');
+    // A <script> needs a src, unless it is a data block the browser does not run
+    t.false(/<script(?![^>]*\bsrc=)(?![^>]*type="application\/json")[^>]*>/.test(source), `${path.basename(view)} has an inline <script>`);
+    t.false(/\son[a-z]+=["']/i.test(source), `${path.basename(view)} has an inline event handler`);
+    t.false(/href=["']javascript:/i.test(source), `${path.basename(view)} has a javascript: link`);
+  }
 });
 
 test('GET /login renders correct content', async t => {

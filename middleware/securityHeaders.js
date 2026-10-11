@@ -2,15 +2,15 @@
  * Security Headers
  *
  * Set on every response. Everything the pages load is served by the app
- * itself (public/vendor), so the policy allows nothing from other servers.
- * Inline scripts and styles stay allowed because the views still carry
- * inline <script> blocks and onclick= attributes; moving those to /js would
- * let script-src drop 'unsafe-inline'.
+ * itself (public/vendor), so the policy allows nothing from other servers,
+ * and scripts only run from files under public/js: no inline <script> and no
+ * onclick= attributes (test/routes.test.js checks the views). Inline styles
+ * stay allowed because the org chart draws its cards with them.
  */
 
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  "script-src 'self'",
   "style-src 'self' 'unsafe-inline'",
   // The profile photo is a data: URI, and so are Bootstrap's own icons
   "img-src 'self' data:",

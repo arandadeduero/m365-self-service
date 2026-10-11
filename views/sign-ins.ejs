@@ -46,7 +46,7 @@
                   </td>
                   <td class="text-end">
                     <% if (entry.id) { %>
-                      <form action="/account/sign-ins/report" method="POST" class="d-inline" onsubmit="return confirm('Se avisará a Informática y se cerrarán todas tus sesiones en todos los dispositivos. ¿Continuar?');">
+                      <form action="/account/sign-ins/report" method="POST" class="d-inline" data-confirm="Se avisará a Informática y se cerrarán todas tus sesiones en todos los dispositivos. ¿Continuar?">
                         <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
                         <input type="hidden" name="signInId" value="<%= entry.id %>">
                         <button type="submit" class="btn btn-outline-danger btn-sm">No fui yo</button>
@@ -62,5 +62,7 @@
     </div>
   </div>
 </main>
+
+<script src="/js/confirm.js"></script>
 
 <%- include('partials/footer') %>

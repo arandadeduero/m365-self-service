@@ -63,17 +63,6 @@
   </div>
 </main>
 
-<script>
-  (function () {
-    const schedule = document.getElementById('scheduleFields');
-    const radios = document.querySelectorAll('input[name="status"]');
-    function update() {
-      const scheduled = document.getElementById('statusScheduled').checked;
-      schedule.classList.toggle('d-none', !scheduled);
-    }
-    radios.forEach((radio) => radio.addEventListener('change', update));
-    update();
-  })();
-</script>
+<script src="/js/auto-reply.js"></script>
 
 <%- include('partials/footer') %>
