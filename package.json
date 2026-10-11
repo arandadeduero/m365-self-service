@@ -29,13 +29,13 @@
   "dependencies": {
     "@aws-sdk/client-ses": "^3.1089.0",
     "@azure/msal-node": "^5.2.5",
-    "axios": "^1.18.1",
+    "axios": "^1.20.0",
     "dotenv": "^17.4.2",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.1",
     "express-session": "^1.19.0",
-    "multer": "^2.2.0",
+    "multer": "^2.4.0",
     "session-file-store": "^1.5.0"
   },
   "devDependencies": {
