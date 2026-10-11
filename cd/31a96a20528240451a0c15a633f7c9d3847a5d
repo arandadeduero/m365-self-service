@@ -1,0 +1,34 @@
+server.js
+  s_44ab0f065da999::t_96092a9e396997 27,111
+routes/rooms.js
+  s_44ab0f065da999::t_a835f45a04ee6b 1-117
+test/rooms.test.js
+  s_44ab0f065da999::t_a806d9b7a9dbb4 1-169
+views/rooms.ejs
+  s_44ab0f065da999::t_a835f45a04ee6b 1-87
+views/account.ejs
+  s_44ab0f065da999::t_06041b2e78651a 216
+views/partials/header.ejs
+  s_44ab0f065da999::t_4952dd3d6a5828 62-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cd31a96a20528240451a0c15a633f7c9d3847a5d",
+  "prompts": {},
+  "humans": {
+    "h_3aa52f59e1a7c5": {
+      "author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_44ab0f065da999": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "44e99ee9-2ad8-4bcc-860f-91c036ab0268",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
