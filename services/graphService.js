@@ -61,6 +61,29 @@ async function getUserProfile(accessToken) {
   }
 }
 
+// What the directory shows about a person
+const DIRECTORY_USER_FIELDS = 'id,displayName,givenName,surname,mail,jobTitle,department,officeLocation,businessPhones,mobilePhone';
+
+/**
+ * Get one person of the directory, with the signed-in user's token
+ * @param {string} accessToken - Valid access token
+ * @param {string} userId - Directory id, already checked for its format
+ * @returns {Promise<Object|null>} The user, or null when there is none
+ */
+async function getUserById(accessToken, userId) {
+  try {
+    const response = await axios.get(`${GRAPH_API_BASE}/users/${encodeURIComponent(userId)}`, {
+      params: { $select: DIRECTORY_USER_FIELDS },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 404) return null;
+    console.error(`Error fetching user ${userId}:`, error.response?.data || error.message);
+    throw graphError('Failed to fetch user', error);
+  }
+}
+
 /**
  * Get all users in the organization for selection dropdowns
  * @param {string} accessToken - Valid access token for Microsoft Graph
@@ -1084,6 +1107,7 @@ module.exports = {
   getAuthenticationMethods,
   getUserDevices,
   getAllUsers,
+  getUserById,
   getUsersWithManager,
   findUserByEmail,
   getUserForReset,

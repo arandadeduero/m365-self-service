@@ -7,7 +7,9 @@ Portal interno de autoservicio para los usuarios de Microsoft 365 del Ayuntamien
 
 - ✅ **Autenticación con Microsoft 365** - Flujo de código de autorización OAuth 2.0 con MSAL, para un solo inquilino (tenant)
 - ✅ **Perfil** - Perfil, foto, grupos, responsable y datos en bruto de Graph; cada usuario puede editar su puesto, teléfonos, oficina y foto. Los campos que Microsoft no deja cambiar a un usuario se muestran en solo lectura
-- ✅ **Directorio** - Directorio del personal con buscador, teléfonos y oficinas
+- ✅ **Directorio** - Directorio del personal con buscador, teléfonos y oficinas, exportable a Excel; cada persona tiene una tarjeta con código QR y vCard para guardarla en el móvil
+- ✅ **Mi firma de correo** - La firma del Ayuntamiento con los datos del perfil, lista para copiar en Outlook
+- ✅ **Mi actividad** - Lo que se ha hecho con la cuenta en el portal en los últimos 30 días, en lenguaje llano
 - ✅ **Mi cuenta** - Qué incluye la licencia en lenguaje llano con un enlace a cada aplicación, espacio de OneDrive, una lista de comprobación de la cuenta, antigüedad y caducidad de la contraseña, métodos de inicio de sesión con un aviso cuando no hay segundo factor, dispositivos, reglas de la bandeja de entrada con un aviso cuando el correo se reenvía fuera, y la dirección de recuperación
 - ✅ **Mis grupos** - Qué es cada grupo al que pertenece el usuario (un Team, una lista de correo, un grupo de seguridad) y qué le da
 - ✅ **Mis inicios de sesión** - Dónde y cuándo se ha usado la cuenta últimamente, con un botón «No fui yo» que avisa a Informática y cierra todas las sesiones de la cuenta
@@ -342,6 +344,9 @@ mi-microsoft-365/
 │   ├── ownedGroups.js                # Propietarios: ver y cambiar los miembros de sus grupos
 │   ├── help.js                       # Página de ayuda y su formulario de contacto
 │   ├── rooms.js                      # Salas de reuniones libres
+│   ├── directory.js                  # Directorio, exportación, tarjetas de contacto y vCard
+│   ├── signature.js                  # Firma de correo
+│   ├── activity.js                   # Actividad de la persona en el portal
 │   └── blog.js                       # Publicar en el blog de WordPress
 │
 ├── services/
@@ -498,6 +503,8 @@ Ningún test habla con Microsoft, AWS ni WordPress:
 | `DATA_DIR` | Directorio de las solicitudes para entrar en grupos | `/var/lib/mi-microsoft-365` | No (por defecto: `./data`) |
 | `PASSWORD_MAX_AGE_DAYS` | Días que dura una contraseña en tu inquilino; hace que la página de la cuenta muestre los días que quedan | `90` | No (no se muestra caducidad) |
 | `PROFILE_EDITABLE_FIELDS` | Campos del perfil que los usuarios pueden cambiar por sí mismos, de entre `mobilePhone`, `businessPhones`, `jobTitle` y `officeLocation`; el resto se muestra en solo lectura | `mobilePhone,businessPhones` | No (por defecto: los cuatro) |
+| `ORG_WEB` | Web del Ayuntamiento, para la firma de correo | `https://www.example.es` | No (por defecto: la del Ayuntamiento) |
+| `ORG_ADDRESS` | Dirección postal, para la firma de correo | `Plaza Mayor, 1 · 09400 Aranda de Duero` | No (sin ella la firma no lleva dirección) |
 | `INTRANET_URL` | Dirección de la intranet de la organización, enlazada desde la página de inicio, la de ayuda y el pie | `https://example.sharepoint.com` | No (por defecto: la del Ayuntamiento) |
 | `ORG_CHART_ROOT` | Dirección de la persona que está en lo alto del organigrama; las cuentas que no dependen de ella se listan debajo del gráfico | `top-person@example.com` | No (por defecto: la del Ayuntamiento; si nadie tiene esa dirección, quien tenga gente a su cargo y ningún responsable) |
 | `ADMIN_EMAIL` | Buzón que recibe las correcciones de responsable, las solicitudes de acceso a grupos, los inicios de sesión denunciados y los mensajes de la página de ayuda | `informatica@example.es` | Recomendada (si falta se usa una dirección incluida en el código) |
@@ -557,6 +564,10 @@ Quién puede usar `/blog` no es una variable de entorno: se configura en `config
 | POST | `/ayuda/contacto` | Con sesión | Escribir a Informática desde el buzón del usuario |
 | GET | `/admin/audit` | Administradores | El registro de auditoría, con filtros |
 | GET | `/directorio` | Con sesión | Directorio del personal |
+| GET | `/directorio/export.csv` | Con sesión | El directorio para Excel |
+| GET | `/directorio/:id`, `/directorio/:id/vcard` | Con sesión | Tarjeta de contacto con QR, y su vCard |
+| GET | `/firma` | Con sesión | Firma de correo de la persona |
+| GET | `/account/activity` | Con sesión | La actividad de la persona en el portal |
 | GET | `/groups` | Con sesión | Grupos del inquilino y listas de distribución (nombres que empiezan por `DIST`) |
 | POST | `/groups/generate-report` | Con sesión | Informe en texto de los grupos seleccionados (JSON) |
 | GET | `/teams` | Con sesión | Equipos a los que pertenece el usuario y sus canales |

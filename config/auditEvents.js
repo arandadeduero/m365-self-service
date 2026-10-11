@@ -1,0 +1,25 @@
+/**
+ * What each audit event is called when a person looks at their own activity
+ */
+module.exports = {
+  'auth.sign_in': 'Inicio de sesión en el portal',
+  'auth.sign_out': 'Cierre de sesión',
+  'account.regional_settings_corrected': 'Zona horaria o idioma puestos en orden al iniciar sesión',
+  'permission.denied': 'Intento de abrir una página sin permiso',
+  'profile.update': 'Datos del perfil cambiados',
+  'profile.photo_update': 'Foto de perfil cambiada',
+  'mail.auto_reply_update': 'Respuestas automáticas cambiadas',
+  'account.sign_in_reported': 'Inicio de sesión denunciado («No fui yo»)',
+  'group.member_added': 'Persona añadida a un grupo que administras',
+  'group.member_removed': 'Persona quitada de un grupo que administras',
+  'help.contact': 'Mensaje enviado a Informática',
+  'request.manager_correction': 'Corrección de responsable pedida',
+  'request.group_access': 'Acceso a grupos pedido a Informática',
+  'group_request.created': 'Solicitud de entrar en un grupo enviada a sus propietarios',
+  'group_request.approved': 'Solicitud de grupo aprobada',
+  'group_request.rejected': 'Solicitud de grupo rechazada',
+  'blog.post': 'Entrada enviada al blog',
+  'calendar.shared': 'Calendario compartido con alguien',
+  'calendar.unshared': 'Acceso a tu calendario retirado',
+  'files.unshared': 'Un archivo dejó de compartirse',
+};

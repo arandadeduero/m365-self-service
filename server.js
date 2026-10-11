@@ -28,6 +28,9 @@ const adminRoutes = require('./routes/admin');
 const ownedGroupRoutes = require('./routes/ownedGroups');
 const helpRoutes = require('./routes/help');
 const roomRoutes = require('./routes/rooms');
+const directoryRoutes = require('./routes/directory');
+const signatureRoutes = require('./routes/signature');
+const activityRoutes = require('./routes/activity');
 
 // Import middleware
 const { expiredSessionHandler, errorHandler, notFoundHandler } = require('./middleware/errorHandler');
@@ -144,6 +147,9 @@ app.use('/', adminRoutes);
 app.use('/', ownedGroupRoutes);
 app.use('/', helpRoutes);
 app.use('/', roomRoutes);
+app.use('/', directoryRoutes);
+app.use('/', signatureRoutes);
+app.use('/', activityRoutes);
 
 // 404 handler (must be after all routes)
 app.use(notFoundHandler);

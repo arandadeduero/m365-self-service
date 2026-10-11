@@ -1,0 +1,49 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-profile">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Mi actividad</h1>
+    <a href="/account" class="btn btn-outline-secondary">Volver a mi cuenta</a>
+  </div>
+
+  <p class="text-muted">
+    Lo que se ha hecho con tu cuenta en este portal en los últimos <%= days %> días: cada inicio de sesión y cada cambio, con la dirección desde la que se hizo. Si ves algo que no reconoces, díselo a Informática desde <a href="/ayuda">Ayuda</a>.
+    Lo que haces en Outlook, Teams o los demás programas de Microsoft 365 no aparece aquí.
+  </p>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <% if (entries.length > 0) { %>
+        <p class="text-muted small">
+          <% if (total > entries.length) { %>Se muestran los <%= entries.length %> más recientes de <%= total %>.<% } else { %><%= total %> <%= total === 1 ? 'evento' : 'eventos' %>.<% } %>
+        </p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Cuándo</th>
+                <th>Qué</th>
+                <th>Desde</th>
+                <th>Detalles</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% entries.forEach(function(entry) { %>
+                <tr>
+                  <td class="text-nowrap"><%= new Date(entry.time).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Madrid' }) %></td>
+                  <td><%= entry.label %></td>
+                  <td><%= entry.ip || '' %></td>
+                  <td class="small text-break text-muted"><%= entry.details %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="text-muted mb-0">No hay actividad tuya en los últimos <%= days %> días.</p>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

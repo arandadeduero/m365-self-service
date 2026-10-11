@@ -423,6 +423,18 @@ test.serial('GET /account/sign-ins says when there are none, or when the log is 
 
 // -------------------------------------------------------- automatic replies
 
+test.serial('GET /firma builds the signature from the profile and says what is missing', async t => {
+  http.on('get', '/v1.0/me', { displayName: 'Alice Example', jobTitle: 'Técnica', businessPhones: ['947500100'], mail: 'alice@arandadeduero.es' });
+
+  const res = await agent.get('/firma').expect(200);
+
+  t.true(res.text.includes('id="signaturePreview"><table'));
+  t.true(res.text.includes('Alice Example'));
+  t.true(res.text.includes('Tel. 947500100'));
+  t.true(res.text.includes('Te falta el departamento'));
+  t.true(res.text.includes('src="/js/signature.js"'));
+});
+
 test.serial('GET /profile/me/auto-reply drops tags hidden inside other tags', async t => {
   http.on('get', `${SETTINGS}/automaticRepliesSetting`, {
     status: 'alwaysEnabled',

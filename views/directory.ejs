@@ -3,7 +3,10 @@
 <main class="container py-4 page-shell">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <h1 class="h2 mb-0 page-title">Directorio</h1>
-    <input type="search" class="form-control w-auto" id="directorySearch" placeholder="Buscar por nombre, puesto, departamento o teléfono" size="45" autofocus>
+    <div class="d-flex flex-wrap gap-2">
+      <input type="search" class="form-control w-auto" id="directorySearch" placeholder="Buscar por nombre, puesto, departamento o teléfono" size="45" autofocus>
+      <a href="/directorio/export.csv" class="btn btn-outline-secondary">Exportar a Excel</a>
+    </div>
   </div>
 
   <p class="text-muted">
@@ -23,6 +26,7 @@
                 <th>Oficina</th>
                 <th>Teléfono</th>
                 <th>Correo</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -39,6 +43,7 @@
                   <td>
                     <% if (user.mail) { %><a href="mailto:<%= user.mail %>" class="text-decoration-none"><%= user.mail %></a><% } %>
                   </td>
+                  <td class="text-end"><a href="/directorio/<%= user.id %>" class="btn btn-outline-primary btn-sm text-nowrap">Tarjeta</a></td>
                 </tr>
               <% }); %>
             </tbody>

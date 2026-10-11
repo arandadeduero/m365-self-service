@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-profile">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Mi firma de correo</h1>
+    <a href="/account" class="btn btn-outline-secondary">Volver a mi cuenta</a>
+  </div>
+
+  <p class="text-muted">
+    Esta es tu firma con el formato del Ayuntamiento, hecha con los datos de tu perfil. Cópiala y pégala en Outlook una vez; a partir de ahí sale sola en cada correo.
+    <% if (missing.length > 0) { %>
+      Te falta <%= missing.map(field => field === 'jobTitle' ? 'el puesto' : 'el departamento').join(' y ') %>: puedes ponerlo en <a href="/profile/me/edit">Editar mi perfil</a> y volver aquí.
+    <% } %>
+  </p>
+
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <h2 class="h5 mb-3">Así se verá</h2>
+      <%# Built in services/signature.js from escaped profile values; the markup itself is the signature %>
+      <div class="border rounded p-3 bg-white" id="signaturePreview"><%- signature.html %></div>
+      <div class="d-flex flex-wrap gap-2 mt-3">
+        <button type="button" class="btn btn-primary" id="copySignature">Copiar la firma</button>
+        <span class="text-muted small align-self-center d-none" id="copyDone">Copiada. Ahora pégala en Outlook.</span>
+      </div>
+      <textarea class="d-none" id="signatureText" readonly><%= signature.text %></textarea>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <h2 class="h5 mb-3">Dónde pegarla</h2>
+      <ul class="mb-0">
+        <li><strong>Outlook en el navegador</strong> y <strong>el nuevo Outlook</strong>: rueda de Configuración → Cuentas → Firmas → Nueva firma, pega, y elígela para los mensajes nuevos y las respuestas.</li>
+        <li><strong>Outlook clásico de escritorio</strong>: Archivo → Opciones → Correo → Firmas → Nueva, pega y guarda.</li>
+        <li><strong>Móvil</strong>: Configuración → tu cuenta → Firma. Ahí solo cabe texto; usa esta versión:</li>
+      </ul>
+      <pre class="bg-light rounded p-3 mt-3 mb-0 small"><%= signature.text %></pre>
+    </div>
+  </div>
+</main>
+
+<script src="/js/signature.js"></script>
+
+<%- include('partials/footer') %>

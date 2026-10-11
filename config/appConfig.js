@@ -31,6 +31,10 @@ module.exports = {
   // directory, the top is whoever has people below and no manager.
   ORG_CHART_ROOT: process.env.ORG_CHART_ROOT || 'alinaje@arandadeduero.es',
 
+  // Shown in the email signature the portal builds for each person
+  ORG_WEB: process.env.ORG_WEB || 'https://www.arandadeduero.es',
+  ORG_ADDRESS: process.env.ORG_ADDRESS || '',
+
   // Recipient of the requests that have nobody else to go to
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'glopez@arandadeduero.es',
 

@@ -32,7 +32,6 @@ const {
   describeCalendarSharing
 } = require('../services/accountInsights');
 const {
-  getAllUsers,
   getAccountStatus,
   getUserLicenses,
   getAuthenticationMethods,
@@ -156,24 +155,6 @@ function htmlToText(html) {
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
-
-/**
- * GET /directorio
- * Staff directory - everybody in the organization with their contact details
- */
-router.get('/directorio', isAuthenticated, async (req, res, next) => {
-  try {
-    const users = await getAllUsers(req.session.accessToken);
-
-    res.render('directory', {
-      title: 'Directorio',
-      currentPage: 'directory',
-      users,
-    });
-  } catch (error) {
-    next(error);
-  }
-});
 
 /**
  * GET /account
