@@ -9,3 +9,10 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    # One pull request a week for all minor and patch updates together.
+    # Major versions still get a pull request each, since they can break things.
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
