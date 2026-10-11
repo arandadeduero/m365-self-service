@@ -1,0 +1,60 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-profile">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Qué comparto fuera</h1>
+    <a href="/account" class="btn btn-outline-secondary">Volver a mi cuenta</a>
+  </div>
+
+  <p class="text-muted">
+    Tus archivos y carpetas de OneDrive que puede abrir alguien de fuera del Ayuntamiento: los que tienen un enlace que vale para cualquiera, y los compartidos con direcciones externas. Lo que compartes con compañeros no sale aquí.
+    Un enlace «para cualquiera» lo puede reenviar quien lo reciba; si ya no hace falta, quítalo.
+  </p>
+
+  <% if (notice) { %><div class="alert alert-success"><%= notice %></div><% } %>
+
+  <% if (!sharing) { %>
+    <div class="card shadow-sm border-0 app-panel"><div class="card-body p-4"><p class="text-muted mb-0">Ahora mismo no se puede consultar tu OneDrive.</p></div></div>
+  <% } else { %>
+    <% if (partial) { %>
+      <div class="alert alert-warning">Tienes tantos archivos que no se ha podido revisar todo; esta lista puede estar incompleta.</div>
+    <% } %>
+    <% if (sharing.uncheckedCount > 0) { %>
+      <div class="alert alert-warning"><%= sharing.uncheckedCount %> <%= sharing.uncheckedCount === 1 ? 'elemento compartido no se ha podido comprobar' : 'elementos compartidos no se han podido comprobar' %>.</div>
+    <% } %>
+    <div class="card shadow-sm border-0 app-panel">
+      <div class="card-body p-4">
+        <% if (sharing.outside.length === 0) { %>
+          <p class="mb-0">Nada de tu OneDrive llega a nadie de fuera del Ayuntamiento.<% if (sharing.insideCount > 0) { %> Compartes <%= sharing.insideCount %> <%= sharing.insideCount === 1 ? 'elemento' : 'elementos' %> con compañeros.<% } %></p>
+        <% } else { %>
+          <p class="text-muted"><%= sharing.outside.length %> <%= sharing.outside.length === 1 ? 'elemento llega' : 'elementos llegan' %> fuera del Ayuntamiento<% if (sharing.insideCount > 0) { %>; otros <%= sharing.insideCount %> solo a compañeros<% } %>.</p>
+          <ul class="list-group list-group-flush">
+            <% sharing.outside.forEach(function(item) { %>
+              <li class="list-group-item px-0">
+                <div class="mb-2">
+                  <strong><%= item.folder ? '📁 ' : '' %><%= item.name %></strong>
+                  <span class="text-muted small"> en <%= item.path %></span>
+                  <% if (item.url) { %> · <a href="<%= item.url %>" target="_blank" rel="noopener" class="small">Abrir en OneDrive</a><% } %>
+                </div>
+                <% item.shares.forEach(function(share) { %>
+                  <div class="d-flex justify-content-between align-items-center gap-3 mb-2">
+                    <div class="small">
+                      <% if (share.kind === 'anyone') { %><span class="badge bg-danger">Cualquiera con el enlace</span><% } else { %><span class="badge bg-warning text-dark">Fuera del Ayuntamiento</span> <%= share.outsiders.join(', ') %><% } %>
+                      <span class="text-muted">· <%= share.roles.join(', ') %><% if (share.expires) { %> · caduca el <%= new Date(share.expires).toLocaleDateString('es-ES') %><% } %></span>
+                    </div>
+                    <form action="/account/sharing/<%= encodeURIComponent(item.id) %>/permissions/<%= encodeURIComponent(share.id) %>/remove" method="POST">
+                      <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                      <button type="submit" class="btn btn-outline-danger btn-sm text-nowrap">Dejar de compartir</button>
+                    </form>
+                  </div>
+                <% }); %>
+              </li>
+            <% }); %>
+          </ul>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

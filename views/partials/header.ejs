@@ -50,6 +50,8 @@
               <li><a class="<%= itemClass('/account') %>" href="/account">Resumen de la cuenta</a></li>
               <li><a class="<%= itemClass('/account/groups') %>" href="/account/groups">Mis grupos</a></li>
               <li><a class="<%= itemClass('/account/sign-ins') %>" href="/account/sign-ins">Mis inicios de sesión</a></li>
+              <li><a class="<%= itemClass('/account/apps') %>" href="/account/apps">Aplicaciones con acceso</a></li>
+              <li><a class="<%= itemClass('/account/sharing') %>" href="/account/sharing">Qué comparto fuera</a></li>
               <% if (typeof hasSharedMailboxes !== 'undefined' && hasSharedMailboxes) { %>
               <li><a class="<%= itemClass('/account/mailboxes') %>" href="/account/mailboxes">Buzones compartidos</a></li>
               <% } %>

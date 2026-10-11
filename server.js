@@ -31,6 +31,8 @@ const roomRoutes = require('./routes/rooms');
 const directoryRoutes = require('./routes/directory');
 const signatureRoutes = require('./routes/signature');
 const activityRoutes = require('./routes/activity');
+const appsRoutes = require('./routes/apps');
+const sharingRoutes = require('./routes/sharing');
 
 // Import middleware
 const { expiredSessionHandler, errorHandler, notFoundHandler } = require('./middleware/errorHandler');
@@ -150,6 +152,8 @@ app.use('/', roomRoutes);
 app.use('/', directoryRoutes);
 app.use('/', signatureRoutes);
 app.use('/', activityRoutes);
+app.use('/', appsRoutes);
+app.use('/', sharingRoutes);
 
 // 404 handler (must be after all routes)
 app.use(notFoundHandler);

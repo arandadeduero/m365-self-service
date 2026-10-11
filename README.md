@@ -9,6 +9,8 @@ Portal interno de autoservicio para los usuarios de Microsoft 365 del Ayuntamien
 - ✅ **Perfil** - Perfil, foto, grupos, responsable y datos en bruto de Graph; cada usuario puede editar su puesto, teléfonos, oficina y foto. Los campos que Microsoft no deja cambiar a un usuario se muestran en solo lectura
 - ✅ **Directorio** - Directorio del personal con buscador, teléfonos y oficinas, exportable a Excel; cada persona tiene una tarjeta con código QR y vCard para guardarla en el móvil
 - ✅ **Mi firma de correo** - El generador de firmas del Ayuntamiento ([firmas-correo](https://github.com/arandadeduero/firmas-correo)) dentro del portal, con los datos del perfil al lado
+- ✅ **Aplicaciones con acceso** - Qué aplicaciones tienen permisos sobre la cuenta del usuario y qué pueden hacer, en lenguaje llano
+- ✅ **Qué comparto fuera** - Archivos de OneDrive con enlaces para cualquiera o compartidos con direcciones externas, y un botón para dejar de compartirlos
 - ✅ **Mi actividad** - Lo que se ha hecho con la cuenta en el portal en los últimos 30 días, en lenguaje llano
 - ✅ **Mi cuenta** - Qué incluye la licencia en lenguaje llano con un enlace a cada aplicación, espacio de OneDrive, una lista de comprobación de la cuenta, antigüedad y caducidad de la contraseña, métodos de inicio de sesión con un aviso cuando no hay segundo factor, dispositivos, reglas de la bandeja de entrada con un aviso cuando el correo se reenvía fuera, y la dirección de recuperación
 - ✅ **Mis grupos** - Qué es cada grupo al que pertenece el usuario (un Team, una lista de correo, un grupo de seguridad) y qué le da
@@ -132,7 +134,7 @@ Tras el registro verás la página de información general de la aplicación. **
      - ✅ `Directory.Read.All` - Leer datos del directorio
      - ✅ `MailboxSettings.ReadWrite` - Leer y cambiar las respuestas automáticas del usuario
      - ✅ `Mail.Send` - Enviar correos como el usuario que ha iniciado sesión (para las correcciones de responsable y las entradas del blog)
-     - ✅ `Files.Read` - Leer cuánto espacio de OneDrive ha usado el usuario. El permiso cubre los archivos del usuario en general; la aplicación solo pide la cuota
+     - ✅ `Files.ReadWrite` - Leer cuánto espacio de OneDrive ha usado el usuario, qué comparte con personas de fuera, y retirar esos accesos. La aplicación no lee ni cambia el contenido de ningún archivo
      - ✅ `User.RevokeSessions.All` - Cerrar las sesiones del propio usuario cuando denuncia un inicio de sesión («No fui yo»)
      - ✅ `Calendars.ReadWrite` - Leer con quién está compartido el calendario, compartirlo con compañeros desde el portal, y ver si las salas están libres. El permiso cubre el calendario del usuario en general; la aplicación no lee ni crea citas
      - ✅ `Presence.Read.All` - Ver en el directorio si cada persona está disponible en Teams
@@ -348,6 +350,8 @@ mi-microsoft-365/
 │   ├── directory.js                  # Directorio, exportación, tarjetas de contacto y vCard
 │   ├── signature.js                  # Firma de correo
 │   ├── activity.js                   # Actividad de la persona en el portal
+│   ├── apps.js                       # Aplicaciones con permisos sobre la cuenta
+│   ├── sharing.js                    # Archivos de OneDrive compartidos fuera
 │   └── blog.js                       # Publicar en el blog de WordPress
 │
 ├── services/
@@ -568,6 +572,9 @@ Quién puede usar `/blog` no es una variable de entorno: se configura en `config
 | GET | `/directorio/export.csv` | Con sesión | El directorio para Excel |
 | GET | `/directorio/:id`, `/directorio/:id/vcard` | Con sesión | Tarjeta de contacto con QR, y su vCard |
 | GET | `/firma` | Con sesión | Firma de correo de la persona |
+| GET | `/account/apps` | Con sesión | Aplicaciones con permisos sobre la cuenta |
+| GET | `/account/sharing` | Con sesión | Archivos de OneDrive que llegan fuera del Ayuntamiento |
+| POST | `/account/sharing/:item/permissions/:permission/remove` | Con sesión | Dejar de compartir uno |
 | GET | `/account/activity` | Con sesión | La actividad de la persona en el portal |
 | GET | `/groups` | Con sesión | Grupos del inquilino y listas de distribución (nombres que empiezan por `DIST`) |
 | POST | `/groups/generate-report` | Con sesión | Informe en texto de los grupos seleccionados (JSON) |
@@ -699,6 +706,7 @@ Cada acción que cambia algo, y cada inicio de sesión, se añade a un archivo p
 | `permission.denied` | A un usuario se le niega una página: la lista de permitidos del blog, el visor de auditoría, o decidir sobre una solicitud de un grupo del que no es propietario |
 | `profile.update`, `profile.photo_update` | Cambian los datos o la foto del perfil |
 | `mail.auto_reply_update` | Cambian las respuestas automáticas (solo el estado, nunca el mensaje) |
+| `files.unshared` | El usuario dejó de compartir un archivo (el id del archivo y con quién estaba compartido, nunca su contenido) |
 | `calendar.shared`, `calendar.unshared` | El usuario compartió su calendario con alguien, o le retiró el acceso (con quién y qué podía ver) |
 | `account.sign_in_reported` | Un usuario ha denunciado un inicio de sesión como ajeno (su id y su dirección, si se avisó a Informática y si se cerraron las sesiones) |
 | `group.member_added`, `group.member_removed` | Un propietario ha cambiado los miembros de su grupo |

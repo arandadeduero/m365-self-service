@@ -1,0 +1,47 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-profile">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Aplicaciones con acceso a mi cuenta</h1>
+    <a href="/account" class="btn btn-outline-secondary">Volver a mi cuenta</a>
+  </div>
+
+  <p class="text-muted">
+    Cuando entras en una aplicación con tu cuenta del Ayuntamiento y aceptas lo que pide, esa aplicación se queda con permiso para hacerlo aunque tú no estés. Aquí ves cuáles son y qué pueden hacer.
+    Las que puso Informática para todo el mundo están marcadas; las demás las aceptaste tú. Si ves una que no reconoces, o que pide más de lo que necesita, retírale el acceso desde <a href="<%= myAppsUrl %>" target="_blank" rel="noopener">Mis aplicaciones de Microsoft</a> (en el menú de la aplicación, «Administrar» → «Revocar permisos») y avisa a Informática.
+  </p>
+
+  <% if (!apps) { %>
+    <div class="card shadow-sm border-0 app-panel"><div class="card-body p-4"><p class="text-muted mb-0">Ahora mismo no se puede consultar qué aplicaciones tienen acceso a tu cuenta.</p></div></div>
+  <% } else if (apps.length === 0) { %>
+    <div class="card shadow-sm border-0 app-panel"><div class="card-body p-4"><p class="text-muted mb-0">Ninguna aplicación tiene permisos sobre tu cuenta.</p></div></div>
+  <% } else { %>
+    <% apps.forEach(function(app) { %>
+      <div class="card shadow-sm border-0 app-panel mb-3">
+        <div class="card-body p-4">
+          <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+            <div>
+              <h3 class="h5 mb-1">
+                <%= app.name %>
+                <% if (app.isThisPortal) { %><span class="badge bg-primary">Este portal</span><% } %>
+                <% if (app.reachesContent) { %><span class="badge bg-warning text-dark">Llega a tu correo o archivos</span><% } %>
+              </h3>
+              <p class="text-muted small mb-0">
+                <% if (app.publisher) { %><%= app.publisher %><%= app.verified ? ' (editor verificado)' : '' %><% } else { %>Editor desconocido<% } %>
+                · <%= app.forEveryone ? 'Autorizada por Informática para todo el Ayuntamiento' : 'La autorizaste tú' %>
+              </p>
+            </div>
+            <% if (app.homepage) { %><a href="<%= app.homepage %>" target="_blank" rel="noopener" class="btn btn-outline-secondary btn-sm">Abrir</a><% } %>
+          </div>
+          <ul class="mb-0">
+            <% app.permissions.forEach(function(permission) { %>
+              <li><%= permission.text %><% if (permission.text !== permission.scope) { %> <code class="small text-muted"><%= permission.scope %></code><% } %></li>
+            <% }); %>
+          </ul>
+        </div>
+      </div>
+    <% }); %>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

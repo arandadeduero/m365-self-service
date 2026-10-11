@@ -512,6 +512,108 @@ async function getPresences(accessToken, userIds) {
 }
 
 /**
+ * The delegated permissions apps hold on the signed-in user's account: what
+ * the user consented to, and what an administrator consented to for everybody
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<Array|null>} The grants, or null when they could not be read
+ */
+async function getMyAppGrants(accessToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/me/oauth2PermissionGrants`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch (error) {
+    console.error('Error fetching app grants:', error.response?.data || error.message);
+    return null;
+  }
+}
+
+/**
+ * An application of the directory, by the id of its service principal
+ * @param {string} accessToken - Valid access token
+ * @param {string} id - Service principal id, already checked for its format
+ * @returns {Promise<Object|null>} Name and publisher, or null when it cannot be read
+ */
+async function getServicePrincipal(accessToken, id) {
+  try {
+    const response = await axios.get(`${GRAPH_API_BASE}/servicePrincipals/${encodeURIComponent(id)}`, {
+      params: { $select: 'id,appId,displayName,publisherName,verifiedPublisher,homepage' },
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error fetching service principal ${id}:`, error.response?.data || error.message);
+    return null;
+  }
+}
+
+// Pages of the drive listing read at most, so a huge OneDrive does not hang the page
+const DRIVE_PAGES_MAX = 25;
+
+/**
+ * The items of the user's OneDrive that are shared with somebody
+ * @param {string} accessToken - Valid access token
+ * @returns {Promise<{items: Array, complete: boolean}|null>} The shared items, and whether the whole drive was read; null when it could not be
+ */
+async function getSharedDriveItems(accessToken) {
+  try {
+    const headers = { Authorization: `Bearer ${accessToken}` };
+    let response = await axios.get(`${GRAPH_API_BASE}/me/drive/root/delta`, {
+      params: { $select: 'id,name,webUrl,shared,file,folder,deleted,parentReference', $top: 1000 },
+      headers,
+    });
+    const items = [];
+    let pages = 1;
+    const keep = (page) => items.push(...(page.value || []).filter(item => item.shared && !item.deleted));
+    keep(response.data);
+    while (response.data['@odata.nextLink'] && pages < DRIVE_PAGES_MAX) {
+      response = await axios.get(response.data['@odata.nextLink'], { headers });
+      keep(response.data);
+      pages += 1;
+    }
+    return { items, complete: !response.data['@odata.nextLink'] };
+  } catch (error) {
+    console.error('Error listing shared drive items:', error.response?.data || error.message);
+    return null;
+  }
+}
+
+/**
+ * Who an item of the user's OneDrive is shared with
+ * @param {string} accessToken - Valid access token
+ * @param {string} itemId - Drive item id, already checked for its format
+ * @returns {Promise<Array|null>} Its permissions, or null when they could not be read
+ */
+async function getDriveItemPermissions(accessToken, itemId) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/me/drive/items/${encodeURIComponent(itemId)}/permissions`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch (error) {
+    console.error(`Error fetching permissions of item ${itemId}:`, error.response?.data || error.message);
+    return null;
+  }
+}
+
+/**
+ * Stop sharing an item of the user's OneDrive with somebody, or through a link
+ * @param {string} accessToken - Valid access token
+ * @param {string} itemId - Drive item id, already checked for its format
+ * @param {string} permissionId - Permission id, already checked for its format
+ * @returns {Promise<void>}
+ */
+async function removeDriveItemPermission(accessToken, itemId, permissionId) {
+  try {
+    await axios.delete(`${GRAPH_API_BASE}/me/drive/items/${encodeURIComponent(itemId)}/permissions/${encodeURIComponent(permissionId)}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch (error) {
+    console.error(`Error removing permission ${permissionId} of item ${itemId}:`, error.response?.data || error.message);
+    throw graphError('Failed to remove sharing', error);
+  }
+}
+
+/**
  * Whether the signed-in user can open somebody else's mailbox (a shared one)
  * @param {string} accessToken - Valid access token
  * @param {string} address - Address of the mailbox
@@ -1176,6 +1278,11 @@ module.exports = {
   getAllUsers,
   getUserById,
   getPresences,
+  getMyAppGrants,
+  getServicePrincipal,
+  getSharedDriveItems,
+  getDriveItemPermissions,
+  removeDriveItemPermission,
   shareCalendar,
   removeCalendarPermission,
   getUsersWithManager,
