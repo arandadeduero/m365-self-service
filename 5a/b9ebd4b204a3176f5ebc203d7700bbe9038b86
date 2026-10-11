@@ -1,0 +1,44 @@
+routes/signature.js
+  s_011367d8e8fa7a::t_0e22e772c26b51 19-25,29
+test/account.test.js
+  s_011367d8e8fa7a::t_0e22e772c26b51 431
+README.md
+  s_011367d8e8fa7a::t_0e22e772c26b51 14,577-578,711
+config/auditEvents.js
+  s_011367d8e8fa7a::t_0e22e772c26b51 18-21
+CLAUDE.md
+  s_011367d8e8fa7a::t_0e22e772c26b51 41,43
+views/team.ejs
+  s_011367d8e8fa7a::t_0e22e772c26b51 1-79
+test/team.test.js
+  s_011367d8e8fa7a::t_0e22e772c26b51 1-86
+config/teamRequests.js
+  s_011367d8e8fa7a::t_0e22e772c26b51 1-60
+routes/team.js
+  s_011367d8e8fa7a::t_0e22e772c26b51 1-86
+services/graphService.js
+  s_011367d8e8fa7a::t_0e22e772c26b51 88-103,1297
+  s_011367d8e8fa7a::t_b2151eb9a5cc7e 87
+server.js
+  s_011367d8e8fa7a::t_0e22e772c26b51 37,160
+views/partials/header.ejs
+  s_011367d8e8fa7a::t_0e22e772c26b51 71-72
+views/signature.ejs
+  s_011367d8e8fa7a::t_0e22e772c26b51 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5ab9ebd4b204a3176f5ebc203d7700bbe9038b86",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "unknown"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
