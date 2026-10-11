@@ -1,0 +1,56 @@
+views/partials/header.ejs
+  s_011367d8e8fa7a::t_a39f2b15391e42 100-104,106
+views/admin-licenses.ejs
+  s_011367d8e8fa7a::t_a39f2b15391e42 1-36
+services/requestStore.js
+  s_011367d8e8fa7a::t_a39f2b15391e42 92-98,129
+  s_011367d8e8fa7a::t_fbc06e729dc0c1 91
+views/admin-accounts.ejs
+  s_011367d8e8fa7a::t_a39f2b15391e42 1-44
+config/auditEvents.js
+  s_011367d8e8fa7a::t_a39f2b15391e42 29
+views/admin-requests.ejs
+  s_011367d8e8fa7a::t_a39f2b15391e42 1-34
+services/settingsStore.js
+  s_011367d8e8fa7a::t_a39f2b15391e42 1-70
+routes/admin.js
+  s_011367d8e8fa7a::t_a39f2b15391e42 5-10,18-25,73-201
+  s_011367d8e8fa7a::t_b13050ce28f5b4 202
+README.md
+  s_011367d8e8fa7a::t_a39f2b15391e42 26-27,155-156,524,573-578,721
+views/audit.ejs
+  s_011367d8e8fa7a::t_a39f2b15391e42 35
+test/admin-pages.test.js
+  s_011367d8e8fa7a::t_a39f2b15391e42 1-167
+services/accountReview.js
+  s_011367d8e8fa7a::t_a39f2b15391e42 1-86
+  s_011367d8e8fa7a::t_fbbb3ecb21ab82 87
+views/admin-messages.ejs
+  s_011367d8e8fa7a::t_a39f2b15391e42 1-33
+CLAUDE.md
+  s_011367d8e8fa7a::t_a39f2b15391e42 46,122
+services/messageCenterService.js
+  s_011367d8e8fa7a::t_a39f2b15391e42 1-54
+services/graphService.js
+  s_011367d8e8fa7a::t_a39f2b15391e42 104-162,1357-1359
+server.js
+  s_011367d8e8fa7a::t_a39f2b15391e42 46-48
+views/admin-settings.ejs
+  s_011367d8e8fa7a::t_a39f2b15391e42 1-32
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "654956079d82651b1148c5104a56c442aaab4e33",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "unknown"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
