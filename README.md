@@ -178,7 +178,7 @@ A password reset link is sent to the first **alternate email address** of the ac
 ```bash
 # If using git
 git clone <repository-url>
-cd example-login-m365
+cd mi-microsoft-365
 
 # Or download and extract the ZIP file
 ```
@@ -299,7 +299,7 @@ URL: http://localhost:3000
 ## Part 3: Project Structure
 
 ```
-example-login-m365/
+mi-microsoft-365/
 ├── server.js                         # Express app: middleware, sessions, routes
 ├── package.json                      # Dependencies and scripts
 ├── .env.example                      # Environment variables template
