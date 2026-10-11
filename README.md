@@ -23,7 +23,8 @@ Portal interno de autoservicio para los usuarios de Microsoft 365 del Ayuntamien
 - ✅ **Ayuda** - Qué es Microsoft 365 y qué herramientas tiene la organización, respuestas a las preguntas habituales y un formulario para escribir a Informática con el estado de la cuenta adjunto
 - ✅ **Enlace a la intranet** - La página de inicio, la de ayuda y el pie enlazan a la intranet de la organización
 - ✅ **Configuración regional** - Cada cuenta se vuelve a poner en hora de Madrid y en español en cada inicio de sesión
-- ✅ **Visor de auditoría** - Los administradores pueden leer y filtrar el registro de auditoría desde la aplicación
+- ✅ **Visor de auditoría** - Los administradores pueden leer y filtrar el registro de auditoría desde la aplicación, y exportarlo a CSV
+- ✅ **Panel de Informática** - Licencias compradas y libres, cuentas que necesitan atención (sin iniciar sesión, sin segundo factor, contraseña caducada, licencias mal asignadas), el centro de mensajes de Microsoft, las solicitudes de grupos sin decidir, y la lista del blog y los buzones compartidos editables desde la web
 - ✅ **Estado del servicio** - Un aviso en todas las páginas mientras Microsoft informa de una incidencia en Microsoft 365
 - ✅ **Respuestas automáticas** - Activar, desactivar o programar entre dos fechas las respuestas de fuera de la oficina
 - ✅ **Grupos** - Todos los grupos del inquilino con el estado de pertenencia; las solicitudes para entrar van a los propietarios del grupo, que aprueban o rechazan en la aplicación
@@ -150,6 +151,8 @@ Tras el registro verás la página de información general de la aplicación. **
   La lista anterior tiene que coincidir con `scopes` en `config/authConfig.js`.
 
   **«Mis inicios de sesión» necesita un permiso de aplicación y una licencia.** Añade `AuditLog.Read.All` como permiso de *Aplicación*, con consentimiento de administrador. Microsoft solo sirve el registro de inicios de sesión a los inquilinos con Entra ID P1 o P2. Sin cualquiera de las dos cosas, la página dice que el registro no está disponible. La aplicación solo lee el registro del usuario que ha iniciado sesión.
+
+  **El centro de mensajes (`/admin/avisos`) necesita otro permiso de aplicación:** `ServiceMessage.Read.All`, con consentimiento de administrador. Y «Cuentas que necesitan atención» usa `AuditLog.Read.All` (último inicio de sesión, con Entra ID P1) y `UserAuthenticationMethod.Read.All` (segundo factor registrado), también de *Aplicación*; sin ellos, esas dos listas dicen que no se pueden saber.
 
   **El aviso de estado del servicio necesita un permiso de aplicación.** Añade `ServiceHealth.Read.All` como permiso de *Aplicación*, con consentimiento de administrador. Sin él la aplicación funciona y simplemente nunca muestra el aviso.
 
@@ -518,7 +521,7 @@ Ningún test habla con Microsoft, AWS ni WordPress:
 
 `REDIRECT_URI` decide también la dirección de los enlaces de restablecimiento de contraseña: apuntan a su origen (por ejemplo `https://herramientas.example.es`), nunca al host de la petición que llega.
 
-Quién puede usar `/blog` no es una variable de entorno: se configura en `config/local.js` (ver Parte 2, Paso 4).
+Quién puede usar `/blog` no es una variable de entorno: se configura en `config/local.js` (ver Parte 2, Paso 4) o, una vez en marcha, desde Administración → Ajustes, que guarda `settings.json` en `DATA_DIR` y manda sobre `local.js`.
 
 ---
 
@@ -567,6 +570,12 @@ Quién puede usar `/blog` no es una variable de entorno: se configura en `config
 | GET | `/ayuda` | Con sesión | Página de ayuda |
 | POST | `/ayuda/contacto` | Con sesión | Escribir a Informática desde el buzón del usuario |
 | GET | `/admin/audit` | Administradores | El registro de auditoría, con filtros |
+| GET | `/admin/audit.csv` | Administradores | El mismo registro, para Excel |
+| GET | `/admin/cuentas` | Administradores | Cuentas que necesitan atención (leídas con el token de la aplicación) |
+| GET | `/admin/licencias` | Administradores | Licencias compradas, en uso y libres |
+| GET | `/admin/avisos` | Administradores | El centro de mensajes de Microsoft |
+| GET | `/admin/solicitudes` | Administradores | Solicitudes de grupos pendientes |
+| GET, POST | `/admin/ajustes` | Administradores | Lista del blog y buzones compartidos |
 | GET | `/directorio` | Con sesión | Directorio del personal |
 | GET | `/directorio/export.csv` | Con sesión | El directorio para Excel |
 | GET | `/directorio/:id`, `/directorio/:id/vcard` | Con sesión | Tarjeta de contacto con QR, y su vCard |
@@ -709,6 +718,7 @@ Cada acción que cambia algo, y cada inicio de sesión, se añade a un archivo p
 | `profile.update`, `profile.photo_update` | Cambian los datos o la foto del perfil |
 | `mail.auto_reply_update` | Cambian las respuestas automáticas (solo el estado, nunca el mensaje) |
 | `request.onboarding`, `request.offboarding`, `request.team`, `request.guest` | Una solicitud de alta, baja, equipo de Teams o invitado externo se envió a Informática (solo el tipo, nunca los datos de la persona) |
+| `admin.settings_updated` | Un administrador guardó la lista del blog o los buzones compartidos (cuántas entradas, no cuáles) |
 | `files.unshared` | El usuario dejó de compartir un archivo (el id del archivo y con quién estaba compartido, nunca su contenido) |
 | `calendar.shared`, `calendar.unshared` | El usuario compartió su calendario con alguien, o le retiró el acceso (con quién y qué podía ver) |
 | `account.sign_in_reported` | Un usuario ha denunciado un inicio de sesión como ajeno (su id y su dirección, si se avisó a Informática y si se cerraron las sesiones) |

@@ -1,0 +1,36 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-error">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Licencias</h1>
+    <a href="https://admin.microsoft.com/#/licenses" target="_blank" rel="noopener" class="btn btn-outline-secondary">Abrir en el centro de administración</a>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <% if (!licenses) { %>
+        <p class="text-muted mb-0">Ahora mismo no se pueden leer las licencias.</p>
+      <% } else if (licenses.length === 0) { %>
+        <p class="text-muted mb-0">No hay licencias compradas.</p>
+      <% } else { %>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead><tr><th>Licencia</th><th class="text-end">Compradas</th><th class="text-end">En uso</th><th class="text-end">Libres</th></tr></thead>
+            <tbody>
+              <% licenses.forEach(function(license) { %>
+                <tr class="<%= license.low ? 'table-warning' : '' %>">
+                  <td><strong><%= license.name %></strong><% if (license.name !== license.code) { %> <code class="small text-muted"><%= license.code %></code><% } %></td>
+                  <td class="text-end"><%= license.total %></td>
+                  <td class="text-end"><%= license.used %></td>
+                  <td class="text-end"><%= license.left %><% if (license.low) { %> <span class="badge bg-warning text-dark">Se agotan</span><% } %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

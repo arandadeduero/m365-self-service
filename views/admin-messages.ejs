@@ -1,0 +1,33 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-error">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Avisos de Microsoft</h1>
+    <a href="https://admin.microsoft.com/#/MessageCenter" target="_blank" rel="noopener" class="btn btn-outline-secondary">Abrir el centro de mensajes</a>
+  </div>
+
+  <p class="text-muted">Lo que Microsoft anuncia a los administradores: cambios que vienen y cosas que hay que hacer antes de una fecha. Las incidencias en curso salen en el aviso de arriba de cada página.</p>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <% if (!messages) { %>
+        <p class="text-muted mb-0">Ahora mismo no se pueden leer los avisos. La aplicación necesita el permiso de aplicación <code>ServiceMessage.Read.All</code>.</p>
+      <% } else if (messages.length === 0) { %>
+        <p class="text-muted mb-0">No hay avisos.</p>
+      <% } else { %>
+        <ul class="list-group list-group-flush">
+          <% messages.forEach(function(message) { %>
+            <li class="list-group-item px-0">
+              <a href="https://admin.microsoft.com/#/MessageCenter/:/messages/<%= encodeURIComponent(message.id) %>" target="_blank" rel="noopener" class="fw-semibold text-decoration-none"><%= message.title %></a>
+              <% if (message.isMajorChange) { %> <span class="badge bg-warning text-dark">Cambio importante</span><% } %>
+              <% if (message.actionRequiredByDateTime) { %> <span class="badge bg-danger">Actuar antes del <%= new Date(message.actionRequiredByDateTime).toLocaleDateString('es-ES') %></span><% } %>
+              <br><span class="text-muted small"><%= (message.services || []).join(', ') %><% if (message.category) { %> · <%= message.category %><% } %> · <%= new Date(message.lastModifiedDateTime).toLocaleDateString('es-ES') %></span>
+            </li>
+          <% }); %>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

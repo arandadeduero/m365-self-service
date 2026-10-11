@@ -43,6 +43,9 @@ const { csrfProtection } = require('./middleware/csrf');
 const { securityHeaders } = require('./middleware/securityHeaders');
 const { getServiceIssues } = require('./services/serviceHealthService');
 
+// Lists administrators edit from the web replace the ones of config/local.js
+require('./services/settingsStore').applySettings();
+
 // Create Express app
 const app = express();
 

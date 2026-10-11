@@ -97,7 +97,13 @@
           <li class="nav-item dropdown">
             <a href="/admin/audit" class="<%= groupClass('audit') %> nav-link-admin" role="button" data-bs-toggle="dropdown" aria-expanded="false">Administración</a>
             <ul class="dropdown-menu">
+              <li><a class="<%= itemClass('/admin/cuentas') %>" href="/admin/cuentas">Cuentas que necesitan atención</a></li>
+              <li><a class="<%= itemClass('/admin/licencias') %>" href="/admin/licencias">Licencias</a></li>
+              <li><a class="<%= itemClass('/admin/solicitudes') %>" href="/admin/solicitudes">Solicitudes pendientes</a></li>
+              <li><a class="<%= itemClass('/admin/avisos') %>" href="/admin/avisos">Avisos de Microsoft</a></li>
+              <li><hr class="dropdown-divider"></li>
               <li><a class="<%= itemClass('/admin/audit') %>" href="/admin/audit">Auditoría</a></li>
+              <li><a class="<%= itemClass('/admin/ajustes') %>" href="/admin/ajustes">Ajustes</a></li>
             </ul>
           </li>
           <% } %>

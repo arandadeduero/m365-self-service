@@ -89,6 +89,14 @@ function listPendingForGroups(groupIds) {
 }
 
 /**
+ * Every request still waiting for an owner, oldest first
+ * @returns {Array}
+ */
+function listPending() {
+  return readAll().filter(r => r.status === 'pending');
+}
+
+/**
  * Requests made by a user, newest first
  * @param {string} requesterId
  * @returns {Array}
@@ -118,6 +126,7 @@ function resolveRequest(id, status, resolvedBy) {
 }
 
 module.exports = {
+  listPending,
   createRequest,
   getRequest,
   listPendingForGroups,

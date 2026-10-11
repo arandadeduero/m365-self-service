@@ -1,0 +1,32 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-error">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Ajustes</h1>
+  </div>
+
+  <% if (saved) { %><div class="alert alert-success">Guardado. Ya está en vigor.</div><% } %>
+
+  <p class="text-muted">Estas listas se guardan en el servidor y mandan sobre las de <code>config/local.js</code>. Una entrada por línea.</p>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <form action="/admin/ajustes" method="POST" class="row g-4">
+        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+        <div class="col-md-6">
+          <label for="blogUsers" class="form-label">Quién puede publicar en el blog</label>
+          <textarea class="form-control font-monospace" id="blogUsers" name="blogUsers" rows="10"><%= settings.blogUsers.join('\n') %></textarea>
+          <div class="form-text">Nombres de usuario (la parte del correo antes de @). Sin nadie, nadie puede publicar.</div>
+        </div>
+        <div class="col-md-6">
+          <label for="sharedMailboxes" class="form-label">Buzones compartidos</label>
+          <textarea class="form-control font-monospace" id="sharedMailboxes" name="sharedMailboxes" rows="10"><%= settings.sharedMailboxes.join('\n') %></textarea>
+          <div class="form-text">Direcciones @<%= domain %>. Cada persona ve en «Mi cuenta» los que puede abrir.</div>
+        </div>
+        <div class="col-12"><button type="submit" class="btn btn-primary">Guardar</button></div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

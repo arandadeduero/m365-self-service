@@ -1,0 +1,44 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell page-error">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Cuentas que necesitan atención</h1>
+  </div>
+
+  <p class="text-muted">Lo que conviene revisar de vez en cuando. Se lee con el permiso de la propia aplicación, no con tu cuenta.</p>
+
+  <% if (!review) { %>
+    <div class="card shadow-sm border-0 app-panel"><div class="card-body p-4"><p class="text-muted mb-0">Ahora mismo no se pueden leer las cuentas.</p></div></div>
+  <% } else { %>
+    <p class="text-muted small"><%= review.total %> cuentas de personas<% if (review.guests > 0) { %> y <%= review.guests %> invitados externos<% } %>.</p>
+    <%
+      const sections = [
+        ['Sin iniciar sesión en 90 días', review.idle, 'No se puede saber: el registro de inicios de sesión necesita Entra ID P1 y el permiso de aplicación AuditLog.Read.All.'],
+        ['Sin segundo factor', review.withoutMfa, 'No se puede saber: el informe de métodos de autenticación necesita Entra ID P1 y el permiso de aplicación UserAuthenticationMethod.Read.All.'],
+        ['Contraseña caducada', review.expiredPassword, 'No se comprueba: no hay PASSWORD_MAX_AGE_DAYS configurado.'],
+        ['Deshabilitadas con licencia', review.disabledWithLicense, null],
+        ['Habilitadas sin licencia', review.enabledWithoutLicense, null],
+      ];
+    %>
+    <% sections.forEach(function([heading, list, unavailable]) { %>
+      <div class="card shadow-sm border-0 app-panel mb-3">
+        <div class="card-body p-4">
+          <h2 class="h5 mb-2"><%= heading %><% if (list) { %> <span class="badge bg-secondary"><%= list.length %></span><% } %></h2>
+          <% if (!list) { %>
+            <p class="text-muted mb-0"><%= unavailable %></p>
+          <% } else if (list.length === 0) { %>
+            <p class="text-muted mb-0">Ninguna.</p>
+          <% } else { %>
+            <ul class="mb-0">
+              <% list.forEach(function(person) { %>
+                <li><strong><%= person.name %></strong> <span class="text-muted small"><%= person.username %></span> — <%= person.note %></li>
+              <% }); %>
+            </ul>
+          <% } %>
+        </div>
+      </div>
+    <% }); %>
+  <% } %>
+</main>
+
+<%- include('partials/footer') %>

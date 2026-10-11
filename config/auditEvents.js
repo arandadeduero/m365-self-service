@@ -26,4 +26,5 @@ module.exports = {
   'calendar.shared': 'Calendario compartido con alguien',
   'calendar.unshared': 'Acceso a tu calendario retirado',
   'files.unshared': 'Un archivo dejó de compartirse',
+  'admin.settings_updated': 'Ajustes del portal cambiados (lista del blog, buzones compartidos)',
 };

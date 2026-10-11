@@ -32,6 +32,7 @@
         <div class="col-md-2 d-flex gap-2">
           <button type="submit" class="btn btn-primary">Filtrar</button>
           <a href="/admin/audit" class="btn btn-outline-secondary">Quitar</a>
+          <a href="/admin/audit.csv?day=<%= encodeURIComponent(filters.day) %>&event=<%= encodeURIComponent(filters.event) %>&actor=<%= encodeURIComponent(filters.actor) %>" class="btn btn-outline-secondary">CSV</a>
         </div>
       </form>
     </div>

@@ -43,7 +43,7 @@ Node >= 25 is required (`engines`, Dockerfile and CI all use 25). CommonJS throu
 - `routes/team.js` — `/equipo`: `/me/directReports` and four request forms to IT defined entirely in `config/teamRequests.js` (fields, labels, email subject, audit event); the email is plain text from the user's mailbox and the audit entry carries only the kind.
 - `routes/debug.js` — `/debug` (user menu, «Datos técnicos»): Graph's `/me` as it comes and the session's account, never a token.
 - `routes/rooms.js` — `/salas`: the meeting rooms (place, capacity; sorted client-side by `public/js/rooms.js`) and, after a search, which are free; booking left to Outlook.
-- `routes/admin.js` — `/admin/audit`, for users with a directory role (`res.locals.isAdmin`).
+- `routes/admin.js` — `/admin/*`, for users with a directory role (`res.locals.isAdmin`): audit (+ CSV), `cuentas` (every user read with the app token, judged by `services/accountReview.js`, pure; lists it cannot compute are `null`, shown as "cannot know"), `licencias` (`/subscribedSkus`), `avisos` (`services/messageCenterService.js`, app token, cached), `solicitudes` (`requestStore.listPending`), `ajustes` (`services/settingsStore.js`: `DATA_DIR/settings.json` replaces the blog list and shared mailboxes of `config/local.js` in place, at start and on save).
 - `services/regionalSettings.js` — puts every account back on Madrid time and Spanish at sign-in (called from `/auth/callback`).
 - `routes/groupRequests.js` — asking to join groups and owners deciding. Requests live in `services/requestStore.js` (one JSON file in `DATA_DIR`).
 - `services/serviceHealthService.js` — Microsoft 365 incidents for the banner, app-only token, cached in memory.
@@ -119,6 +119,7 @@ Everything is tested against stubs. These depend on Microsoft's side and should 
 - Inbox rules (`/me/mailFolders/inbox/messageRules`), drive quota (`/me/drive?$select=quota` with `Files.Read`) and `/me/memberOf/microsoft.graph.group` returning `resourceProvisioningOptions`.
 - "No fui yo": `POST /me/revokeSignInSessions` with the delegated permission `User.RevokeSessions.All` for a user without an admin role, and that sign-in log entries carry an `id`.
 - Calendar sharing: `/me/calendar/calendarPermissions` with `Calendars.ReadWrite`, that the entry for the whole organization is the one without an address, and that `POST` with `{ emailAddress: { address }, role }` and `DELETE .../{id}` work for a normal user.
+- Admin pages: `/subscribedSkus` with the administrator's delegated `Directory.Read.All`; `/users?$select=...,signInActivity` with the application `AuditLog.Read.All` (P1); `/reports/authenticationMethods/userRegistrationDetails` with the application `UserAuthenticationMethod.Read.All`; `/admin/serviceAnnouncement/messages` with the application `ServiceMessage.Read.All`.
 - App grants: `/me/oauth2PermissionGrants` with the delegated `Directory.Read.All`, and `/servicePrincipals/{id}` for names.
 - Sharing: `/me/drive/root/delta` with `$select=...,shared,deleted` returning the `shared` facet, `/me/drive/items/{id}/permissions` listing `link.scope` and `grantedToIdentitiesV2`, and `DELETE` of a permission with the delegated `Files.ReadWrite`.
 - Presence: `POST /communications/getPresencesByUserId` with the delegated `Presence.Read.All` (it needs admin consent), up to 650 ids per request.

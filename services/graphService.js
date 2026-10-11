@@ -102,6 +102,65 @@ async function getDirectReports(accessToken) {
 }
 
 /**
+ * The licenses the organization has bought, and how many are in use
+ * @param {string} accessToken - Valid access token (an administrator's)
+ * @returns {Promise<Array|null>} subscribedSkus, or null when they could not be read
+ */
+async function getSubscribedSkus(accessToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/subscribedSkus`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch (error) {
+    console.error('Error fetching subscribed SKUs:', error.response?.data || error.message);
+    return null;
+  }
+}
+
+// What the accounts review looks at; signInActivity needs Entra ID P1
+const REVIEW_FIELDS = 'id,displayName,userPrincipalName,accountEnabled,userType,lastPasswordChangeDateTime,assignedLicenses,createdDateTime';
+
+/**
+ * Every account, for the administrators' review, read with the app's token
+ * @param {string} appToken - App-only token
+ * @returns {Promise<{users: Array, signInsKnown: boolean}|null>} The users, and whether their last sign-in could be read; null when nothing could
+ */
+async function getUsersForReview(appToken) {
+  const headers = { Authorization: `Bearer ${appToken}` };
+  try {
+    const users = await getAllPages(`${GRAPH_API_BASE}/users`, { params: { $select: `${REVIEW_FIELDS},signInActivity`, $top: 999 }, headers });
+    return { users, signInsKnown: true };
+  } catch (error) {
+    console.error('Error fetching users with sign-in activity, trying without:', error.response?.data || error.message);
+  }
+  try {
+    const users = await getAllPages(`${GRAPH_API_BASE}/users`, { params: { $select: REVIEW_FIELDS, $top: 999 }, headers });
+    return { users, signInsKnown: false };
+  } catch (error) {
+    console.error('Error fetching users for review:', error.response?.data || error.message);
+    return null;
+  }
+}
+
+/**
+ * Whether each person has registered a second factor, from the
+ * authentication methods report, read with the app's token
+ * @param {string} appToken - App-only token
+ * @returns {Promise<Array|null>} userRegistrationDetails, or null when unreadable
+ */
+async function getMfaRegistration(appToken) {
+  try {
+    return await getAllPages(`${GRAPH_API_BASE}/reports/authenticationMethods/userRegistrationDetails`, {
+      params: { $select: 'id,userPrincipalName,isMfaRegistered,isMfaCapable', $top: 999 },
+      headers: { Authorization: `Bearer ${appToken}` },
+    });
+  } catch (error) {
+    console.error('Error fetching MFA registration:', error.response?.data || error.message);
+    return null;
+  }
+}
+
+/**
  * Get all users in the organization for selection dropdowns
  * @param {string} accessToken - Valid access token for Microsoft Graph
  * @returns {Promise<Array>} Array of users with basic info
@@ -1295,6 +1354,9 @@ module.exports = {
   getAllUsers,
   getUserById,
   getDirectReports,
+  getSubscribedSkus,
+  getUsersForReview,
+  getMfaRegistration,
   getPresences,
   getMyAppGrants,
   getServicePrincipal,
