@@ -60,6 +60,9 @@
             <a href="/account" class="nav-link <%= currentPage === 'account' ? 'active' : '' %>">Mi cuenta</a>
           </li>
           <li class="nav-item">
+            <a href="/salas" class="nav-link <%= currentPage === 'rooms' ? 'active' : '' %>">Salas</a>
+          </li>
+          <li class="nav-item">
             <a href="/ayuda" class="nav-link <%= currentPage === 'help' ? 'active' : '' %>">Ayuda</a>
           </li>
           <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
