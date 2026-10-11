@@ -1,0 +1,35 @@
+views/rooms.ejs
+  s_011367d8e8fa7a::t_3f06bc6950e6a4 37-47,51-54,56-57,61,64-68,70-73,88-94,96
+  s_011367d8e8fa7a::t_bb8482dbe6a4aa 55,58-60,69
+  s_011367d8e8fa7a::t_7ab1d9a2ec0b3f 9-10
+  s_011367d8e8fa7a::t_d527723366196a 99-100
+routes/rooms.js
+  s_011367d8e8fa7a::t_7764cfad6f74be 60-66,69-70,80-91,94-102,104-108,117
+  s_011367d8e8fa7a::t_fd8981ba6cc62e 59
+public/js/rooms.js
+  s_011367d8e8fa7a::t_4db0cf7e77c2b4 1-37
+public/css/custom.css
+  s_011367d8e8fa7a::t_c9e3a5c454391a 259-289
+CLAUDE.md
+  s_011367d8e8fa7a::t_81e614fefb7a71 41
+README.md
+  s_011367d8e8fa7a::t_685c5ce0d2d709 17,656
+test/rooms.test.js
+  s_011367d8e8fa7a::t_9530af5bf318f1 58,66-76,81-94,100,165,172-173,176
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "849d925d3f6bb36ca7e1804630ecaa5c70602469",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
