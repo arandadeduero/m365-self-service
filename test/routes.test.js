@@ -31,8 +31,8 @@ test('GET /login returns login page', async t => {
     .get('/login')
     .expect(200);
 
-  t.true(res.text.includes('Iniciar sesion con Microsoft'));
-  t.true(res.text.includes('Herramienta 365 - Ayuntamiento de Aranda de Duero'));
+  t.true(res.text.includes('Iniciar sesión con Microsoft'));
+  t.true(res.text.includes('Mi Microsoft 365 · Ayuntamiento de Aranda de Duero'));
 });
 
 test('GET /login renders correct content', async t => {

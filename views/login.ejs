@@ -5,23 +5,24 @@
     <div class="col-12 col-md-10 col-lg-7">
       <div class="card shadow-sm border-0 app-panel">
         <div class="card-body p-4 p-md-5 text-center">
-          <h1 class="h2 mb-3 page-title">Bienvenido a Herramientas Microsoft 365 - Ayuntamiento de Aranda de Duero</h1>
-          <p class="text-secondary mb-4">Inicia sesion con tu cuenta de Microsoft 365 para acceder a tu perfil.</p>
+          <p class="text-uppercase text-secondary small fw-semibold mb-1"><%= orgName %></p>
+          <h1 class="h2 mb-3 page-title"><%= appName %></h1>
+          <p class="text-secondary mb-4">Tu cuenta, tus grupos y tus herramientas de Microsoft 365, explicados y en un solo sitio. Entra con tu cuenta del Ayuntamiento.</p>
 
-          <a href="/auth/signin" class="btn btn-primary btn-lg px-4">Iniciar sesion con Microsoft</a>
+          <a href="/auth/signin" class="btn btn-primary btn-lg px-4">Iniciar sesión con Microsoft</a>
           
           <div class="mt-3">
             <a href="/reset-password" class="text-decoration-none">¿Has olvidado tu contraseña?</a>
           </div>
 
           <div class="alert alert-light text-start mt-4 mb-0">
-            <p class="mb-2"><strong>Lo que veras despues de iniciar sesion:</strong></p>
+            <p class="mb-2"><strong>Qué puedes hacer aquí:</strong></p>
             <ul class="mb-0">
-              <li>Informacion de tu perfil</li>
-              <li>Foto de perfil</li>
-              <li>Pertenencia a grupos</li>
-              <li>Datos del responsable</li>
-              <li>Datos JSON en bruto</li>
+              <li>Ver qué incluye tu licencia y abrir cada aplicación</li>
+              <li>Comprobar que tu cuenta está protegida y dónde se ha usado</li>
+              <li>Pedir acceso a grupos, equipos y listas de correo</li>
+              <li>Buscar a un compañero, una sala libre o la respuesta a una duda</li>
+              <li>Activar las respuestas automáticas y actualizar tus datos</li>
             </ul>
           </div>
         </div>

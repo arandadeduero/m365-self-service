@@ -1,7 +1,7 @@
 {
-  "name": "herramientas-microsoft-365-ayuntamiento-aranda-de-duero",
+  "name": "mi-microsoft-365",
   "version": "1.0.0",
-  "description": "Herramientas Microsoft 365 - Ayuntamiento de Aranda de Duero",
+  "description": "Mi Microsoft 365 - Portal de autoservicio de Microsoft 365 del Ayuntamiento de Aranda de Duero",
   "main": "server.js",
   "type": "commonjs",
   "engines": {

@@ -20,6 +20,13 @@ try {
 const PROFILE_FIELDS = ['jobTitle', 'mobilePhone', 'businessPhones', 'officeLocation'];
 
 module.exports = {
+  // What the portal and the organization are called on every page
+  APP_NAME: 'Mi Microsoft 365',
+  ORG_NAME: 'Ayuntamiento de Aranda de Duero',
+
+  // The organization's intranet, linked from the home page and the help page
+  INTRANET_URL: process.env.INTRANET_URL || 'https://aytoarandaduero.sharepoint.com',
+
   // Recipient of the requests that have nobody else to go to
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'glopez@arandadeduero.es',
 

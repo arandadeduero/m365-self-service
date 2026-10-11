@@ -1,4 +1,4 @@
-# Herramientas Microsoft 365 - Ayuntamiento de Aranda de Duero
+# Mi Microsoft 365 - Ayuntamiento de Aranda de Duero
 
 Internal self-service portal for Microsoft 365 users of the Ayuntamiento de Aranda de Duero. Staff sign in with their Microsoft 365 account to see and edit their profile, browse groups and Teams, view the org chart, publish to the municipal WordPress blog and reset a forgotten password. Built with Node.js, Express, EJS and Bootstrap 5.
 
@@ -15,7 +15,8 @@ Internal self-service portal for Microsoft 365 users of the Ayuntamiento de Aran
 - ✅ **Shared Mailboxes** - Which of the organization's shared mailboxes the user can open
 - ✅ **Owner Tools** - Owners see the members and guests of their groups, add and remove members, and are warned when a group has a single owner
 - ✅ **Rooms** - Which meeting rooms are free at a given time, with a link that books them in Outlook
-- ✅ **Help** - Answers to the usual questions, and a form to write to IT with the state of the account attached
+- ✅ **Help** - What Microsoft 365 is and which tools the organization has, answers to the usual questions, and a form to write to IT with the state of the account attached
+- ✅ **Intranet Link** - The home page, the help page and the footer link to the organization's intranet
 - ✅ **Regional Settings** - Every account is put back on Madrid time and Spanish at each sign-in
 - ✅ **Audit Viewer** - Administrators can read and filter the audit log in the app
 - ✅ **Service Status** - A banner on every page while Microsoft reports an incident in Microsoft 365
@@ -89,7 +90,7 @@ Before running the application, you must register it in Azure Portal.
 
 ### Step 2: Fill Registration Form
 
-- **Name**: `Herramientas Microsoft 365 - Ayuntamiento de Aranda de Duero` (or any name you prefer)
+- **Name**: `Mi Microsoft 365 - Ayuntamiento de Aranda de Duero` (or any name you prefer)
 - **Supported account types**: Select **"Accounts in this organizational directory only (Single tenant)"**
 - **Redirect URI**:
   - Platform: **Web**
@@ -473,6 +474,7 @@ No test talks to Microsoft, AWS or WordPress:
 | `DATA_DIR` | Directory of the requests to join groups | `/var/lib/m365-tools` | No (default: `./data`) |
 | `PASSWORD_MAX_AGE_DAYS` | Days a password lasts in your tenant; makes the account page show the days left | `90` | No (no expiry shown) |
 | `PROFILE_EDITABLE_FIELDS` | Profile fields users may change themselves, out of `mobilePhone`, `businessPhones`, `jobTitle`, `officeLocation`; the rest are shown read-only | `mobilePhone,businessPhones` | No (default: all four) |
+| `INTRANET_URL` | Address of the organization's intranet, linked from the home page, the help page and the footer | `https://example.sharepoint.com` | No (default: the Ayuntamiento's) |
 | `ADMIN_EMAIL` | Mailbox that receives manager correction and group access requests, reported sign-ins and messages from the help page | `informatica@example.es` | Recommended (a built-in address is used otherwise) |
 | `TRUST_PROXY` | Number of reverse proxies in front of the app, so it sees the real client address and protocol | `1` | When behind a proxy |
 | `RESET_RATE_LIMIT` | Reset links one IP address may request every 15 minutes | `5` | No (default: 5) |

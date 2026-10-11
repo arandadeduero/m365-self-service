@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= title %> - Herramienta 365 - Ayuntamiento de Aranda de Duero</title>
+  <title><%= title %> · <%= appName %> · <%= orgName %></title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,7 +35,7 @@
   <% if (typeof currentPage !== 'undefined' && currentPage !== 'login') { %>
   <nav class="navbar navbar-expand-lg app-nav border-bottom shadow-sm">
     <div class="container">
-      <a class="navbar-brand fw-semibold" href="/">Gestor M365</a>
+      <a class="navbar-brand fw-semibold" href="/"><%= appName %></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Mostrar navegacion">
         <span class="navbar-toggler-icon"></span>
       </button>

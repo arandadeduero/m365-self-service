@@ -32,7 +32,8 @@ Node >= 25 is required (`engines`, Dockerfile and CI all use 25). CommonJS throu
 - `routes/blog.js` — `/blog`: emails a post to Jetpack Post-by-Email through the signed-in user's mailbox.
 - `routes/account.js` — `/directorio`, `/account`, `/account/groups`, `/account/sign-ins` (and its `/report`), `/account/mailboxes`, `/profile/me/auto-reply`, `/profile/me/photo`. What those pages *say* is decided in `services/accountInsights.js` (pure functions) and `config/licenseCatalog.js`.
 - `routes/ownedGroups.js` — `/groups/owned`: owners seeing and changing the members of their groups.
-- `routes/help.js` — `/ayuda` and its contact form; the questions are in `config/helpTopics.js`.
+- `routes/help.js` — `/ayuda` and its contact form. All its text is configuration: the introduction to Microsoft 365 in `config/helpGuide.js`, the questions in `config/helpTopics.js`.
+- The portal's name, the organization's and the intranet address are `APP_NAME`, `ORG_NAME` and `INTRANET_URL` in `config/appConfig.js`, given to every view as `appName`, `orgName` and `intranetUrl` (`app.locals` in `server.js`). Do not write the name into a view.
 - `routes/rooms.js` — `/salas`: free meeting rooms, booking left to Outlook.
 - `routes/admin.js` — `/admin/audit`, for users with a directory role (`res.locals.isAdmin`).
 - `services/regionalSettings.js` — puts every account back on Madrid time and Spanish at sign-in (called from `/auth/callback`).

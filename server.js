@@ -16,6 +16,7 @@ const FileStore = require('session-file-store')(session);
 const path = require('path');
 
 // Import routes
+const appConfig = require('./config/appConfig');
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
 const blogRoutes = require('./routes/blog');
@@ -48,6 +49,11 @@ if (process.env.TRUST_PROXY) {
 // View engine setup (EJS)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Names and links every page uses
+app.locals.appName = appConfig.APP_NAME;
+app.locals.orgName = appConfig.ORG_NAME;
+app.locals.intranetUrl = appConfig.INTRANET_URL;
 
 // Middleware setup
 // Parse JSON and URL-encoded bodies

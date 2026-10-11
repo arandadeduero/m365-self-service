@@ -69,6 +69,9 @@ test.serial('GET / renders the profile of the signed-in user', async t => {
   t.true(res.text.includes('Obras'));
   t.true(res.text.includes('Boss Person'));
   t.true(res.text.includes('/images/default-avatar.png'));
+  // Name of the portal in the menu, and the intranet one click away
+  t.true(res.text.includes('<a class="navbar-brand fw-semibold" href="/">Mi Microsoft 365</a>'));
+  t.regex(res.text, /Intranet del Ayuntamiento[\s\S]*?href="https:\/\/aytoarandaduero\.sharepoint\.com" target="_blank" rel="noopener" class="btn btn-primary/);
   t.false(res.text.includes(ADMIN_BANNER));
   t.is(http.callsTo('get', '/v1.0/me')[0].config.headers.Authorization, 'Bearer user-token');
 });
@@ -494,4 +497,12 @@ test.serial('GET /auth/logout ends the session and signs out of Microsoft', asyn
 
   const home = await agent.get('/').expect(302);
   t.is(home.header.location, '/login');
+});
+
+test.serial('the login page carries the name of the portal', async t => {
+  const res = await request(app).get('/login').expect(200);
+
+  t.true(res.text.includes('· Mi Microsoft 365 · Ayuntamiento de Aranda de Duero</title>'));
+  t.true(res.text.includes('<h1 class="h2 mb-3 page-title">Mi Microsoft 365</h1>'));
+  t.false(res.text.includes('Gestor M365'));
 });
