@@ -18,10 +18,17 @@ ENV NODE_ENV=production
 ENV PORT=3000
 
 # Copy node_modules from builder
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /usr/src/app/node_modules ./node_modules
 
 # Copy app source
-COPY . .
+COPY --chown=node:node . .
+
+# The directories the app writes to, owned by the user it runs as. A named
+# volume mounted on one of them takes this ownership the first time
+RUN mkdir -p sessions audit data && chown node:node sessions audit data
+
+# Run as the unprivileged user the base image provides
+USER node
 
 # Expose port
 EXPOSE 3000

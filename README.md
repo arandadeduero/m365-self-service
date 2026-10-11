@@ -833,6 +833,7 @@ Notas:
 - El registro de auditoría se escribe en `audit/` y las solicitudes de grupos pendientes en `data/`. Sin volúmenes se pierden con el contenedor.
 - Las sesiones son archivos en `sessions/`. Sin un volumen, todo el mundo pierde la sesión cuando se sustituye el contenedor. Lo mismo pasa en las plataformas con sistema de archivos efímero, como Heroku.
 - En producción la cookie de sesión es `Secure`, así que hay que llegar a la aplicación por HTTPS, y la aplicación envía HSTS.
+- El proceso corre como el usuario `node` (uid 1000), no como root. Si montas directorios del host en `sessions/`, `audit/` o `data/`, tienen que ser escribibles por ese uid; los volúmenes con nombre toman el propietario de la imagen la primera vez.
 - Sin `SESSION_SECRET` la aplicación no arranca en producción.
 - Detrás de un proxy inverso, pon `TRUST_PROXY=1`. Si no, todos los visitantes parecen venir de la dirección del proxy y comparten un único límite de restablecimiento de contraseña.
 - Los contadores de los límites se guardan en memoria, así que se reinician con el contenedor y no se comparten entre varias instancias.

@@ -5,6 +5,10 @@ npm-debug.log
 .github
 .env
 .env.example
+config/local.js
+coverage
+.playwright-mcp
+.DS_Store
 sessions
 audit
 data
