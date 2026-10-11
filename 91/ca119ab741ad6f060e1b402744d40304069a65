@@ -1,0 +1,61 @@
+test/routes.test.js
+  s_011367d8e8fa7a::t_85f99b0416d362 78-79
+  s_011367d8e8fa7a::t_5aca9d290728e8 64-77,80-82
+views/blog.ejs
+  s_011367d8e8fa7a::t_5aca9d290728e8 39
+views/owned-group.ejs
+  s_011367d8e8fa7a::t_5aca9d290728e8 48,108
+  s_011367d8e8fa7a::t_50007c2efd8345 109
+middleware/securityHeaders.js
+  s_011367d8e8fa7a::t_5aca9d290728e8 5-8,13
+public/js/profile.js
+  s_011367d8e8fa7a::t_5aca9d290728e8 2,4-8,10-37,39-50,52-62,64-68
+views/groups.ejs
+  s_011367d8e8fa7a::t_84d3eab3312d5c 49,85
+  s_011367d8e8fa7a::t_5aca9d290728e8 2,22,114-115,122-123
+README.md
+  s_011367d8e8fa7a::t_5aca9d290728e8 362,916
+CLAUDE.md
+  s_011367d8e8fa7a::t_5aca9d290728e8 30
+public/js/csrf.js
+  s_011367d8e8fa7a::t_5aca9d290728e8 1-8
+public/js/groups.js
+  s_011367d8e8fa7a::t_5aca9d290728e8 1-59
+views/profile.ejs
+  s_011367d8e8fa7a::t_5aca9d290728e8 2,175-176
+public/js/blog.js
+  s_011367d8e8fa7a::t_5aca9d290728e8 1-18
+views/reset-password-form.ejs
+  s_011367d8e8fa7a::t_5aca9d290728e8 13,20,28,40
+views/sign-ins.ejs
+  s_011367d8e8fa7a::t_5aca9d290728e8 49,66
+  s_011367d8e8fa7a::t_7ab2a0df63f04a 67
+public/js/confirm.js
+  s_011367d8e8fa7a::t_5aca9d290728e8 1-8
+views/auto-reply.ejs
+  s_011367d8e8fa7a::t_5aca9d290728e8 66
+public/js/reset-password.js
+  s_011367d8e8fa7a::t_5aca9d290728e8 1-20
+views/directory.ejs
+  s_011367d8e8fa7a::t_5aca9d290728e8 55
+public/js/directory.js
+  s_011367d8e8fa7a::t_5aca9d290728e8 1-24
+public/js/auto-reply.js
+  s_011367d8e8fa7a::t_5aca9d290728e8 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "91ca119ab741ad6f060e1b402744d40304069a65",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
