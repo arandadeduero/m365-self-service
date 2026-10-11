@@ -50,6 +50,16 @@ test('apps are grouped from their grants, content-reaching ones first, and this 
   t.deepEqual(apps[1].permissions.find(p => p.scope === 'Something.New'), { scope: 'Something.New', text: 'Something.New', reachesContent: false });
 });
 
+test('only a web address is offered as the app\'s link', t => {
+  const grant = [{ clientId: SP_A, consentType: 'Principal', scope: 'User.Read' }];
+  const describe = (homepage) => describeAppGrants(grant, new Map([[SP_A, { displayName: 'X', homepage }]]), '')[0].homepage;
+
+  t.is(describe('https://acme.example/app'), 'https://acme.example/app');
+  t.is(describe('javascript:alert(1)'), null);
+  t.is(describe('not a url'), null);
+  t.is(describe(undefined), null);
+});
+
 test.serial('GET /account/apps names each app, who authorised it, and what it may do', async t => {
   http.on('get', '/me/oauth2PermissionGrants', { value: [
     { clientId: SP_A, consentType: 'Principal', scope: 'User.Read Files.ReadWrite' },

@@ -40,6 +40,16 @@ const SCOPES = {
   'Tasks.ReadWrite': 'Ver y cambiar tus tareas',
 };
 
+// Only a web address is offered as a link; the publisher writes this field
+const webUrl = (value) => {
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+  } catch (error) {
+    return null;
+  }
+};
+
 // Permissions that reach the person's own content, which deserve a second look
 const REACHES_CONTENT = /^(Mail|Files|Sites|Contacts|Chat|ChannelMessage|Notes)\./;
 
@@ -74,7 +84,7 @@ function describeAppGrants(grants, principals, ownAppId) {
         name: principal.displayName || 'Aplicación sin nombre',
         publisher: principal.verifiedPublisher?.displayName || principal.publisherName || null,
         verified: Boolean(principal.verifiedPublisher?.displayName),
-        homepage: principal.homepage || null,
+        homepage: webUrl(principal.homepage),
         isThisPortal: Boolean(ownAppId) && principal.appId === ownAppId,
         forEveryone: app.forEveryone,
         forMe: app.forMe,
