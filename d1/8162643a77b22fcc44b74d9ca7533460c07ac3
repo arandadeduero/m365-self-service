@@ -1,0 +1,51 @@
+test/shared-mailboxes.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 10,26
+test/regional-settings.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 11,43
+test/auth.test.js
+  s_011367d8e8fa7a::t_74eb130a0d8c13 3-4,11-15,18-35,39-40,43-80,82-84,87
+test/token-refresh.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 11,31
+test/authenticated.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 11,42,263
+services/tokenService.js
+  s_011367d8e8fa7a::t_8331987caa7832 43-44,47-48
+routes/auth.js
+  s_011367d8e8fa7a::t_8026646f905865 10,17-30,38-41,43,56-59,70-78
+test/rooms.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 10,26
+test/group-requests.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 13,60
+test/audit-viewer.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 12,29
+test/sign-in-report.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 10,26
+test/help.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 10,26
+test/account.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 11,29
+CLAUDE.md
+  s_011367d8e8fa7a::t_f8702cdd71e92b 57,133
+test/owned-groups.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 10,26
+test/service-status.test.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 11,39
+test/helpers/stubs.js
+  s_011367d8e8fa7a::t_f8702cdd71e92b 139-153,171
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d18162643a77b22fcc44b74d9ca7533460c07ac3",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
