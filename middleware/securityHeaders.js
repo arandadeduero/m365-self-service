@@ -2,11 +2,23 @@
  * Security Headers
  *
  * Set on every response. Everything the pages load is served by the app
- * itself (public/vendor), so the policy allows nothing from other servers,
+ * itself (public/vendor), so the policy allows nothing from other servers
+ * (except the organization's own signature generator, framed in /firma),
  * and scripts only run from files under public/js: no inline <script> and no
  * onclick= attributes (test/routes.test.js checks the views). Inline styles
  * stay allowed because the org chart draws its cards with them.
  */
+
+const appConfig = require('../config/appConfig');
+
+// The one page shown inside the portal: the organization's signature generator
+const generatorOrigin = (() => {
+  try {
+    return appConfig.SIGNATURE_GENERATOR_URL ? new URL(appConfig.SIGNATURE_GENERATOR_URL).origin : null;
+  } catch (error) {
+    return null;
+  }
+})();
 
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
@@ -19,6 +31,7 @@ const CONTENT_SECURITY_POLICY = [
   // Signing in is a redirect to Microsoft; listed in case a browser applies
   // form-action to the redirect that follows a form
   "form-action 'self' https://login.microsoftonline.com",
+  `frame-src ${generatorOrigin || "'none'"}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "object-src 'none'",

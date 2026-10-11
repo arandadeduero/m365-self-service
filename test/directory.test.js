@@ -33,6 +33,26 @@ test.beforeEach(() => {
   http.on('get', `/users/${ANA_ID}`, ANA);
 });
 
+test.serial('the directory shows whether people are available in Teams, asked for all at once', async t => {
+  http.on('post', '/communications/getPresencesByUserId', { value: [{ id: ANA_ID, availability: 'Busy', activity: 'InAMeeting' }] });
+
+  const res = await agent.get('/directorio').expect(200);
+
+  t.true(res.text.includes('<th>Estado</th>'));
+  t.true(res.text.includes('<span class="presence-dot presence-busy"></span>Ocupado · En una reunión'));
+  t.deepEqual(http.callsTo('post', '/communications/getPresencesByUserId')[0].data, { ids: [ANA_ID] });
+});
+
+test.serial('when presence cannot be read the column is left out, not shown as offline', async t => {
+  http.fail('post', '/communications/getPresencesByUserId', 403);
+
+  const res = await agent.get('/directorio').expect(200);
+
+  t.false(res.text.includes('<th>Estado</th>'));
+  t.false(res.text.includes('presence-dot'));
+  t.true(res.text.includes('Ana García'));
+});
+
 test.serial('the directory links every person to their card and offers the export', async t => {
   const res = await agent.get('/directorio').expect(200);
 

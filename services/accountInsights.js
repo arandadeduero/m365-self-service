@@ -283,6 +283,9 @@ function describeCalendarSharing(permissions) {
       // The entry for "everybody in the organization" has a name but no address
       const everyone = !address;
       return {
+        id: permission.id || null,
+        // The default entries (the organization's own) cannot be taken back here
+        removable: Boolean(permission.id) && permission.isRemovable !== false && !everyone,
         who: everyone ? 'Todas las personas del Ayuntamiento' : (permission.emailAddress.name || address),
         email: address,
         access: CALENDAR_ROLES[permission.role] || permission.role,

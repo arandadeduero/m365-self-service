@@ -54,7 +54,8 @@ const scopes = [
   'Mail.Send',              // Send emails as the signed-in user
   'Files.Read',             // OneDrive space used (the app reads nothing else from it)
   'User.RevokeSessions.All', // "No fui yo": closing the user's own sessions
-  'Calendars.Read',         // Who the calendar is shared with, and whether rooms are free
+  'Calendars.ReadWrite',    // Who the calendar is shared with (and sharing it), and whether rooms are free
+  'Presence.Read.All',      // Whether people in the directory are available in Teams
   'Mail.Read.Shared',       // Checking which shared mailboxes the user can open (no mail is read)
   'Place.Read.All',         // The list of meeting rooms
   'offline_access',         // Refresh tokens for long-lived sessions

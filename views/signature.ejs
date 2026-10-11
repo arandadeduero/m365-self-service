@@ -1,44 +1,43 @@
 <%- include('partials/header') %>
 
-<main class="container py-4 page-shell page-profile">
+<main class="container-xxl py-4 page-shell page-profile">
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
     <h1 class="h2 mb-0 page-title">Mi firma de correo</h1>
-    <a href="/account" class="btn btn-outline-secondary">Volver a mi cuenta</a>
+    <div class="d-flex gap-2">
+      <% if (generatorUrl) { %><a href="<%= generatorUrl %>" target="_blank" rel="noopener" class="btn btn-outline-secondary">Abrir en una pestaña</a><% } %>
+      <a href="/account" class="btn btn-outline-secondary">Volver a mi cuenta</a>
+    </div>
   </div>
 
   <p class="text-muted">
-    Esta es tu firma con el formato del Ayuntamiento, hecha con los datos de tu perfil. Cópiala y pégala en Outlook una vez; a partir de ahí sale sola en cada correo.
+    El generador del Ayuntamiento hace la firma con el formato oficial y el logo de tu concejalía. Rellena los campos con los datos de tu perfil, que tienes aquí al lado, y pulsa <strong>Copiar vista previa</strong> para pegarla en Outlook.
     <% if (missing.length > 0) { %>
-      Te falta <%= missing.map(field => field === 'jobTitle' ? 'el puesto' : 'el departamento').join(' y ') %>: puedes ponerlo en <a href="/profile/me/edit">Editar mi perfil</a> y volver aquí.
+      En tu perfil falta <%= missing.map(field => field === 'jobTitle' ? 'el puesto' : 'el departamento').join(' y ') %>; puedes ponerlo en <a href="/profile/me/edit">Editar mi perfil</a>.
     <% } %>
   </p>
 
-  <div class="card shadow-sm border-0 app-panel mb-4">
-    <div class="card-body p-4">
-      <h2 class="h5 mb-3">Así se verá</h2>
-      <%# Built in services/signature.js from escaped profile values; the markup itself is the signature %>
-      <div class="border rounded p-3 bg-white" id="signaturePreview"><%- signature.html %></div>
-      <div class="d-flex flex-wrap gap-2 mt-3">
-        <button type="button" class="btn btn-primary" id="copySignature">Copiar la firma</button>
-        <span class="text-muted small align-self-center d-none" id="copyDone">Copiada. Ahora pégala en Outlook.</span>
+  <div class="row g-4">
+    <div class="col-lg-3">
+      <div class="card shadow-sm border-0 app-panel">
+        <div class="card-body p-4">
+          <h2 class="h6 text-muted text-uppercase mb-3">Tus datos</h2>
+          <dl class="mb-0">
+            <% details.forEach(function([label, value]) { %>
+              <dt class="small text-muted"><%= label %></dt>
+              <dd class="text-break"><%= value %></dd>
+            <% }); %>
+          </dl>
+        </div>
       </div>
-      <textarea class="d-none" id="signatureText" readonly><%= signature.text %></textarea>
     </div>
-  </div>
-
-  <div class="card shadow-sm border-0 app-panel">
-    <div class="card-body p-4">
-      <h2 class="h5 mb-3">Dónde pegarla</h2>
-      <ul class="mb-0">
-        <li><strong>Outlook en el navegador</strong> y <strong>el nuevo Outlook</strong>: rueda de Configuración → Cuentas → Firmas → Nueva firma, pega, y elígela para los mensajes nuevos y las respuestas.</li>
-        <li><strong>Outlook clásico de escritorio</strong>: Archivo → Opciones → Correo → Firmas → Nueva, pega y guarda.</li>
-        <li><strong>Móvil</strong>: Configuración → tu cuenta → Firma. Ahí solo cabe texto; usa esta versión:</li>
-      </ul>
-      <pre class="bg-light rounded p-3 mt-3 mb-0 small"><%= signature.text %></pre>
+    <div class="col-lg-9">
+      <% if (generatorUrl) { %>
+        <iframe src="<%= generatorUrl %>" title="Generador de firmas de correo del Ayuntamiento" class="signature-generator" allow="clipboard-write" loading="lazy"></iframe>
+      <% } else { %>
+        <div class="card shadow-sm border-0 app-panel"><div class="card-body p-4"><p class="text-muted mb-0">El generador de firmas no está configurado.</p></div></div>
+      <% } %>
     </div>
   </div>
 </main>
-
-<script src="/js/signature.js"></script>
 
 <%- include('partials/footer') %>

@@ -13,7 +13,8 @@ const QRCode = require('qrcode');
 const appConfig = require('../config/appConfig');
 const { isAuthenticated } = require('../middleware/auth');
 const { userError } = require('../middleware/errorHandler');
-const { getAllUsers, getUserById } = require('../services/graphService');
+const { getAllUsers, getUserById, getPresences } = require('../services/graphService');
+const { describePresence } = require('../services/presence');
 const { buildVCard, vcardFileName, directoryCsv } = require('../services/vcard');
 
 // Only a directory id goes into a Graph URL
@@ -40,11 +41,15 @@ async function loadPerson(req) {
 router.get('/directorio', isAuthenticated, async (req, res, next) => {
   try {
     const users = await getAllUsers(req.session.accessToken);
+    // Teams presence, when Graph lets this user read it; null means no column
+    const presences = users.length > 0 ? await getPresences(req.session.accessToken, users.map(user => user.id)) : [];
+    const byId = new Map((presences || []).map(presence => [presence.id, presence]));
 
     res.render('directory', {
       title: 'Directorio',
       currentPage: 'directory',
-      users,
+      users: users.map(user => ({ ...user, presence: presences ? describePresence(byId.get(user.id)) : null })),
+      presenceKnown: presences !== null,
     });
   } catch (error) {
     next(error);

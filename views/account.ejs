@@ -185,9 +185,12 @@
     </div>
   </div>
 
-  <div class="card shadow-sm border-0 app-panel mt-4">
+  <div class="card shadow-sm border-0 app-panel mt-4" id="calendario">
     <div class="card-body p-4">
       <h3 class="h5 mb-3">Calendario</h3>
+      <% if (calendarNotice) { %>
+        <div class="alert alert-success"><%= calendarNotice %></div>
+      <% } %>
       <% if (!calendarSharing) { %>
         <p class="text-muted">No se ha podido comprobar con quién compartes tu calendario.</p>
       <% } else { %>
@@ -201,10 +204,18 @@
           <p class="text-muted">Estas personas pueden ver tu calendario. Quien solo ve si estás libre u ocupado no ve con quién ni para qué.</p>
           <ul class="list-group list-group-flush mb-3">
             <% calendarSharing.forEach(function(entry) { %>
-              <li class="list-group-item px-0">
-                <strong><%= entry.who %></strong><% if (entry.email) { %> <span class="text-muted small"><%= entry.email %></span><% } %>
-                <% if (entry.canChange) { %> <span class="badge bg-warning text-dark">Puede hacer cambios</span><% } %>
-                <br><span class="text-muted small"><%= entry.access %></span>
+              <li class="list-group-item px-0 d-flex justify-content-between align-items-start gap-3">
+                <div>
+                  <strong><%= entry.who %></strong><% if (entry.email) { %> <span class="text-muted small"><%= entry.email %></span><% } %>
+                  <% if (entry.canChange) { %> <span class="badge bg-warning text-dark">Puede hacer cambios</span><% } %>
+                  <br><span class="text-muted small"><%= entry.access %></span>
+                </div>
+                <% if (entry.removable) { %>
+                  <form action="/account/calendar/<%= encodeURIComponent(entry.id) %>/remove" method="POST">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                    <button type="submit" class="btn btn-outline-danger btn-sm text-nowrap">Quitar acceso</button>
+                  </form>
+                <% } %>
               </li>
             <% }); %>
           </ul>
@@ -212,7 +223,28 @@
           <p>Nadie más puede ver tu calendario.</p>
         <% } %>
       <% } %>
-      <a href="https://outlook.office.com/calendar/options/calendar/SharedCalendars" target="_blank" rel="noopener" class="btn btn-outline-secondary">Cambiar con quién lo comparto</a>
+      <% if (calendarSharing) { %>
+        <form action="/account/calendar/share" method="POST" class="row g-2 align-items-end mb-3">
+          <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+          <div class="col-md-5">
+            <label for="shareEmail" class="form-label">Compartir con</label>
+            <input type="email" class="form-control" id="shareEmail" name="email" placeholder="nombre@<%= domain %>" required>
+          </div>
+          <div class="col-md-5">
+            <label for="shareRole" class="form-label">Qué puede ver</label>
+            <select class="form-select" id="shareRole" name="role">
+              <% Object.entries(calendarRoles).forEach(function([value, label]) { %>
+                <option value="<%= value %>"><%= label %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">Compartir</button>
+          </div>
+        </form>
+        <p class="text-muted small">Solo con personas del Ayuntamiento. Para compartirlo con alguien de fuera, o nombrar a un delegado, hazlo desde Outlook.</p>
+      <% } %>
+      <a href="https://outlook.office.com/calendar/options/calendar/SharedCalendars" target="_blank" rel="noopener" class="btn btn-outline-secondary">Abrir en Outlook</a>
       <a href="/salas" class="btn btn-outline-secondary">Buscar una sala libre</a>
     </div>
   </div>

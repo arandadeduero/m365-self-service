@@ -445,6 +445,73 @@ async function getCalendarPermissions(accessToken) {
 }
 
 /**
+ * Share the signed-in user's calendar with somebody
+ * @param {string} accessToken - Valid access token
+ * @param {string} address - Who, by email address
+ * @param {string} role - freeBusyRead, limitedRead, read or write
+ * @returns {Promise<Object>} The permission Graph created
+ */
+async function shareCalendar(accessToken, address, role) {
+  try {
+    const response = await axios.post(`${GRAPH_API_BASE}/me/calendar/calendarPermissions`, {
+      emailAddress: { address },
+      role,
+    }, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error sharing calendar:', error.response?.data || error.message);
+    throw graphError('Failed to share calendar', error);
+  }
+}
+
+/**
+ * Take back somebody's access to the signed-in user's calendar
+ * @param {string} accessToken - Valid access token
+ * @param {string} permissionId - Id of the calendarPermission
+ * @returns {Promise<void>}
+ */
+async function removeCalendarPermission(accessToken, permissionId) {
+  try {
+    await axios.delete(`${GRAPH_API_BASE}/me/calendar/calendarPermissions/${encodeURIComponent(permissionId)}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+  } catch (error) {
+    console.error('Error removing calendar permission:', error.response?.data || error.message);
+    throw graphError('Failed to remove calendar permission', error);
+  }
+}
+
+// People Graph answers about in one presence request
+const PRESENCES_PER_REQUEST = 650;
+
+/**
+ * The Teams presence of several people
+ * @param {string} accessToken - Valid access token
+ * @param {Array<string>} userIds - Directory ids
+ * @returns {Promise<Array|null>} One entry per person (id, availability, activity), or null when it could not be read
+ */
+async function getPresences(accessToken, userIds) {
+  try {
+    const all = [];
+    for (let i = 0; i < userIds.length; i += PRESENCES_PER_REQUEST) {
+      const response = await axios.post(`${GRAPH_API_BASE}/communications/getPresencesByUserId`, {
+        ids: userIds.slice(i, i + PRESENCES_PER_REQUEST),
+      }, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      all.push(...(response.data.value || []));
+    }
+    return all;
+  } catch (error) {
+    console.error('Error fetching presences:', error.response?.data || error.message);
+    // null, not []: "could not check" must not look like "everybody offline"
+    return null;
+  }
+}
+
+/**
  * Whether the signed-in user can open somebody else's mailbox (a shared one)
  * @param {string} accessToken - Valid access token
  * @param {string} address - Address of the mailbox
@@ -1108,6 +1175,9 @@ module.exports = {
   getUserDevices,
   getAllUsers,
   getUserById,
+  getPresences,
+  shareCalendar,
+  removeCalendarPermission,
   getUsersWithManager,
   findUserByEmail,
   getUserForReset,

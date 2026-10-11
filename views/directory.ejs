@@ -10,7 +10,7 @@
   </div>
 
   <p class="text-muted">
-    Todas las personas del Ayuntamiento con cuenta de Microsoft 365. Los datos salen del perfil de cada una: si los tuyos no están bien, cámbialos en <a href="/profile/me/edit">Editar perfil</a>.
+    Todas las personas del Ayuntamiento con cuenta de Microsoft 365<% if (presenceKnown) { %>, y si están disponibles ahora mismo en Teams<% } %>. Los datos salen del perfil de cada una: si los tuyos no están bien, cámbialos en <a href="/profile/me/edit">Editar perfil</a>.
   </p>
 
   <div class="card shadow-sm border-0 app-panel">
@@ -21,6 +21,7 @@
             <thead>
               <tr>
                 <th>Nombre</th>
+                <% if (presenceKnown) { %><th>Estado</th><% } %>
                 <th>Puesto</th>
                 <th>Departamento</th>
                 <th>Oficina</th>
@@ -34,6 +35,9 @@
                 <% const phones = [...(user.businessPhones || []), user.mobilePhone].filter(Boolean); %>
                 <tr>
                   <td><strong><%= user.displayName %></strong></td>
+                  <% if (presenceKnown) { %>
+                    <td class="text-nowrap"><span class="presence-dot presence-<%= user.presence.tone %>"></span><%= user.presence.label %></td>
+                  <% } %>
                   <td><%= user.jobTitle %></td>
                   <td><%= user.department %></td>
                   <td><%= user.officeLocation %></td>

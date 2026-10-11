@@ -43,6 +43,8 @@ const {
   getMyGroups,
   getRecentSignIns,
   getCalendarPermissions,
+  shareCalendar,
+  removeCalendarPermission,
   canOpenMailbox,
   revokeSignInSessions,
   sendEmail,
@@ -163,6 +165,10 @@ function htmlToText(html) {
 router.get('/account', isAuthenticated, async (req, res, next) => {
   try {
     const accessToken = req.session.accessToken;
+    // Shown once, after sharing or unsharing the calendar
+    const calendarNotice = req.session.calendarNotice || null;
+    delete req.session.calendarNotice;
+
     const [status, licenses, methods, devices, photo, manager, rules, quota, calendar] = await Promise.all([
       getAccountStatus(accessToken),
       getUserLicenses(accessToken),
@@ -186,6 +192,9 @@ router.get('/account', isAuthenticated, async (req, res, next) => {
       devices,
       mailRules: summarizeRules(rules, permissions.DOMAIN),
       calendarSharing: describeCalendarSharing(calendar),
+      calendarRoles: CALENDAR_SHARE_ROLES,
+      domain: permissions.DOMAIN,
+      calendarNotice,
       hasSharedMailboxes: appConfig.SHARED_MAILBOXES.length > 0,
       checklist: buildChecklist({
         security,
@@ -198,6 +207,67 @@ router.get('/account', isAuthenticated, async (req, res, next) => {
       changePasswordUrl: CHANGE_PASSWORD_URL,
       securityInfoUrl: SECURITY_INFO_URL,
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// What somebody can be given on the calendar from this page; delegate
+// roles stay in Outlook, where their consequences are explained
+const CALENDAR_SHARE_ROLES = {
+  freeBusyRead: 'Solo si estoy libre u ocupado',
+  limitedRead: 'El título y el lugar de mis citas',
+  read: 'Todos los detalles de mis citas',
+  write: 'Todo, y puede crear y cambiar citas',
+};
+const CALENDAR_PERMISSION_ID = /^[A-Za-z0-9_=.-]{1,512}$/;
+
+/**
+ * POST /account/calendar/share
+ * Give a colleague access to the calendar. Only people of the organization:
+ * sharing outside is done in Outlook, which warns about it.
+ */
+router.post('/account/calendar/share', isAuthenticated, async (req, res, next) => {
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    const role = String(req.body.role || '');
+    const [, domain] = email.split('@');
+    if (!/^[^@\s]+@[^@\s]+$/.test(email) || domain !== permissions.DOMAIN) {
+      throw userError(400, `Indica una dirección del Ayuntamiento (@${permissions.DOMAIN}).`);
+    }
+    if (!CALENDAR_SHARE_ROLES[role]) {
+      throw userError(400, 'Elige qué puede ver esa persona.');
+    }
+
+    await shareCalendar(req.session.accessToken, email, role);
+    auditRequest(req, 'calendar.shared', { with: email, role });
+    req.session.calendarNotice = `Tu calendario está ahora compartido con ${email}.`;
+    res.redirect('/account#calendario');
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /account/calendar/:id/remove
+ * Take back somebody's access. The id must be one of the calendar's own
+ * permissions, read again from Graph, so the audit entry can say who.
+ */
+router.post('/account/calendar/:id/remove', isAuthenticated, async (req, res, next) => {
+  try {
+    if (!CALENDAR_PERMISSION_ID.test(req.params.id)) {
+      throw userError(404, 'Ese acceso no existe.');
+    }
+    const current = describeCalendarSharing(await getCalendarPermissions(req.session.accessToken)) || [];
+    const entry = current.find(permission => permission.id === req.params.id && permission.removable);
+    if (!entry) {
+      throw userError(404, 'Ese acceso no existe o no se puede quitar desde aquí.');
+    }
+
+    await removeCalendarPermission(req.session.accessToken, entry.id);
+    auditRequest(req, 'calendar.unshared', { with: entry.email });
+    req.session.calendarNotice = `${entry.who} ya no puede ver tu calendario.`;
+    res.redirect('/account#calendario');
   } catch (error) {
     next(error);
   }

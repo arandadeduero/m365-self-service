@@ -8,12 +8,12 @@ Portal interno de autoservicio para los usuarios de Microsoft 365 del Ayuntamien
 - ✅ **Autenticación con Microsoft 365** - Flujo de código de autorización OAuth 2.0 con MSAL, para un solo inquilino (tenant)
 - ✅ **Perfil** - Perfil, foto, grupos, responsable y datos en bruto de Graph; cada usuario puede editar su puesto, teléfonos, oficina y foto. Los campos que Microsoft no deja cambiar a un usuario se muestran en solo lectura
 - ✅ **Directorio** - Directorio del personal con buscador, teléfonos y oficinas, exportable a Excel; cada persona tiene una tarjeta con código QR y vCard para guardarla en el móvil
-- ✅ **Mi firma de correo** - La firma del Ayuntamiento con los datos del perfil, lista para copiar en Outlook
+- ✅ **Mi firma de correo** - El generador de firmas del Ayuntamiento ([firmas-correo](https://github.com/arandadeduero/firmas-correo)) dentro del portal, con los datos del perfil al lado
 - ✅ **Mi actividad** - Lo que se ha hecho con la cuenta en el portal en los últimos 30 días, en lenguaje llano
 - ✅ **Mi cuenta** - Qué incluye la licencia en lenguaje llano con un enlace a cada aplicación, espacio de OneDrive, una lista de comprobación de la cuenta, antigüedad y caducidad de la contraseña, métodos de inicio de sesión con un aviso cuando no hay segundo factor, dispositivos, reglas de la bandeja de entrada con un aviso cuando el correo se reenvía fuera, y la dirección de recuperación
 - ✅ **Mis grupos** - Qué es cada grupo al que pertenece el usuario (un Team, una lista de correo, un grupo de seguridad) y qué le da
 - ✅ **Mis inicios de sesión** - Dónde y cuándo se ha usado la cuenta últimamente, con un botón «No fui yo» que avisa a Informática y cierra todas las sesiones de la cuenta
-- ✅ **Calendario compartido** - Quién puede ver el calendario del usuario y qué puede hacer cada uno, con un aviso para las personas de fuera de la organización
+- ✅ **Calendario compartido** - Quién puede ver el calendario del usuario y qué puede hacer cada uno, con un aviso para las personas de fuera de la organización; compartirlo con un compañero o retirarle el acceso sin salir del portal
 - ✅ **Buzones compartidos** - Cuáles de los buzones compartidos de la organización puede abrir el usuario
 - ✅ **Herramientas para propietarios** - Los propietarios ven los miembros e invitados de sus grupos, añaden y quitan miembros, y reciben un aviso cuando un grupo tiene un único propietario
 - ✅ **Salas** - Las salas de reuniones con su ubicación y aforo, cuáles están libres a una hora dada, y un enlace que las reserva en Outlook
@@ -134,7 +134,8 @@ Tras el registro verás la página de información general de la aplicación. **
      - ✅ `Mail.Send` - Enviar correos como el usuario que ha iniciado sesión (para las correcciones de responsable y las entradas del blog)
      - ✅ `Files.Read` - Leer cuánto espacio de OneDrive ha usado el usuario. El permiso cubre los archivos del usuario en general; la aplicación solo pide la cuota
      - ✅ `User.RevokeSessions.All` - Cerrar las sesiones del propio usuario cuando denuncia un inicio de sesión («No fui yo»)
-     - ✅ `Calendars.Read` - Leer con quién está compartido el calendario y si las salas están libres. El permiso cubre el calendario del usuario en general; la aplicación no lee las citas
+     - ✅ `Calendars.ReadWrite` - Leer con quién está compartido el calendario, compartirlo con compañeros desde el portal, y ver si las salas están libres. El permiso cubre el calendario del usuario en general; la aplicación no lee ni crea citas
+     - ✅ `Presence.Read.All` - Ver en el directorio si cada persona está disponible en Teams
      - ✅ `Mail.Read.Shared` - Comprobar qué buzones compartidos puede abrir el usuario. El permiso deja a una aplicación leer el correo del usuario y el correo compartido al que tiene acceso; la aplicación solo pregunta si existe cada bandeja de entrada y nunca lee un mensaje
      - ✅ `Place.Read.All` - Leer la lista de salas de reuniones
      - ✅ `offline_access` - Mantener el acceso a los datos
@@ -503,8 +504,7 @@ Ningún test habla con Microsoft, AWS ni WordPress:
 | `DATA_DIR` | Directorio de las solicitudes para entrar en grupos | `/var/lib/mi-microsoft-365` | No (por defecto: `./data`) |
 | `PASSWORD_MAX_AGE_DAYS` | Días que dura una contraseña en tu inquilino; hace que la página de la cuenta muestre los días que quedan | `90` | No (no se muestra caducidad) |
 | `PROFILE_EDITABLE_FIELDS` | Campos del perfil que los usuarios pueden cambiar por sí mismos, de entre `mobilePhone`, `businessPhones`, `jobTitle` y `officeLocation`; el resto se muestra en solo lectura | `mobilePhone,businessPhones` | No (por defecto: los cuatro) |
-| `ORG_WEB` | Web del Ayuntamiento, para la firma de correo | `https://www.example.es` | No (por defecto: la del Ayuntamiento) |
-| `ORG_ADDRESS` | Dirección postal, para la firma de correo | `Plaza Mayor, 1 · 09400 Aranda de Duero` | No (sin ella la firma no lleva dirección) |
+| `SIGNATURE_GENERATOR_URL` | Dirección del generador de firmas, que se muestra dentro de la página «Mi firma» | `https://org.github.io/firmas-correo/` | No (por defecto: el del Ayuntamiento) |
 | `INTRANET_URL` | Dirección de la intranet de la organización, enlazada desde la página de inicio, la de ayuda y el pie | `https://example.sharepoint.com` | No (por defecto: la del Ayuntamiento) |
 | `ORG_CHART_ROOT` | Dirección de la persona que está en lo alto del organigrama; las cuentas que no dependen de ella se listan debajo del gráfico | `top-person@example.com` | No (por defecto: la del Ayuntamiento; si nadie tiene esa dirección, quien tenga gente a su cargo y ningún responsable) |
 | `ADMIN_EMAIL` | Buzón que recibe las correcciones de responsable, las solicitudes de acceso a grupos, los inicios de sesión denunciados y los mensajes de la página de ayuda | `informatica@example.es` | Recomendada (si falta se usa una dirección incluida en el código) |
@@ -553,6 +553,7 @@ Quién puede usar `/blog` no es una variable de entorno: se configura en `config
 | GET | `/account` | Con sesión | Qué tiene el usuario y cómo está configurada y protegida su cuenta |
 | GET | `/account/groups` | Con sesión | Los grupos del usuario y qué le da cada uno |
 | GET | `/account/sign-ins` | Con sesión | Los inicios de sesión recientes del propio usuario |
+| POST | `/account/calendar/share`, `/account/calendar/:id/remove` | Con sesión | Compartir el calendario con un compañero, o retirar un acceso |
 | POST | `/account/sign-ins/report` | Con sesión | «No fui yo»: avisa a Informática de un inicio de sesión y cierra todas las sesiones |
 | GET | `/account/mailboxes` | Con sesión | Los buzones compartidos que el usuario puede abrir |
 | GET | `/groups/owned` | Con sesión | Los grupos de los que el usuario es propietario |
@@ -698,6 +699,7 @@ Cada acción que cambia algo, y cada inicio de sesión, se añade a un archivo p
 | `permission.denied` | A un usuario se le niega una página: la lista de permitidos del blog, el visor de auditoría, o decidir sobre una solicitud de un grupo del que no es propietario |
 | `profile.update`, `profile.photo_update` | Cambian los datos o la foto del perfil |
 | `mail.auto_reply_update` | Cambian las respuestas automáticas (solo el estado, nunca el mensaje) |
+| `calendar.shared`, `calendar.unshared` | El usuario compartió su calendario con alguien, o le retiró el acceso (con quién y qué podía ver) |
 | `account.sign_in_reported` | Un usuario ha denunciado un inicio de sesión como ajeno (su id y su dirección, si se avisó a Informática y si se cerraron las sesiones) |
 | `group.member_added`, `group.member_removed` | Un propietario ha cambiado los miembros de su grupo |
 | `help.contact` | Un usuario ha escrito a Informática desde la página de ayuda (nunca el mensaje) |
@@ -924,7 +926,7 @@ Notas:
 
 ### Cabeceras
 
-- ✅ `Content-Security-Policy` que solo permite recursos del propio servidor, ejecuta JavaScript únicamente desde los archivos de `public/js/` (nada inline) y prohíbe mostrar las páginas dentro de otras (`frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin` y HSTS en producción (`middleware/securityHeaders.js`)
+- ✅ `Content-Security-Policy` que solo permite recursos del propio servidor (más el generador de firmas del Ayuntamiento, embebido en «Mi firma»), ejecuta JavaScript únicamente desde los archivos de `public/js/` (nada inline) y prohíbe mostrar las páginas dentro de otras (`frame-ancestors 'none'`), `X-Content-Type-Options: nosniff`, `Referrer-Policy: same-origin` y HSTS en producción (`middleware/securityHeaders.js`)
 
 ### Recursos externos
 

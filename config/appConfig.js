@@ -31,9 +31,9 @@ module.exports = {
   // directory, the top is whoever has people below and no manager.
   ORG_CHART_ROOT: process.env.ORG_CHART_ROOT || 'alinaje@arandadeduero.es',
 
-  // Shown in the email signature the portal builds for each person
-  ORG_WEB: process.env.ORG_WEB || 'https://www.arandadeduero.es',
-  ORG_ADDRESS: process.env.ORG_ADDRESS || '',
+  // The organization's own signature generator (github.com/arandadeduero/firmas-correo),
+  // shown inside the /firma page. Empty hides the page's embed.
+  SIGNATURE_GENERATOR_URL: process.env.SIGNATURE_GENERATOR_URL || 'https://arandadeduero.github.io/firmas-correo/',
 
   // Recipient of the requests that have nobody else to go to
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'glopez@arandadeduero.es',

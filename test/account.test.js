@@ -423,16 +423,17 @@ test.serial('GET /account/sign-ins says when there are none, or when the log is 
 
 // -------------------------------------------------------- automatic replies
 
-test.serial('GET /firma builds the signature from the profile and says what is missing', async t => {
+test.serial("GET /firma shows the organization's generator with the person's details beside it", async t => {
   http.on('get', '/v1.0/me', { displayName: 'Alice Example', jobTitle: 'Técnica', businessPhones: ['947500100'], mail: 'alice@arandadeduero.es' });
 
   const res = await agent.get('/firma').expect(200);
 
-  t.true(res.text.includes('id="signaturePreview"><table'));
-  t.true(res.text.includes('Alice Example'));
-  t.true(res.text.includes('Tel. 947500100'));
-  t.true(res.text.includes('Te falta el departamento'));
-  t.true(res.text.includes('src="/js/signature.js"'));
+  t.true(res.text.includes('<iframe src="https://arandadeduero.github.io/firmas-correo/"'));
+  t.true(res.text.includes('<dd class="text-break">Alice Example</dd>'));
+  t.true(res.text.includes('<dd class="text-break">947500100</dd>'));
+  t.true(res.text.includes('falta el departamento'));
+  // The policy lets that one page be framed, and nothing else
+  t.true(res.headers['content-security-policy'].includes('frame-src https://arandadeduero.github.io;'));
 });
 
 test.serial('GET /profile/me/auto-reply drops tags hidden inside other tags', async t => {
@@ -616,6 +617,52 @@ test.serial('POST /profile/me/photo renders the error page when Graph rejects th
 // ----------------------------------------------------------------- calendar
 
 const CALENDAR = '/me/calendar/calendarPermissions';
+
+test.serial('the calendar can be shared with a colleague from the account page', async t => {
+  http.on('get', '/v1.0/me', {});
+  http.on('get', CALENDAR, { value: [] });
+  http.on('post', CALENDAR, { id: 'perm-1' });
+
+  const res = await post('/account/calendar/share').type('form').send({ email: 'Bob@arandadeduero.es', role: 'limitedRead' }).expect(302);
+
+  t.is(res.header.location, '/account#calendario');
+  t.deepEqual(http.callsTo('post', CALENDAR)[0].data, { emailAddress: { address: 'bob@arandadeduero.es' }, role: 'limitedRead' });
+  t.deepEqual(auditEvents('calendar.shared').at(-1).with, 'bob@arandadeduero.es');
+
+  const page = await agent.get('/account').expect(200);
+  t.true(page.text.includes('Tu calendario está ahora compartido con bob@arandadeduero.es.'));
+});
+
+test.serial('the calendar is not shared outside the organization or with a role this page does not offer', async t => {
+  http.on('post', CALENDAR, { id: 'perm-1' });
+
+  await post('/account/calendar/share').type('form').send({ email: 'bob@gmail.com', role: 'read' }).expect(400);
+  await post('/account/calendar/share').type('form').send({ email: 'bob@arandadeduero.es', role: 'delegateWithPrivateEventAccess' }).expect(400);
+
+  t.is(http.callsTo('post', CALENDAR).length, 0);
+});
+
+test.serial("somebody's access to the calendar can be taken back, by an id the calendar really has", async t => {
+  http.on('get', '/v1.0/me', {});
+  http.on('get', CALENDAR, { value: [
+    { id: 'L289', role: 'read', emailAddress: { name: 'Bob Builder', address: 'bob@arandadeduero.es' }, isInsideOrganization: true, isRemovable: true },
+    { id: 'ORG', role: 'freeBusyRead', emailAddress: { name: 'My Organization' }, isRemovable: false },
+  ] });
+  http.on('delete', `${CALENDAR}/L289`, {});
+
+  const page = await agent.get('/account').expect(200);
+  t.true(page.text.includes('action="/account/calendar/L289/remove"'));
+  t.false(page.text.includes('action="/account/calendar/ORG/remove"'));
+
+  await post('/account/calendar/ORG/remove').expect(404);
+  await post('/account/calendar/nope/remove').expect(404);
+  t.is(http.callsTo('delete', `${CALENDAR}/ORG`).length, 0);
+
+  const res = await post('/account/calendar/L289/remove').expect(302);
+  t.is(res.header.location, '/account#calendario');
+  t.is(http.callsTo('delete', `${CALENDAR}/L289`).length, 1);
+  t.is(auditEvents('calendar.unshared').at(-1).with, 'bob@arandadeduero.es');
+});
 
 test.serial('GET /account lists who can see the calendar and warns about outsiders', async t => {
   http.on('get', '/v1.0/me', {});
