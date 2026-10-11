@@ -1,0 +1,19 @@
+README.md
+  s_44ab0f065da999::t_f94e3bd73abd39 181,302
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "abe074df61044c9e9123baa0c32fd5e4f9f900ac",
+  "prompts": {},
+  "sessions": {
+    "s_44ab0f065da999": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "44e99ee9-2ad8-4bcc-860f-91c036ab0268",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
