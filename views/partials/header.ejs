@@ -24,47 +24,89 @@
     </div>
   <% } %>
   <% if (typeof currentPage !== 'undefined' && currentPage !== 'login') { %>
+  <%
+    // Which group of the menu the page belongs to, and the exact page inside it
+    const page = currentPage;
+    const here = typeof currentPath !== 'undefined' ? currentPath : '';
+    const me = typeof currentUser !== 'undefined' ? currentUser : null;
+    const admin = typeof isAdmin !== 'undefined' && isAdmin;
+    const groupClass = (...pages) => 'nav-link dropdown-toggle' + (pages.includes(page) ? ' active' : '');
+    const itemClass = (href) => 'dropdown-item' + (here === href ? ' active' : '');
+  %>
   <nav class="navbar navbar-expand-lg app-nav border-bottom shadow-sm">
     <div class="container">
       <a class="navbar-brand fw-semibold" href="/"><%= appName %></a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Mostrar navegacion">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Mostrar navegación">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="mainNav">
-        <ul class="navbar-nav ms-auto">
+        <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a href="/" class="nav-link <%= currentPage === 'profile' ? 'active' : '' %>">Perfil</a>
+            <a href="/" class="nav-link <%= page === 'profile' ? 'active' : '' %>">Perfil</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="/account" class="<%= groupClass('account') %>" role="button" data-bs-toggle="dropdown" aria-expanded="false">Mi cuenta</a>
+            <ul class="dropdown-menu">
+              <li><a class="<%= itemClass('/account') %>" href="/account">Resumen de la cuenta</a></li>
+              <li><a class="<%= itemClass('/account/groups') %>" href="/account/groups">Mis grupos</a></li>
+              <li><a class="<%= itemClass('/account/sign-ins') %>" href="/account/sign-ins">Mis inicios de sesión</a></li>
+              <% if (typeof hasSharedMailboxes !== 'undefined' && hasSharedMailboxes) { %>
+              <li><a class="<%= itemClass('/account/mailboxes') %>" href="/account/mailboxes">Buzones compartidos</a></li>
+              <% } %>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="<%= itemClass('/profile/me/edit') %>" href="/profile/me/edit">Editar mi perfil</a></li>
+              <li><a class="<%= itemClass('/profile/me/auto-reply') %>" href="/profile/me/auto-reply">Respuestas automáticas</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="/directorio" class="<%= groupClass('directory', 'organigrama') %>" role="button" data-bs-toggle="dropdown" aria-expanded="false">Personas</a>
+            <ul class="dropdown-menu">
+              <li><a class="<%= itemClass('/directorio') %>" href="/directorio">Directorio</a></li>
+              <li><a class="<%= itemClass('/organigrama') %>" href="/organigrama">Organigrama</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a href="/groups" class="<%= groupClass('groups', 'teams') %>" role="button" data-bs-toggle="dropdown" aria-expanded="false">Grupos</a>
+            <ul class="dropdown-menu">
+              <li><a class="<%= itemClass('/groups') %>" href="/groups">Todos los grupos</a></li>
+              <li><a class="<%= itemClass('/groups/requests') %>" href="/groups/requests">Mis solicitudes</a></li>
+              <li><a class="<%= itemClass('/groups/owned') %>" href="/groups/owned">Grupos que administro</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="<%= itemClass('/teams') %>" href="/teams">Mis equipos de Teams</a></li>
+            </ul>
           </li>
           <li class="nav-item">
-            <a href="/groups" class="nav-link <%= currentPage === 'groups' ? 'active' : '' %>">Grupos</a>
+            <a href="/salas" class="nav-link <%= page === 'rooms' ? 'active' : '' %>">Salas</a>
           </li>
+          <% if (typeof canPublish !== 'undefined' && canPublish) { %>
           <li class="nav-item">
-            <a href="/teams" class="nav-link <%= currentPage === 'teams' ? 'active' : '' %>">Teams</a>
-          </li>
-          <li class="nav-item">
-            <a href="/organigrama" class="nav-link <%= currentPage === 'organigrama' ? 'active' : '' %>">Organigrama</a>
-          </li>
-          <li class="nav-item">
-            <a href="/directorio" class="nav-link <%= currentPage === 'directory' ? 'active' : '' %>">Directorio</a>
-          </li>
-          <li class="nav-item">
-            <a href="/account" class="nav-link <%= currentPage === 'account' ? 'active' : '' %>">Mi cuenta</a>
-          </li>
-          <li class="nav-item">
-            <a href="/salas" class="nav-link <%= currentPage === 'rooms' ? 'active' : '' %>">Salas</a>
-          </li>
-          <li class="nav-item">
-            <a href="/ayuda" class="nav-link <%= currentPage === 'help' ? 'active' : '' %>">Ayuda</a>
-          </li>
-          <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
-          <li class="nav-item">
-            <a href="/admin/audit" class="nav-link <%= currentPage === 'audit' ? 'active' : '' %>">Auditoría</a>
+            <a href="/blog" class="nav-link <%= page === 'blog' ? 'active' : '' %>">Blog</a>
           </li>
           <% } %>
           <li class="nav-item">
-            <a href="/blog" class="nav-link <%= currentPage === 'blog' ? 'active' : '' %>">Blog</a>
+            <a href="/ayuda" class="nav-link <%= page === 'help' ? 'active' : '' %>">Ayuda</a>
+          </li>
+          <% if (admin) { %>
+          <li class="nav-item dropdown">
+            <a href="/admin/audit" class="<%= groupClass('audit') %> nav-link-admin" role="button" data-bs-toggle="dropdown" aria-expanded="false">Administración</a>
+            <ul class="dropdown-menu">
+              <li><a class="<%= itemClass('/admin/audit') %>" href="/admin/audit">Auditoría</a></li>
+            </ul>
+          </li>
+          <% } %>
+        </ul>
+        <% if (me) { %>
+        <ul class="navbar-nav">
+          <li class="nav-item dropdown">
+            <a href="/" class="nav-link dropdown-toggle" id="userMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false"><%= me.name %></a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><span class="dropdown-item-text text-muted small"><%= me.username %></span></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/auth/logout">Cerrar sesión</a></li>
+            </ul>
           </li>
         </ul>
+        <% } %>
       </div>
     </div>
   </nav>

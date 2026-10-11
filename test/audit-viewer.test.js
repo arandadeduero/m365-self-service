@@ -48,6 +48,19 @@ test.beforeEach(() => {
   ]);
 });
 
+test.serial('only administrators get the administration menu', async t => {
+  // One at a time: the Graph stub answers the roles question the same for everybody
+  const admin = await signInAs(t, ADMIN, { admin: true });
+  const adminMenu = (await admin.get('/ayuda').expect(200)).text.split('<nav ')[1].split('</nav>')[0];
+  t.true(adminMenu.includes('>Administración</a>'));
+  t.true(adminMenu.includes('href="/admin/audit"'));
+
+  const user = await signInAs(t, USER, { admin: false });
+  const userMenu = (await user.get('/ayuda').expect(200)).text.split('<nav ')[1].split('</nav>')[0];
+  t.false(userMenu.includes('Administración'));
+  t.false(userMenu.includes('/admin/audit'));
+});
+
 test.serial('an administrator sees the log, newest first, with its details', async t => {
   const admin = await signInAs(t, ADMIN, { admin: true });
 

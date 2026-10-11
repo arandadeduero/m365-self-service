@@ -18,6 +18,7 @@ const path = require('path');
 
 // Import routes
 const appConfig = require('./config/appConfig');
+const permissions = require('./config/permissions');
 const authRoutes = require('./routes/auth');
 const indexRoutes = require('./routes/index');
 const blogRoutes = require('./routes/blog');
@@ -104,6 +105,19 @@ app.use(refreshAccessToken);
 
 // Check admin status for all requests
 app.use(checkAdminStatus);
+
+// What the menu needs: who is signed in, which entries apply to them, and
+// the path, to mark the current page
+app.use((req, res, next) => {
+  const account = req.session && req.session.account;
+  const [username, domain] = (account?.username || '').split('@');
+  res.locals.currentUser = account ? { name: account.name || account.username, username: account.username } : null;
+  res.locals.currentPath = req.path;
+  // Read at request time: config/local.js and the tests change the list
+  res.locals.canPublish = Boolean(account) && domain === permissions.DOMAIN && (permissions['/blog'] || []).includes(username);
+  res.locals.hasSharedMailboxes = appConfig.SHARED_MAILBOXES.length > 0;
+  next();
+});
 
 // Tell signed-in users about open Microsoft 365 incidents on every page
 app.use(async (req, res, next) => {

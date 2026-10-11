@@ -73,6 +73,45 @@ test.serial('GET / renders the profile of the signed-in user', async t => {
   t.is(http.callsTo('get', '/v1.0/me')[0].config.headers.Authorization, 'Bearer user-token');
 });
 
+test.serial('the menu groups the pages, names the user, and only shows what applies to them', async t => {
+  http.on('get', '/v1.0/me', { displayName: 'Alice Example' });
+
+  const res = await agent.get('/').expect(200);
+
+  const menu = res.text.split('<nav ')[1].split('</nav>')[0];
+  t.true(menu.includes('href="/" class="nav-link active"'));
+  for (const href of ['/account', '/account/groups', '/account/sign-ins', '/profile/me/edit', '/profile/me/auto-reply', '/directorio', '/organigrama', '/groups', '/groups/requests', '/groups/owned', '/teams', '/salas', '/ayuda', '/blog']) {
+    t.true(menu.includes(`href="${href}"`), href);
+  }
+  // Nothing is configured for shared mailboxes, and alice holds no directory role
+  t.false(menu.includes('/account/mailboxes'));
+  t.false(menu.includes('Administración'));
+  t.true(menu.includes('id="userMenu"'));
+  t.true(menu.includes('>Alice Example</a>'));
+  t.true(menu.includes('alice@arandadeduero.es'));
+  t.true(menu.includes('href="/auth/logout">Cerrar sesión</a>'));
+});
+
+test.serial('the menu marks the group and the page the user is on', async t => {
+  http.on('get', '/me/memberOf/microsoft.graph.group', { value: [] });
+
+  const res = await agent.get('/account/groups').expect(200);
+
+  const menu = res.text.split('<nav ')[1].split('</nav>')[0];
+  t.true(menu.includes('href="/account" class="nav-link dropdown-toggle active"'));
+  t.true(menu.includes('class="dropdown-item active" href="/account/groups"'));
+  t.false(menu.includes('href="/" class="nav-link active"'));
+});
+
+test.serial('the menu shows Blog only to users on its list', async t => {
+  http.on('get', '/v1.0/me', { displayName: 'Alice Example' });
+  permissions['/blog'] = ['someone-else'];
+
+  const res = await agent.get('/').expect(200);
+
+  t.false(res.text.split('<nav ')[1].split('</nav>')[0].includes('href="/blog"'));
+});
+
 test.serial('GET / embeds the profile photo when the user has one', async t => {
   http.on('get', '/v1.0/me', { displayName: 'Alice Example' });
   http.on('get', '/me/photo/$value', Buffer.from('img'));

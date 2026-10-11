@@ -86,6 +86,10 @@ h6,
 .app-nav {
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(8px);
+  /* backdrop-filter makes the bar a stacking context of its own, so its
+     dropdowns need the bar itself above the page */
+  position: relative;
+  z-index: 1030;
 }
 
 .app-nav .navbar-brand {
@@ -100,9 +104,38 @@ h6,
 }
 
 .app-nav .nav-link.active,
-.app-nav .nav-link:hover {
+.app-nav .nav-link:hover,
+.app-nav .nav-link.show {
   color: #133b70;
   background: rgba(13, 110, 253, 0.12);
+}
+
+.app-nav .nav-link-admin {
+  color: #9f1239;
+}
+
+.app-nav .dropdown-menu {
+  border: 1px solid var(--app-line);
+  border-radius: 0.75rem;
+  box-shadow: 0 12px 30px rgba(24, 36, 51, 0.12);
+  padding: 0.4rem;
+}
+
+.app-nav .dropdown-item {
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.8rem;
+  font-weight: 500;
+}
+
+.app-nav .dropdown-item:hover,
+.app-nav .dropdown-item:focus {
+  background: rgba(13, 110, 253, 0.08);
+  color: #133b70;
+}
+
+.app-nav .dropdown-item.active {
+  background: rgba(13, 110, 253, 0.16);
+  color: #133b70;
 }
 
 .app-panel {
@@ -408,9 +441,17 @@ h6,
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 991.98px) {
   .app-nav .nav-link {
     border-radius: 0.6rem;
     margin-top: 0.3rem;
+  }
+
+  /* Inside the collapsed menu the groups open in place, without a floating box */
+  .app-nav .dropdown-menu {
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+    padding-left: 1rem;
   }
 }

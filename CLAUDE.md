@@ -37,6 +37,7 @@ Node >= 25 is required (`engines`, Dockerfile and CI all use 25). CommonJS throu
 - `routes/ownedGroups.js` — `/groups/owned`: owners seeing and changing the members of their groups.
 - `routes/help.js` — `/ayuda` and its contact form. All its text is configuration: the introduction to Microsoft 365 in `config/helpGuide.js`, the questions in `config/helpTopics.js`.
 - The portal's name, the organization's and the intranet address are `APP_NAME`, `ORG_NAME` and `INTRANET_URL` in `config/appConfig.js`, given to every view as `appName`, `orgName` and `intranetUrl` (`app.locals` in `server.js`). Do not write the name into a view.
+- **The menu lives in `views/partials/header.ejs` only.** `server.js` gives it, per request, `currentUser` (name and address), `currentPath` (to mark the page inside a group), `canPublish` (the `/blog` list, so the link is only shown to those who may use it) and `hasSharedMailboxes`; `isAdmin` comes from `checkAdminStatus`. Pages set `currentPage` (`profile`, `account`, `directory`, `organigrama`, `groups`, `teams`, `rooms`, `blog`, `help`, `audit`), which picks the group. Sign-out is in the user menu; pages do not carry their own button.
 - `routes/rooms.js` — `/salas`: free meeting rooms, booking left to Outlook.
 - `routes/admin.js` — `/admin/audit`, for users with a directory role (`res.locals.isAdmin`).
 - `services/regionalSettings.js` — puts every account back on Madrid time and Spanish at sign-in (called from `/auth/callback`).
