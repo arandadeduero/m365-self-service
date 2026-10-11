@@ -1,0 +1,62 @@
+routes/directory.js
+  s_011367d8e8fa7a::t_d69a4d0407c33a 16-17,44-46,51-52
+services/graphService.js
+  s_011367d8e8fa7a::t_d69a4d0407c33a 447-513,1178-1180
+public/css/custom.css
+  s_011367d8e8fa7a::t_35996523c7d21f 259-267
+  s_011367d8e8fa7a::t_d69a4d0407c33a 268-282
+config/appConfig.js
+  s_011367d8e8fa7a::t_35996523c7d21f 34-36
+config/authConfig.js
+  s_011367d8e8fa7a::t_d69a4d0407c33a 57-58
+services/accountInsights.js
+  s_011367d8e8fa7a::t_d69a4d0407c33a 286-288
+views/account.ejs
+  s_011367d8e8fa7a::t_d69a4d0407c33a 188,191-193,207-218,226-247
+routes/signature.js
+  s_011367d8e8fa7a::t_35996523c7d21f 4-6,22-29
+.env.example
+  s_011367d8e8fa7a::t_35996523c7d21f 47-49
+CLAUDE.md
+  s_011367d8e8fa7a::t_d69a4d0407c33a 118-119
+  s_011367d8e8fa7a::t_35996523c7d21f 41
+middleware/securityHeaders.js
+  s_011367d8e8fa7a::t_35996523c7d21f 5-6,12-22,34
+test/account.test.js
+  s_011367d8e8fa7a::t_35996523c7d21f 426,431-436,622,646
+  s_011367d8e8fa7a::t_d69a4d0407c33a 621,623-645,647-666
+routes/account.js
+  s_011367d8e8fa7a::t_d69a4d0407c33a 46-47,168-171,195-197,215-274
+  s_011367d8e8fa7a::t_844082d9faba89 275
+test/presence.test.js
+  s_011367d8e8fa7a::t_d69a4d0407c33a 1-22
+README.md
+  s_011367d8e8fa7a::t_35996523c7d21f 11,507,929
+  s_011367d8e8fa7a::t_d69a4d0407c33a 16,137-138,556,702
+services/presence.js
+  s_011367d8e8fa7a::t_d69a4d0407c33a 1-38
+views/directory.ejs
+  s_011367d8e8fa7a::t_d69a4d0407c33a 13,24,38-40
+test/vcard.test.js
+  s_011367d8e8fa7a::t_35996523c7d21f 1-33
+views/signature.ejs
+  s_011367d8e8fa7a::t_35996523c7d21f 3,6-9,13,15,19-30,33-38
+test/directory.test.js
+  s_011367d8e8fa7a::t_d69a4d0407c33a 36-55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9dc6f20b799cc8d06271c41eaf954854e8e3a3c7",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
