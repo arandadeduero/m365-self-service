@@ -1,0 +1,35 @@
+views/help.ejs
+  s_44ab0f065da999::t_a835f45a04ee6b 1-64
+routes/help.js
+  s_44ab0f065da999::t_6926b3bba28b26 36-37,39
+  s_44ab0f065da999::t_a835f45a04ee6b 1-35,38,40-111
+config/helpTopics.js
+  s_44ab0f065da999::t_a835f45a04ee6b 1-49
+server.js
+  s_44ab0f065da999::t_96092a9e396997 26,109
+test/help.test.js
+  s_44ab0f065da999::t_a806d9b7a9dbb4 1-154
+views/partials/header.ejs
+  s_44ab0f065da999::t_33460a83342371 62-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "83baff8afa6a7c671afea84591292e423f27935c",
+  "prompts": {},
+  "humans": {
+    "h_3aa52f59e1a7c5": {
+      "author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_44ab0f065da999": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "44e99ee9-2ad8-4bcc-860f-91c036ab0268",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
