@@ -26,7 +26,7 @@ Node >= 25 is required (`engines`, Dockerfile and CI all use 25). CommonJS throu
 
 ## Layout
 
-- `server.js` — builds and exports the app; only listens when run directly. Order: `securityHeaders` → body parsers → static → file-backed session → `refreshAccessToken` → `checkAdminStatus` → routers → 404 → `expiredSessionHandler` → error handler.
+- `server.js` — builds and exports the app; only listens when run directly. Order: `securityHeaders` → body parsers → static → file-backed session → `refreshAccessToken` → `checkAdminStatus` → routers → 404 → `expiredSessionHandler` → error handler. It refuses to start in production without `SESSION_SECRET`.
 - `middleware/securityHeaders.js` — CSP (`default-src 'self'`, no other servers, `frame-ancestors 'none'`), `nosniff`, `Referrer-Policy`, HSTS in production. Inline scripts are still allowed because the views have them; a new page that needs a script should put it in `public/js/` rather than inline, so that `'unsafe-inline'` can go one day.
 - `routes/auth.js` — `/auth/signin`, `/auth/callback`, `/auth/logout`.
 - `routes/index.js` — profile, groups, teams, organigrama, `/api/*`, and the public password reset flow.

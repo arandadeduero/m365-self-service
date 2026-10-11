@@ -10,6 +10,7 @@
 if (process.env.NODE_ENV !== 'test') {
   require('dotenv').config();
 }
+const crypto = require('crypto');
 const express = require('express');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
@@ -56,6 +57,17 @@ app.locals.appName = appConfig.APP_NAME;
 app.locals.orgName = appConfig.ORG_NAME;
 app.locals.intranetUrl = appConfig.INTRANET_URL;
 
+// The session cookie is signed with this. Without it the app must not run
+// in production; elsewhere a secret for this process only keeps a known
+// value out of the code, at the cost of sessions ending on restart
+if (!process.env.SESSION_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('SESSION_SECRET is not set. Add it to the environment before starting in production.');
+  }
+  console.warn('SESSION_SECRET is not set: using a secret for this process only, so sessions end when it restarts');
+}
+const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+
 // Middleware setup
 app.use(securityHeaders);
 
@@ -72,7 +84,7 @@ app.use(
     store: new FileStore({
       path: path.join(__dirname, 'sessions'),
     }),
-    secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+    secret: sessionSecret,
     resave: false,
     saveUninitialized: false,
     cookie: {
