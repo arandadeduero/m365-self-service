@@ -35,6 +35,19 @@ test('GET /login returns login page', async t => {
   t.true(res.text.includes('Mi Microsoft 365 · Ayuntamiento de Aranda de Duero'));
 });
 
+test('pages load their styles, scripts and typeface from the app, not from other servers', async t => {
+  const res = await request(app).get('/login').expect(200);
+
+  t.deepEqual(res.text.match(/<(?:link|script)\b[^>]*(?:href|src)="https?:[^"]*"/g), null);
+
+  const css = await request(app).get('/css/custom.css').expect(200);
+  t.false(/url\(\s*['"]?https?:/.test(css.text));
+
+  await request(app).get('/vendor/bootstrap-5.3.3.min.css').expect(200);
+  await request(app).get('/vendor/bootstrap-5.3.3.bundle.min.js').expect(200);
+  await request(app).get('/vendor/fonts/outfit-latin.woff2').expect(200).expect('Content-Type', 'font/woff2');
+});
+
 test('GET /login renders correct content', async t => {
   const res = await request(app)
     .get('/login')

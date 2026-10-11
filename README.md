@@ -349,7 +349,7 @@ mi-microsoft-365/
 │   ├── emailService.js               # Password reset emails (AWS SES)
 │   └── wpService.js                  # WordPress REST API (categories)
 │
-├── public/                           # custom.css, profile.js, organigrama.js, default avatar, vendor/ (d3 for the org chart)
+├── public/                           # custom.css, profile.js, organigrama.js, default avatar, vendor/ (Bootstrap, Outfit and d3, served locally)
 │
 ├── views/
 │   ├── partials/                     # header.ejs, footer.ejs

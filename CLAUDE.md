@@ -30,6 +30,7 @@ Node >= 25 is required (`engines`, Dockerfile and CI all use 25). CommonJS throu
 - `routes/auth.js` — `/auth/signin`, `/auth/callback`, `/auth/logout`.
 - `routes/index.js` — profile, groups, teams, organigrama, `/api/*`, and the public password reset flow.
 - `/organigrama` — `services/orgChart.js` (pure) turns the directory into one tree under `ORG_CHART_ROOT` plus the list of people outside it; `public/js/organigrama.js` draws it with d3-org-chart (copies in `public/vendor/`, version in the file name) and runs the search. Initials are plain text: no avatar or image service.
+- `public/vendor/` — Bootstrap, the Outfit typeface and the d3 libraries, served by the app. **Pages load nothing from other servers** (no CDN, no web fonts, no image services); `test/routes.test.js` checks it. A new library goes there, listed in its README.
 - `routes/blog.js` — `/blog`: emails a post to Jetpack Post-by-Email through the signed-in user's mailbox.
 - `routes/account.js` — `/directorio`, `/account`, `/account/groups`, `/account/sign-ins` (and its `/report`), `/account/mailboxes`, `/profile/me/auto-reply`, `/profile/me/photo`. What those pages *say* is decided in `services/accountInsights.js` (pure functions) and `config/licenseCatalog.js`.
 - `routes/ownedGroups.js` — `/groups/owned`: owners seeing and changing the members of their groups.
