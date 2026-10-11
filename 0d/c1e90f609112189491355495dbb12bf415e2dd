@@ -1,0 +1,21 @@
+docker-compose.yml
+  s_011367d8e8fa7a::t_b04e9d2c281ad4 1-51
+README.md
+  s_011367d8e8fa7a::t_ec995ea4062eb0 309,823-833,840
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0dc1e90f609112189491355495dbb12bf415e2dd",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
