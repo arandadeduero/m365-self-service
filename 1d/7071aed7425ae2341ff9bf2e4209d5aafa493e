@@ -1,0 +1,20 @@
+public/css/custom.css
+  s_011367d8e8fa7a::t_16fc15dd9d8e69 117
+  s_011367d8e8fa7a::t_81995b61983629 87-89
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1d7071aed7425ae2341ff9bf2e4209d5aafa493e",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
