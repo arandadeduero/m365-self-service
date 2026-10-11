@@ -1,0 +1,82 @@
+<%- include('partials/header') %>
+
+<main class="container py-4 page-shell">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <h1 class="h2 mb-0 page-title">Auditoría</h1>
+  </div>
+
+  <div class="alert alert-info">
+    Registro de lo que hacen los usuarios en esta herramienta: inicios de sesión, cambios en su cuenta, solicitudes y cambios de contraseña. Sin filtros se muestran los últimos 7 días. Nunca se guardan contraseñas, enlaces de recuperación ni el contenido de los mensajes.
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <form action="/admin/audit" method="GET" class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label for="day" class="form-label">Día</label>
+          <input type="date" class="form-control" id="day" name="day" value="<%= filters.day %>">
+        </div>
+        <div class="col-md-4">
+          <label for="event" class="form-label">Tipo de evento</label>
+          <select class="form-select" id="event" name="event">
+            <option value="">Todos</option>
+            <% events.forEach(function(event) { %>
+              <option value="<%= event %>" <%= filters.event === event ? 'selected' : '' %>><%= event %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="actor" class="form-label">Usuario</label>
+          <input type="text" class="form-control" id="actor" name="actor" value="<%= filters.actor %>" placeholder="nombre o correo">
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Filtrar</button>
+          <a href="/admin/audit" class="btn btn-outline-secondary">Quitar</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <% if (entries.length > 0) { %>
+        <p class="text-muted small">
+          <% if (total > entries.length) { %>
+            Se muestran los <%= entries.length %> más recientes de <%= total %>. Usa los filtros para ver el resto.
+          <% } else { %>
+            <%= total %> <%= total === 1 ? 'evento' : 'eventos' %>.
+          <% } %>
+        </p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Evento</th>
+                <th>Usuario</th>
+                <th>IP</th>
+                <th>Detalles</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% entries.forEach(function(entry) { %>
+                <% const { time, event, actor, ip, ...details } = entry; %>
+                <tr>
+                  <td class="text-nowrap"><%= new Date(time).toLocaleString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: 'Europe/Madrid' }) %></td>
+                  <td><code><%= event %></code></td>
+                  <td><%= actor || '—' %></td>
+                  <td><%= ip %></td>
+                  <td class="small text-break"><%= Object.keys(details).length > 0 ? JSON.stringify(details) : '' %></td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="text-muted mb-0">No hay eventos que coincidan.</p>
+      <% } %>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
