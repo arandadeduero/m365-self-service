@@ -13,7 +13,7 @@
 
 const express = require('express');
 const router = express.Router();
-const { ADMIN_EMAIL, APP_ORIGIN } = require('../config/appConfig');
+const { ADMIN_EMAIL, APP_ORIGIN, APP_NAME } = require('../config/appConfig');
 const { isAuthenticated } = require('../middleware/auth');
 const { userError } = require('../middleware/errorHandler');
 const { auditRequest } = require('../services/auditService');
@@ -97,7 +97,7 @@ router.post('/api/group-access-request', isAuthenticated, async (req, res, next)
         await auditRequest(req, 'group_request.created', { requestId: request.id, groupId: group.id });
         await notify(req, {
           to: owners,
-          subject: `[m365] Solicitud de acceso a ${group.displayName}`,
+          subject: `[${APP_NAME}] Solicitud de acceso a ${group.displayName}`,
           body: `${requester.name} (${requester.email}) solicita unirse al grupo "${group.displayName}", del que eres propietario.\n\nPuedes aprobar o rechazar la solicitud aquí:\n${APP_ORIGIN}/groups/requests`,
         });
       }
@@ -188,7 +188,7 @@ router.post('/groups/requests/:id/approve', isAuthenticated, async (req, res, ne
     });
     await notify(req, {
       to: request.requester.email,
-      subject: `[m365] Ya formas parte de ${request.groupName}`,
+      subject: `[${APP_NAME}] Ya formas parte de ${request.groupName}`,
       body: `Tu solicitud para unirte al grupo "${request.groupName}" ha sido aprobada.`,
     });
 
@@ -214,7 +214,7 @@ router.post('/groups/requests/:id/reject', isAuthenticated, async (req, res, nex
     });
     await notify(req, {
       to: request.requester.email,
-      subject: `[m365] Solicitud de acceso a ${request.groupName}`,
+      subject: `[${APP_NAME}] Solicitud de acceso a ${request.groupName}`,
       body: `Tu solicitud para unirte al grupo "${request.groupName}" no ha sido aprobada. Si crees que es un error, habla con los propietarios del grupo.`,
     });
 

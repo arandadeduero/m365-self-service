@@ -494,8 +494,8 @@ Ningún test habla con Microsoft, AWS ni WordPress:
 | `AWS_ACCESS_KEY_ID` | Clave de acceso de AWS con permiso para enviar con SES | `AKIA...` | Para restablecer contraseñas |
 | `AWS_SECRET_ACCESS_KEY` | Secreto de esa clave de acceso | | Para restablecer contraseñas |
 | `FROM_EMAIL` | Remitente, verificado en SES, de los correos de restablecimiento | `no-responder@arandadeduero.dev` | Para restablecer contraseñas |
-| `AUDIT_DIR` | Directorio del registro de auditoría | `/var/log/m365-tools` | No (por defecto: `./audit`) |
-| `DATA_DIR` | Directorio de las solicitudes para entrar en grupos | `/var/lib/m365-tools` | No (por defecto: `./data`) |
+| `AUDIT_DIR` | Directorio del registro de auditoría | `/var/log/mi-microsoft-365` | No (por defecto: `./audit`) |
+| `DATA_DIR` | Directorio de las solicitudes para entrar en grupos | `/var/lib/mi-microsoft-365` | No (por defecto: `./data`) |
 | `PASSWORD_MAX_AGE_DAYS` | Días que dura una contraseña en tu inquilino; hace que la página de la cuenta muestre los días que quedan | `90` | No (no se muestra caducidad) |
 | `PROFILE_EDITABLE_FIELDS` | Campos del perfil que los usuarios pueden cambiar por sí mismos, de entre `mobilePhone`, `businessPhones`, `jobTitle` y `officeLocation`; el resto se muestra en solo lectura | `mobilePhone,businessPhones` | No (por defecto: los cuatro) |
 | `INTRANET_URL` | Dirección de la intranet de la organización, enlazada desde la página de inicio, la de ayuda y el pie | `https://example.sharepoint.com` | No (por defecto: la del Ayuntamiento) |
@@ -754,7 +754,7 @@ heroku login
 heroku create
 
 # O indica el tuyo
-heroku create my-m365-login-demo
+heroku create mi-microsoft-365
 ```
 
 Apunta la URL de la aplicación (por ejemplo `https://mysterious-ocean-12345.herokuapp.com`)
@@ -832,7 +832,7 @@ El compose arranca la imagen de GHCR con `NODE_ENV=production` y `TRUST_PROXY=1`
 Para construir la imagen en local:
 
 ```bash
-docker build -t m365-tools .
+docker build -t mi-microsoft-365 .
 ```
 
 Notas:

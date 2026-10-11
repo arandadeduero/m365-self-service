@@ -301,7 +301,7 @@ router.post('/account/sign-ins/report', isAuthenticated, async (req, res, next) 
     try {
       await sendEmail(accessToken, {
         to: appConfig.ADMIN_EMAIL,
-        subject: `[m365] Inicio de sesión no reconocido: ${account.username}`,
+        subject: `[${appConfig.APP_NAME}] Inicio de sesión no reconocido: ${account.username}`,
         body: [
           `${account.name || account.username} (${account.username}) indica que NO reconoce este inicio de sesión en su cuenta:`,
           '',
