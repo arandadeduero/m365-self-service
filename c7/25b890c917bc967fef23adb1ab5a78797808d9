@@ -1,0 +1,33 @@
+views/debug.ejs
+  s_011367d8e8fa7a::t_3faa04dd7b29e6 1-27
+routes/debug.js
+  s_011367d8e8fa7a::t_3faa04dd7b29e6 1-40
+public/js/debug.js
+  s_011367d8e8fa7a::t_3faa04dd7b29e6 1-8
+test/authenticated.test.js
+  s_011367d8e8fa7a::t_3faa04dd7b29e6 115-129
+views/partials/header.ejs
+  s_011367d8e8fa7a::t_3faa04dd7b29e6 110
+CLAUDE.md
+  s_011367d8e8fa7a::t_3faa04dd7b29e6 43
+README.md
+  s_011367d8e8fa7a::t_3faa04dd7b29e6 576
+server.js
+  s_011367d8e8fa7a::t_3faa04dd7b29e6 36,158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c725b890c917bc967fef23adb1ab5a78797808d9",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
