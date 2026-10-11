@@ -1,0 +1,27 @@
+views/admin-accounts.ejs
+  s_011367d8e8fa7a::t_9dbd5855ce3c0b 15-20,22
+services/graphService.js
+  s_011367d8e8fa7a::t_9dbd5855ce3c0b 126-127,131,133-135,137,142
+test/admin-pages.test.js
+  s_011367d8e8fa7a::t_9dbd5855ce3c0b 13,111-131
+services/accountReview.js
+  s_011367d8e8fa7a::t_9dbd5855ce3c0b 8-9,12
+routes/admin.js
+  s_011367d8e8fa7a::t_9dbd5855ce3c0b 123
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1f90a350c7cd1c8fb133763b6aba38b7dff539df",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
