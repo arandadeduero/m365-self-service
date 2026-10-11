@@ -1,7 +1,8 @@
 /**
  * Help Routes
  *
- * - GET /ayuda - Answers to the usual questions, and a form to write to IT
+ * - GET /ayuda - What Microsoft 365 is and what the organization has in it,
+ *   answers to the usual questions, and a form to write to IT
  * - POST /ayuda/contacto - Send that message, with the state of the account attached
  */
 
@@ -9,6 +10,7 @@ const express = require('express');
 const router = express.Router();
 const appConfig = require('../config/appConfig');
 const helpTopics = require('../config/helpTopics');
+const helpGuide = require('../config/helpGuide');
 const { isAuthenticated } = require('../middleware/auth');
 const { userError } = require('../middleware/errorHandler');
 const { auditRequest } = require('../services/auditService');
@@ -62,6 +64,7 @@ router.get('/ayuda', isAuthenticated, (req, res) => {
   res.render('help', {
     title: 'Ayuda',
     currentPage: 'help',
+    guide: helpGuide,
     topics: helpTopics,
     sent: req.query.sent === '1',
     adminEmail: appConfig.ADMIN_EMAIL,

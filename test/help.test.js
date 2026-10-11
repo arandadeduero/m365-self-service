@@ -152,3 +152,22 @@ test.serial('writing needs the CSRF token, and the page a signed-in user', async
   t.is(res.header.location, '/login');
   t.is(httpError(500).response.status, 500);
 });
+
+test.serial('the help page explains what Microsoft 365 is and what there is in it', async t => {
+  const user = await signIn(t);
+
+  const res = await user.get('/ayuda').expect(200);
+
+  for (const text of ['Qué es Microsoft 365', 'Cómo se entra', 'Qué tenemos y para qué sirve', 'Dónde guardo cada cosa', 'Qué puedes hacer en este portal']) {
+    t.true(res.text.includes(text), text);
+  }
+  for (const tool of ['Outlook', 'Teams', 'OneDrive', 'SharePoint', 'Word, Excel y PowerPoint', 'Forms', 'Planner y To Do']) {
+    t.true(res.text.includes(`<h4 class="h6 mb-1">${tool}</h4>`), tool);
+  }
+  t.true(res.text.includes('href="https://teams.microsoft.com"'));
+  // What each person has is on their account page, not claimed here
+  t.true(res.text.includes('depende de tu licencia'));
+  t.true(res.text.includes('href="https://aytoarandaduero.sharepoint.com"'));
+  // Explained before the questions
+  t.true(res.text.indexOf('Qué es Microsoft 365') < res.text.indexOf('Preguntas habituales'));
+});

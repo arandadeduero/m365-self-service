@@ -11,6 +11,70 @@
 
   <div class="card shadow-sm border-0 app-panel mb-4">
     <div class="card-body p-4">
+      <h3 class="h5 mb-3">Qué es Microsoft 365</h3>
+      <% guide.intro.forEach(function(paragraph) { %>
+        <p><%= paragraph %></p>
+      <% }); %>
+      <h4 class="h6 mt-4">Cómo se entra</h4>
+      <ul>
+        <% guide.access.forEach(function(way) { %>
+          <li><strong><%= way.label %>.</strong> <%= way.text %></li>
+        <% }); %>
+      </ul>
+      <a href="<%= guide.accessUrl %>" target="_blank" rel="noopener" class="btn btn-primary">Abrir Microsoft 365</a>
+      <a href="<%= intranetUrl %>" target="_blank" rel="noopener" class="btn btn-outline-secondary">Intranet del Ayuntamiento</a>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <h3 class="h5 mb-3">Qué tenemos y para qué sirve</h3>
+      <p class="text-muted">Estas son las herramientas del Ayuntamiento. Cuáles tienes tú depende de tu licencia: lo ves, con un botón para abrir cada una, en <a href="/account">Mi cuenta</a>.</p>
+      <div class="row g-3">
+        <% guide.tools.forEach(function(tool) { %>
+          <div class="col-12 col-md-6">
+            <div class="border rounded-3 p-3 h-100 d-flex flex-column">
+              <h4 class="h6 mb-1"><%= tool.name %></h4>
+              <p class="text-primary fw-semibold small mb-2"><%= tool.use %></p>
+              <p class="text-muted small flex-grow-1"><%= tool.detail %></p>
+              <div><a href="<%= tool.url %>" target="_blank" rel="noopener" class="btn btn-outline-primary btn-sm">Abrir</a></div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+
+      <h4 class="h6 mt-4">Dónde guardo cada cosa</h4>
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <tbody>
+            <% guide.whereToSave.forEach(function(row) { %>
+              <tr>
+                <td><%= row.what %></td>
+                <td><strong><%= row.where %></strong></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <h3 class="h5 mb-3">Qué puedes hacer en este portal</h3>
+      <ul class="mb-0">
+        <li><a href="/account">Mi cuenta</a>: qué incluye tu licencia, si tu cuenta está protegida, tus dispositivos, las reglas de tu correo y quién ve tu calendario.</li>
+        <li><a href="/account/sign-ins">Mis inicios de sesión</a>: dónde y cuándo se ha usado tu cuenta, con un botón por si alguno no es tuyo.</li>
+        <li><a href="/groups">Grupos</a> y <a href="/teams">Teams</a>: a cuáles perteneces, y pedir acceso a los que necesites.</li>
+        <li><a href="/directorio">Directorio</a> y <a href="/organigrama">Organigrama</a>: encontrar a un compañero y ver de quién depende cada persona.</li>
+        <li><a href="/salas">Salas</a>: buscar una sala de reuniones libre.</li>
+        <li><a href="/profile/me/auto-reply">Respuestas automáticas</a>: avisar de que estás fuera.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
       <h3 class="h5 mb-3">Preguntas habituales</h3>
       <div class="accordion" id="helpTopics">
         <% topics.forEach(function(topic, index) { %>
