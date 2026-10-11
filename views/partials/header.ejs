@@ -59,6 +59,9 @@
           <li class="nav-item">
             <a href="/account" class="nav-link <%= currentPage === 'account' ? 'active' : '' %>">Mi cuenta</a>
           </li>
+          <li class="nav-item">
+            <a href="/ayuda" class="nav-link <%= currentPage === 'help' ? 'active' : '' %>">Ayuda</a>
+          </li>
           <% if (typeof isAdmin !== 'undefined' && isAdmin) { %>
           <li class="nav-item">
             <a href="/admin/audit" class="nav-link <%= currentPage === 'audit' ? 'active' : '' %>">Auditoría</a>
