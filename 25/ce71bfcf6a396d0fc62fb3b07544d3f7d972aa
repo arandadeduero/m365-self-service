@@ -1,0 +1,25 @@
+routes/groupRequests.js
+  s_011367d8e8fa7a::t_48310e62a162d2 16,100,191,217
+routes/account.js
+  s_011367d8e8fa7a::t_48310e62a162d2 304
+README.md
+  s_011367d8e8fa7a::t_48310e62a162d2 497-498,757,835
+.env.example
+  s_011367d8e8fa7a::t_48310e62a162d2 31,34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "25ce71bfcf6a396d0fc62fb3b07544d3f7d972aa",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
