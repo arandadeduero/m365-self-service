@@ -1,0 +1,25 @@
+server.js
+  s_011367d8e8fa7a::t_14cbeec5792fdf 60-70
+  s_011367d8e8fa7a::t_fcf29b1fbd83bf 13
+  s_011367d8e8fa7a::t_eb915ce022b947 87
+CLAUDE.md
+  s_011367d8e8fa7a::t_914b4f9fb1ff7c 29
+README.md
+  s_011367d8e8fa7a::t_89c4eded7520cc 836,888
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "57280d1c976cb356e4b7616df84c76453bbc320d",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "unknown"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
