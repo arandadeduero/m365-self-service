@@ -1,0 +1,108 @@
+<%- include('partials/header') %>
+
+<% const guests = members.filter(member => member.guest); %>
+
+<main class="container py-4 page-shell page-groups">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h1 class="h2 mb-1 page-title"><%= group.displayName %></h1>
+      <span class="badge bg-secondary"><%= group.about.label %></span>
+    </div>
+    <a href="/groups/owned" class="btn btn-outline-secondary">Volver a mis grupos</a>
+  </div>
+
+  <% if (changed === 'added') { %>
+    <div class="alert alert-success">Persona añadida al grupo.</div>
+  <% } else if (changed === 'removed') { %>
+    <div class="alert alert-success">Persona quitada del grupo.</div>
+  <% } %>
+
+  <% if (guests.length > 0) { %>
+    <div class="alert alert-warning">
+      En este grupo hay <strong><%= guests.length %></strong> <%= guests.length === 1 ? 'persona' : 'personas' %> de fuera del Ayuntamiento (invitados). Ven lo mismo que el resto de miembros: comprueba que siguen necesitando el acceso.
+    </div>
+  <% } %>
+
+  <% if (owners.length === 1) { %>
+    <div class="alert alert-warning">
+      Este grupo solo tiene un propietario. Pide a Informática que añada a otra persona, para que alguien pueda gestionarlo si tú no estás.
+    </div>
+  <% } %>
+
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <h3 class="h5 mb-3">Miembros (<%= members.length %>)</h3>
+      <% if (members.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <tbody>
+              <% members.forEach(function(member) { %>
+                <tr>
+                  <td>
+                    <strong><%= member.displayName %></strong>
+                    <% if (member.guest) { %> <span class="badge bg-warning text-dark">Invitado externo</span><% } %>
+                    <br><span class="text-muted small"><%= member.mail || member.userPrincipalName %></span>
+                  </td>
+                  <td class="text-end">
+                    <% if (manageable) { %>
+                      <form action="/groups/owned/<%= encodeURIComponent(group.id) %>/members/<%= encodeURIComponent(member.id) %>/remove" method="POST" class="d-inline" onsubmit="return confirm('¿Quitar a esta persona del grupo? Dejará de tener acceso de inmediato.');">
+                        <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Quitar</button>
+                      </form>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <p class="text-muted mb-0">El grupo no tiene miembros.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel mb-4">
+    <div class="card-body p-4">
+      <h3 class="h5 mb-3">Añadir a alguien</h3>
+      <% if (manageable) { %>
+        <form action="/groups/owned/<%= encodeURIComponent(group.id) %>/members" method="POST" class="row g-2">
+          <input type="hidden" name="_csrf" value="<%= csrfToken() %>">
+          <div class="col-md-9">
+            <label for="userId" class="visually-hidden">Persona</label>
+            <select class="form-select" id="userId" name="userId" required>
+              <option value="">Elige a una persona…</option>
+              <% candidates.forEach(function(user) { %>
+                <option value="<%= user.id %>"><%= user.displayName %><% if (user.mail) { %> (<%= user.mail %>)<% } %></option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="col-md-3 d-grid">
+            <button type="submit" class="btn btn-primary">Añadir</button>
+          </div>
+        </form>
+        <p class="text-muted small mt-2 mb-0">La persona entra en el grupo de inmediato y recibe lo mismo que el resto de miembros.</p>
+      <% } else { %>
+        <p class="text-muted mb-0">Los miembros de este tipo de grupo se gestionan en Exchange y no se pueden cambiar desde aquí. Pide el cambio a Informática.</p>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card shadow-sm border-0 app-panel">
+    <div class="card-body p-4">
+      <h3 class="h5 mb-3">Propietarios</h3>
+      <% if (owners.length > 0) { %>
+        <ul class="mb-0">
+          <% owners.forEach(function(owner) { %>
+            <li><%= owner.displayName %> <span class="text-muted small"><%= owner.mail || owner.userPrincipalName %></span></li>
+          <% }); %>
+        </ul>
+      <% } else { %>
+        <p class="text-muted mb-0">No se ha podido consultar quiénes son los propietarios.</p>
+      <% } %>
+      <p class="text-muted small mt-2 mb-0">Añadir o quitar propietarios lo hace Informática.</p>
+    </div>
+  </div>
+</main>
+
+<%- include('partials/footer') %>

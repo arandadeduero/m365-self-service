@@ -22,6 +22,7 @@ const blogRoutes = require('./routes/blog');
 const accountRoutes = require('./routes/account');
 const groupRequestRoutes = require('./routes/groupRequests');
 const adminRoutes = require('./routes/admin');
+const ownedGroupRoutes = require('./routes/ownedGroups');
 
 // Import middleware
 const { expiredSessionHandler, errorHandler, notFoundHandler } = require('./middleware/errorHandler');
@@ -103,6 +104,7 @@ app.use('/', blogRoutes);
 app.use('/', accountRoutes);
 app.use('/', groupRequestRoutes);
 app.use('/', adminRoutes);
+app.use('/', ownedGroupRoutes);
 
 // 404 handler (must be after all routes)
 app.use(notFoundHandler);
