@@ -1,0 +1,26 @@
+views/partials/header.ejs
+  s_44ab0f065da999::t_05d42639431507 10
+public/css/custom.css
+  s_44ab0f065da999::t_05d42639431507 49,63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "8938f8381b5d6fb5cab9b839e534e210534752c6",
+  "prompts": {},
+  "humans": {
+    "h_3aa52f59e1a7c5": {
+      "author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_44ab0f065da999": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "44e99ee9-2ad8-4bcc-860f-91c036ab0268",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
