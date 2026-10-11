@@ -10,7 +10,7 @@ const { jetpackEmail } = require('../config/wpConfig');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.get('/blog', isAuthenticated, checkPermission, async (req, res, next) => {
+router.get('/blog', isAuthenticated, checkPermission('/blog'), async (req, res, next) => {
   try {
     const categories = await getCategories();
     res.render('blog', {
@@ -23,7 +23,7 @@ router.get('/blog', isAuthenticated, checkPermission, async (req, res, next) => 
   }
 });
 
-router.post('/blog', isAuthenticated, checkPermission, upload.array('files', 5), verifyCsrfToken, async (req, res, next) => {
+router.post('/blog', isAuthenticated, checkPermission('/blog'), upload.array('files', 5), verifyCsrfToken, async (req, res, next) => {
   try {
     const { title, content, categories, delay, status } = req.body;
     const files = req.files;

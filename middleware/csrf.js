@@ -16,6 +16,10 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 // middleware has run, so these routes call verifyCsrfToken themselves after it
 const MULTIPART_ROUTES = new Set(['/blog', '/profile/me/photo']);
 
+// Express sends /Blog and /blog/ to the handler of /blog, so the exemption
+// has to recognise those spellings too
+const routeKey = (path) => path.toLowerCase().replace(/\/+$/, '') || '/';
+
 function sessionToken(req) {
   if (!req.session.csrfToken) {
     req.session.csrfToken = crypto.randomBytes(32).toString('hex');
@@ -58,7 +62,7 @@ function csrfProtection(req, res, next) {
     return next();
   }
 
-  if (MULTIPART_ROUTES.has(req.path) && req.is('multipart/form-data')) {
+  if (MULTIPART_ROUTES.has(routeKey(req.path)) && req.is('multipart/form-data')) {
     return next();
   }
 

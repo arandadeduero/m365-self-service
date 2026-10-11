@@ -7,7 +7,7 @@ require('./helpers/env');
 
 const test = require('ava').default;
 const request = require('supertest');
-const { stubAxios, stubMsal, getCsrfToken } = require('./helpers/stubs');
+const { stubAxios, stubMsal, getCsrfToken, signInAgent } = require('./helpers/stubs');
 
 const http = stubAxios();
 stubMsal();
@@ -28,7 +28,7 @@ test.beforeEach(() => {
 
 async function signIn(t) {
   const agent = request.agent(app);
-  await agent.get('/auth/callback?code=test-code').expect(302);
+  await signInAgent(agent);
   t.teardown(() => agent.get('/auth/logout'));
   return agent;
 }
@@ -92,6 +92,25 @@ test.serial('an upload form without the token is refused', async t => {
 
   await agent
     .post('/blog')
+    .field('title', 'Aviso')
+    .field('content', 'Texto')
+    .field('status', 'publish')
+    .expect(403);
+
+  t.is(changes().length, 0);
+});
+
+test.serial('the blog list applies however the path is spelled', async t => {
+  permissions['/blog'] = ['someone-else'];
+  const agent = await signIn(t);
+  const csrf = await getCsrfToken(agent);
+
+  for (const path of ['/blog', '/Blog', '/blog/', '/BLOG/']) {
+    await agent.get(path).expect(403);
+  }
+  await agent
+    .post('/Blog')
+    .set('X-CSRF-Token', csrf)
     .field('title', 'Aviso')
     .field('content', 'Texto')
     .field('status', 'publish')

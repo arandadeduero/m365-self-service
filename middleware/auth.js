@@ -11,37 +11,38 @@ const { auditRequest } = require('../services/auditService');
 const permissions = require('../config/permissions');
 
 /**
- * Middleware to check user permissions for routes/actions
+ * Build the middleware that guards one route with its list in
+ * config/permissions.js. The key is fixed here and never taken from the URL:
+ * Express sends /Blog and /blog/ to the same handler as /blog, so a lookup by
+ * req.path would find no list for them and let anybody through. A key with
+ * no list lets nobody in.
+ * @param {string} routeKey - Key in config/permissions.js, e.g. '/blog'
  */
-function checkPermission(req, res, next) {
-  const userEmail = req.session.account?.username;
-  if (!userEmail) {
+function checkPermission(routeKey) {
+  return function (req, res, next) {
+    const { path, method } = req;
+    const userEmail = req.session.account?.username;
+    if (!userEmail) {
       return res.status(403).send('Access Denied');
-  }
-  
-  const [username, domain] = userEmail.split('@');
-  
-  if (domain !== permissions.DOMAIN) {
+    }
+
+    const [username, domain] = userEmail.split('@');
+
+    if (domain !== permissions.DOMAIN) {
       console.warn(`Access denied: User domain ${domain} does not match required domain ${permissions.DOMAIN}`);
-      auditRequest(req, 'permission.denied', { path: req.path, method: req.method });
-      return res.status(403).send('Access Denied');
-  }
-  
-  const path = req.path;
-  const method = req.method;
-
-  // Check if route has defined permissions
-  const routePermissions = permissions[path];
-
-  if (Array.isArray(routePermissions)) {
-    if (!routePermissions.includes(username)) {
-      console.warn(`Access denied for user ${username} on ${method} ${path}`);
       auditRequest(req, 'permission.denied', { path, method });
       return res.status(403).send('Access Denied');
     }
-  }
-  
-  next();
+
+    const allowed = permissions[routeKey];
+    if (!Array.isArray(allowed) || !allowed.includes(username)) {
+      console.warn(`Access denied for user ${username} on ${method} ${path} (${routeKey})`);
+      auditRequest(req, 'permission.denied', { path, method });
+      return res.status(403).send('Access Denied');
+    }
+
+    next();
+  };
 }
 
 /**

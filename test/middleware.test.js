@@ -64,7 +64,7 @@ test.serial('checkPermission denies requests without a signed-in account', t => 
     t.plan(2);
     const req = { session: {}, path: '/blog', method: 'GET' };
 
-    checkPermission(req, fakeDeniedResponse(t), () => t.fail('Next should not be called'));
+    checkPermission('/blog')(req, fakeDeniedResponse(t), () => t.fail('Next should not be called'));
 });
 
 test.serial('checkPermission denies users from another domain', t => {
@@ -72,7 +72,7 @@ test.serial('checkPermission denies users from another domain', t => {
     withPermissions(t, { DOMAIN: 'arandadeduero.es', '/blog': ['alice'] });
     const req = { session: { account: { username: 'alice@example.com' } }, path: '/blog', method: 'GET' };
 
-    checkPermission(req, fakeDeniedResponse(t), () => t.fail('Next should not be called'));
+    checkPermission('/blog')(req, fakeDeniedResponse(t), () => t.fail('Next should not be called'));
 });
 
 test.serial('checkPermission denies users missing from the route list', t => {
@@ -80,7 +80,7 @@ test.serial('checkPermission denies users missing from the route list', t => {
     withPermissions(t, { DOMAIN: 'arandadeduero.es', '/blog': ['alice'] });
     const req = { session: { account: { username: 'bob@arandadeduero.es' } }, path: '/blog', method: 'POST' };
 
-    checkPermission(req, fakeDeniedResponse(t), () => t.fail('Next should not be called'));
+    checkPermission('/blog')(req, fakeDeniedResponse(t), () => t.fail('Next should not be called'));
 });
 
 test.serial('checkPermission allows users listed for the route', t => {
@@ -88,15 +88,26 @@ test.serial('checkPermission allows users listed for the route', t => {
     withPermissions(t, { DOMAIN: 'arandadeduero.es', '/blog': ['alice'] });
     const req = { session: { account: { username: 'alice@arandadeduero.es' } }, path: '/blog', method: 'GET' };
 
-    checkPermission(req, { status: () => t.fail('Status should not be set') }, () => t.pass());
+    checkPermission('/blog')(req, { status: () => t.fail('Status should not be set') }, () => t.pass());
 });
 
-test.serial('checkPermission allows any domain user on routes without a list', t => {
-    t.plan(1);
+test.serial('checkPermission lets nobody in on a key that has no list', t => {
+    t.plan(2);
     withPermissions(t, { DOMAIN: 'arandadeduero.es' });
     const req = { session: { account: { username: 'bob@arandadeduero.es' } }, path: '/unlisted', method: 'GET' };
 
-    checkPermission(req, { status: () => t.fail('Status should not be set') }, () => t.pass());
+    checkPermission('/unlisted')(req, fakeDeniedResponse(t), () => t.fail('Next should not be called'));
+});
+
+test.serial('checkPermission uses its key however the request path is spelled', t => {
+    // Express sends /Blog and /blog/ to the handler of /blog
+    t.plan(3);
+    withPermissions(t, { DOMAIN: 'arandadeduero.es', '/blog': ['alice'] });
+    const bob = { session: { account: { username: 'bob@arandadeduero.es' } }, path: '/Blog', method: 'POST' };
+    const alice = { session: { account: { username: 'alice@arandadeduero.es' } }, path: '/blog/', method: 'GET' };
+
+    checkPermission('/blog')(bob, fakeDeniedResponse(t), () => t.fail('Next should not be called'));
+    checkPermission('/blog')(alice, { status: () => t.fail('Status should not be set') }, () => t.pass());
 });
 
 test.serial('checkAdminStatus marks anonymous requests as non-admin without calling Graph', async t => {
