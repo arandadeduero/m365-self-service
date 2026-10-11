@@ -973,6 +973,7 @@ La página responde siempre que se ha enviado un enlace si la dirección pertene
 2. La dirección no pertenece a ninguna cuenta
 3. AWS SES no está bien configurado (busca `Error sending reset link` en el registro)
 4. Al registro de la aplicación le faltan los permisos de aplicación que necesita el restablecimiento
+5. El directorio no devuelve `lastPasswordChangeDateTime` para la cuenta (el registro dice `reset.link_failed` con ese nombre): sin esa fecha el enlace no sería de un solo uso, así que no se envía
 
 **Solución:**
 1. Mira en la carpeta de correo no deseado si hay correos de la dirección `FROM_EMAIL`

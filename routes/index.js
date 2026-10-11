@@ -403,12 +403,18 @@ async function sendResetLink(req, email) {
     return;
   }
 
+  // A link is single use because checkResetToken compares this date with the
+  // directory. Without the date that check would always pass, so no link
+  if (!user.lastPasswordChangeDateTime) {
+    throw new Error('The directory does not report when the password was last changed (lastPasswordChangeDateTime), so the link could not be made single use');
+  }
+
   const account = user.mail || user.userPrincipalName;
   const alternate = (user.otherMails || [])[0];
   const token = createResetToken({
     userId: user.id,
     email: account,
-    passwordChangedAt: user.lastPasswordChangeDateTime || null,
+    passwordChangedAt: user.lastPasswordChangeDateTime,
   });
   const resetUrl = `${APP_ORIGIN}/reset-password/${token}`;
 

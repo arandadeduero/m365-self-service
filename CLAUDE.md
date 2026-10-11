@@ -106,7 +106,7 @@ Node >= 25 is required (`engines`, Dockerfile and CI all use 25). CommonJS throu
 Everything is tested against stubs. These depend on Microsoft's side and should be checked once in the real tenant:
 
 - `/users?$expand=manager($select=id)` returning every user with their manager (org chart).
-- `lastPasswordChangeDateTime` being readable with the app's application permissions, and changing when the app sets a password.
+- `lastPasswordChangeDateTime` being readable with the app's application permissions, and changing when the app sets a password. If it is not readable, **no reset link is ever sent** (`sendResetLink` refuses, `reset.link_failed` in the audit log with the reason), because the link could not be made single use.
 - Group requests: `/groups/{id}/owners`, `/me/ownedObjects/microsoft.graph.group`, and an owner adding a member with delegated `GroupMember.ReadWrite.All`; also that the "already a member" error still contains "already exist".
 - Sign-in methods (`/me/authentication/methods` with `UserAuthenticationMethod.Read`) and devices (`/me/registeredDevices` and `/me/ownedDevices` cast to `microsoft.graph.device`).
 - Service incidents: `/admin/serviceAnnouncement/issues` with `$filter=isResolved eq false` and the application permission `ServiceHealth.Read.All`.

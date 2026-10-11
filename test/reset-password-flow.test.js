@@ -147,6 +147,19 @@ test.serial('POST /reset-password answers the same for an unknown user, without 
   t.is(ses.sent.length, 0);
 });
 
+test.serial('no link is sent when the directory does not say when the password last changed', async t => {
+  // Without that date a link could not be made single use
+  delete directoryUser.lastPasswordChangeDateTime;
+
+  const res = await requestLink().expect(200);
+  await lookupFinished();
+
+  t.true(res.text.includes(GENERIC_ANSWER));
+  t.is(ses.sent.length, 0);
+  await waitFor(() => auditEvents('reset.link_failed').some(entry => entry.email === EMAIL));
+  t.regex(auditEvents('reset.link_failed').at(-1).reason, /lastPasswordChangeDateTime/);
+});
+
 test.serial('POST /reset-password answers the same when the email cannot be sent', async t => {
   ses.failWith = new Error('SES is down');
 
