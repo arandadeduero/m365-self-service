@@ -20,7 +20,7 @@ NODE_ENV=test npx ava test/graphService.test.js            # one file
 NODE_ENV=test npx ava --match='*reset link*'                # by title
 ```
 
-There is no linter, formatter or build step. `npm run coverage` is a stub: c8 crashes on the Node version in use (yargs ESM/CJS error), so coverage is not measured.
+There is no linter, formatter, build step or coverage report (c8 crashed on the Node version in use, yargs ESM/CJS error, and was removed on 2026-10-13).
 
 Node >= 25 is required (`engines`, Dockerfile and CI all use 25). CommonJS throughout.
 

@@ -484,7 +484,7 @@ Ningún test habla con Microsoft, AWS ni WordPress:
 
 ### Cobertura
 
-`npm run coverage` solo muestra un aviso: c8 no funciona en las versiones actuales de Node.js, así que por ahora no hay informe de cobertura.
+No hay informe de cobertura: c8 no funciona en las versiones actuales de Node.js y se ha retirado del proyecto.
 
 ---
 
