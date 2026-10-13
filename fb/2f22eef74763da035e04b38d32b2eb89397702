@@ -1,0 +1,27 @@
+.github/workflows/docker-publish.yml
+  s_011367d8e8fa7a::t_0b9386ffbb04d1 21,24,32,40,43
+.github/workflows/test.yml
+  s_011367d8e8fa7a::t_ab225889a3e7d8 27,30
+middleware/auth.js
+  s_011367d8e8fa7a::t_5eb88602bfbdf5 39
+routes/index.js
+  s_011367d8e8fa7a::t_9065f9c2a0afc6 164,166
+server.js
+  s_011367d8e8fa7a::t_59adf59cb626a1 142-143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fb2f22eef74763da035e04b38d32b2eb89397702",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
