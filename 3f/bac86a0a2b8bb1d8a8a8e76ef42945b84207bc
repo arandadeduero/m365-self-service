@@ -1,0 +1,23 @@
+CLAUDE.md
+  s_011367d8e8fa7a::t_bd87728b797baa 23
+package.json
+  s_011367d8e8fa7a::t_9530f8e2f7dd7d 15
+README.md
+  s_011367d8e8fa7a::t_402356d6ac11ad 487
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3fbac86a0a2b8bb1d8a8a8e76ef42945b84207bc",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
