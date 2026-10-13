@@ -36,7 +36,7 @@ function checkPermission(routeKey) {
 
     const allowed = permissions[routeKey];
     if (!Array.isArray(allowed) || !allowed.includes(username)) {
-      console.warn(`Access denied for user ${username} on ${method} ${path} (${routeKey})`);
+      console.warn(`Access denied for user ${username} on ${method} ${path.replace(/[\r\n]/g, '')} (${routeKey})`);
       auditRequest(req, 'permission.denied', { path, method });
       return res.status(403).send('Access Denied');
     }

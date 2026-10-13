@@ -161,8 +161,9 @@ router.post('/profile/me/edit', isAuthenticated, async (req, res, next) => {
     const refused = [];
     try {
       for (const [field, value] of Object.entries(updateData)) {
+        if (!appConfig.PROFILE_FIELDS.includes(field)) continue; // keys come from that list; said twice for clarity
         try {
-          await updateUserProfile(accessToken, { [field]: value });
+          await updateUserProfile(accessToken, Object.fromEntries([[field, value]]));
           saved.push(field);
         } catch (error) {
           if (error.graphStatus !== 403) throw error;

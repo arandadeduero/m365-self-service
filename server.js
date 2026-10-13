@@ -139,7 +139,8 @@ app.use(async (req, res, next) => {
 // Log requests in development
 if (process.env.NODE_ENV !== 'production') {
   app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url}`);
+    // One line per request, whatever the URL contains
+    console.log(`${req.method} ${req.url.replace(/[\r\n]/g, '')}`);
     next();
   });
 }
