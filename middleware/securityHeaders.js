@@ -52,4 +52,4 @@ function securityHeaders(req, res, next) {
   next();
 }
 
-module.exports = { securityHeaders, CONTENT_SECURITY_POLICY };
+module.exports = { securityHeaders };

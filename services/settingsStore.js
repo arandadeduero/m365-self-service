@@ -67,4 +67,4 @@ function saveSettings({ blogUsers, sharedMailboxes }) {
   applySettings();
 }
 
-module.exports = { readSettings, currentSettings, applySettings, saveSettings };
+module.exports = { currentSettings, applySettings, saveSettings };
