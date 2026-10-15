@@ -1,0 +1,21 @@
+middleware/securityHeaders.js
+  s_011367d8e8fa7a::t_8a0e670f40b155 55
+services/settingsStore.js
+  s_011367d8e8fa7a::t_590b5fd2085db3 70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f51a6863af5791452a21f15c9677ad22f8b6ab1a",
+  "prompts": {},
+  "sessions": {
+    "s_011367d8e8fa7a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6ae70847-5654-465c-b468-a4a3492339d0",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Guillermo López <willyaranda@gmail.com>"
+    }
+  }
+}
